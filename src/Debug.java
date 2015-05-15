@@ -40,14 +40,14 @@ public class Debug{
 			}
 			
 		}else if(last instanceof Function){
-			if(last instanceof PrimativeFunction){
+			if(last instanceof VariableFunction){
 				return false;
 			}else{
 				
-				if(((PrimativeFunction) last).inputNode.parents.isEmpty()){
+				if(((VariableFunction) last).inputNode.parents.isEmpty()){
 					return false;
 				}else{
-					stack.add(((PrimativeFunction) last).inputNode.parents.get(0).parentObject);
+					stack.add(((VariableFunction) last).inputNode.parents.get(0).parentObject);
 					return true;
 				}
 				

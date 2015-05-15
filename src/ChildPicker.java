@@ -39,12 +39,12 @@ public class ChildPicker extends VObject{
 		this.parentNode = parentNode;
 		Main.curves.add(new Curve(parentNode,n));
 		
-		/*for(Class<? extends PrimativeFunction> c : ((Primative) this.parent).functions){
+		/*for(Class<? extends VariableFunction> c : ((Variable) this.parent).functions){
 			System.out.println((c.getClass()));
 		}*/
 
 		if(parent instanceof ContainsChildFunctions){ //TODO should be implied
-			for(PrimativeFunction f : ((ContainsChildFunctions) parent).getFunctions()){
+			for(VariableFunction f : ((ContainsChildFunctions) parent).getFunctions()){
 				this.body.add(new MenuItem(f,this));
 			}
 		}
@@ -53,8 +53,8 @@ public class ChildPicker extends VObject{
 	private class MenuItem extends JLabel implements MouseListener{
 		String name;
 		ChildPicker childPicker;
-		private PrimativeFunction f;
-		MenuItem(PrimativeFunction f, ChildPicker parent){
+		private VariableFunction f;
+		MenuItem(VariableFunction f, ChildPicker parent){
 			super();
 			this.f = f;
 			this.name = f.getClass().getSimpleName();
@@ -91,12 +91,12 @@ public class ChildPicker extends VObject{
 		}
 		@Override
 		public void mousePressed(MouseEvent arg0) {
-			PrimativeFunction pf = null;
+			VariableFunction pf = null;
 			try {
-				Constructor<?> constructor = f.getClass().getDeclaredConstructor(Point.class, Node.class, Primative.class);
-				pf = (PrimativeFunction) constructor.newInstance(Node.getLocationOnPanel(this.childPicker), 
+				Constructor<?> constructor = f.getClass().getDeclaredConstructor(Point.class, Node.class, Variable.class);
+				pf = (VariableFunction) constructor.newInstance(Node.getLocationOnPanel(this.childPicker), 
 						parentNode, 
-						(Primative) this.childPicker.parent
+						(Variable) this.childPicker.parent
 					);
 			} catch (InstantiationException e) {
 				// Auto-generated catch block
@@ -117,7 +117,7 @@ public class ChildPicker extends VObject{
 				// Auto-generated catch block
 				e.printStackTrace();
 			}catch(Exception e){
-				//pf = null;//= new PrimativeFunction(Node.getLocationOnPanel(this.childPicker), ((Primative) this.childPicker.parent).dataType, parentNode, (Primative) this.childPicker.parent,"error");
+				//pf = null;//= new VariableFunction(Node.getLocationOnPanel(this.childPicker), ((Variable) this.childPicker.parent).dataType, parentNode, (Variable) this.childPicker.parent,"error");
 			}
 			Main.objects.add(pf);
 			Main.panel.repaint();

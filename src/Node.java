@@ -24,7 +24,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	NodeType type;
 	NodeStyle style = null;
 	boolean canHaveMultipleInputs = true;
-	public ArrayList<Primative.DataType> dataType = new ArrayList<Primative.DataType>();
+	public ArrayList<Variable.DataType> dataType = new ArrayList<Variable.DataType>();
 	protected Dimension size = new Dimension(30,20);
 	Node(NodeType type,VObject parentObj,NodeStyle style){
 		this.style = style;
@@ -34,8 +34,8 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		this.facing = Direction.EAST;
 		this.type = type;
 		this.parentObject = parentObj;
-		//if(parentObj.instance == Primative){//TODO use 'extends'/'typeof'?
-		//	this.dataType = ((Primative) parentObj).dataType;
+		//if(parentObj.instance == Variable){//TODO use 'extends'/'typeof'?
+		//	this.dataType = ((Variable) parentObj).dataType;
 		//}else{
 			//this.dataType = null;
 		//}
@@ -51,7 +51,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		this(type,parentObj,NodeStyle.VISIBLE);
 		this.facing = dir;
 	}
-	Node(Direction dir, NodeType type, VObject parentObj, ArrayList<Primative.DataType> dt){
+	Node(Direction dir, NodeType type, VObject parentObj, ArrayList<Variable.DataType> dt){
 		this(type,parentObj,NodeStyle.VISIBLE);
 		this.facing = dir;
 		this.dataType = dt;
@@ -117,9 +117,9 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		}
 	}
 	
-	public static ArrayList<ArrayList<Primative.DataType>> complement(ArrayList<Primative.DataType> A, ArrayList<Primative.DataType> B){
-		ArrayList<Primative.DataType> sourceList = new ArrayList<Primative.DataType>(A);
-		ArrayList<Primative.DataType> destinationList = new ArrayList<Primative.DataType>(B);
+	public static ArrayList<ArrayList<Variable.DataType>> complement(ArrayList<Variable.DataType> A, ArrayList<Variable.DataType> B){
+		ArrayList<Variable.DataType> sourceList = new ArrayList<Variable.DataType>(A);
+		ArrayList<Variable.DataType> destinationList = new ArrayList<Variable.DataType>(B);
 		
 		System.out.println("A : "+A);
 		System.out.println("B : "+B);
@@ -129,7 +129,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		sourceList.removeAll(B);
 		destinationList.removeAll(A);
 		
-		return new ArrayList<ArrayList<Primative.DataType>>(Arrays.asList(sourceList,destinationList));
+		return new ArrayList<ArrayList<Variable.DataType>>(Arrays.asList(sourceList,destinationList));
 	}
 	
 	public static void connect(Node A, Node B){
@@ -228,8 +228,8 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 					clearChildren(this);
 					clearChildren(node);
 					//System.out.println(this.dataType+", "+node.dataType);
-					if(this.dataType.size() == 1 && this.dataType.get(0) == Primative.DataType.GENERIC && 
-							((node.dataType.size() > 0 && node.dataType.get(0) != Primative.DataType.GENERIC) /*||
+					if(this.dataType.size() == 1 && this.dataType.get(0) == Variable.DataType.GENERIC && 
+							((node.dataType.size() > 0 && node.dataType.get(0) != Variable.DataType.GENERIC) /*||
 									(node.dataType.size() == 0)*/
 									)
 						)	//if this is generic and node isn't
@@ -238,8 +238,8 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 						this.dataType = node.dataType;
 						connect(this,node);
 					}
-					else if(node.dataType.size() == 1 && node.dataType.get(0) == Primative.DataType.GENERIC && 
-						((this.dataType.size() > 0 && this.dataType.get(0) != Primative.DataType.GENERIC)/* ||
+					else if(node.dataType.size() == 1 && node.dataType.get(0) == Variable.DataType.GENERIC && 
+						((this.dataType.size() > 0 && this.dataType.get(0) != Variable.DataType.GENERIC)/* ||
 								(this.dataType.size() == 0)*/
 								)
 							)//if node is generic and this isn't
@@ -247,12 +247,12 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 						System.out.println("node is generic");
 						node.dataType = this.dataType;
 						connect(this,node);
-					}else if((node.dataType.size() == 1 && node.dataType.get(0) == Primative.DataType.GENERIC && this.dataType.size() == 0) ||
-							(this.dataType.size() == 1 && this.dataType.get(0) == Primative.DataType.GENERIC && node.dataType.size() == 0)
+					}else if((node.dataType.size() == 1 && node.dataType.get(0) == Variable.DataType.GENERIC && this.dataType.size() == 0) ||
+							(this.dataType.size() == 1 && this.dataType.get(0) == Variable.DataType.GENERIC && node.dataType.size() == 0)
 							){
 						//Don't connect null data nodes with generic nodes
 					}else{
-						ArrayList<ArrayList<Primative.DataType>> compl = complement(this.dataType,node.dataType);
+						ArrayList<ArrayList<Variable.DataType>> compl = complement(this.dataType,node.dataType);
 						System.out.println(compl);
 						if(compl.get(0).size() == 0 && compl.get(1).size() == 0){
 							node.parentObject.repaint();node.parentObject.revalidate();
@@ -268,7 +268,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 			}
 		}
 		if(!isHoverAnotherNode){
-			if(this.parentObject instanceof Primative){
+			if(this.parentObject instanceof Variable){
 				ChildPicker cp = new ChildPicker(this.parentObject,this,new Point(mouse.x-20,mouse.y-20));
 				Main.objects.add(this.parentObject);
 				Main.panel.add(cp);

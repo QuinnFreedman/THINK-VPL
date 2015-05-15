@@ -16,16 +16,16 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class PrimativeFunction extends Function{
+public class PrimitiveFunction extends Function{
 	protected Node nodeFromParent;
-	Primative.DataType type;
+	Primitive.DataType type;
 	private JLabel label;
 	private String text = "";
 	private JPanel nodeHolder;
 	public String getFunctionName(){
 		return this.getClass().getSimpleName();
 	}
-	PrimativeFunction(Point pos, Primative.DataType type, Node parentNode, Primative parent, /*String name,*/ ArrayList<Primative.DataType> inputs, ArrayList<Primative.DataType> outputs){
+	PrimitiveFunction(Point pos, Primitive.DataType type, Node parentNode, Primitive parent, /*String name,*/ ArrayList<Primitive.DataType> inputs, ArrayList<Primitive.DataType> outputs){
 		super();
 		this.type = type;
 		this.color = Main.colors.get(type);
@@ -66,10 +66,10 @@ public class PrimativeFunction extends Function{
 		Main.curves.add(new Curve(parentNode,nodeFromParent));
 		Main.panel.add(this);
 	}
-	PrimativeFunction() {
+	PrimitiveFunction() {
 		super();
 	}
-	PrimativeFunction(Point pos, Node parentNode, Primative parent) {
+	PrimitiveFunction(Point pos, Node parentNode, Variable parent) {
 		super();
 		System.out.println("you shouldn't be using this");
 	}

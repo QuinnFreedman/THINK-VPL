@@ -20,70 +20,74 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.Box;
+import javax.swing.Box.Filler;
+import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
+import javax.swing.JLabel;
+
+import java.awt.Component;
+
+import javax.swing.JButton;
+import javax.swing.SwingConstants;
+//import org.pushingpixels.substance.api.*;
+
+import org.pushingpixels.substance.api.skin.SubstanceGraphiteLookAndFeel;
 
 public class Main implements ActionListener, MouseInputListener, KeyListener{
 	static ArrayList<VObject> objects = new ArrayList<VObject>();
 	static ArrayList<Curve> curves = new ArrayList<Curve>();
 	static ArrayList<Node> nodes = new ArrayList<Node>();
 	static final int gridWidth = 10;
+	private static ArrayList<Variable> variables = new ArrayList<Variable>();
 	static Point mousePos = new Point();
-	static HashMap<Primative.DataType,Color> colors = new HashMap<Primative.DataType,Color>();
+	static HashMap<Variable.DataType,Color> colors = new HashMap<Variable.DataType,Color>();
 	/**
 	 * @wbp.parser.entryPoint
 	 */
 	static ComponentMover componentMover;
 	static JPanel panel;
+	private static JPanel vars;
 	private static JPopupMenu panelPopup;
 	private static Point clickLocation;
 	public static EntryPoint entryPoint;
-
+	
 	public static void main(String[] args){
+
+        System.out.println("test");
 		new Main();
-		colors.put(Primative.DataType.BOOLEAN, Color.green);
-		colors.put(Primative.DataType.INTEGER, Color.red);
-		colors.put(Primative.DataType.DOUBLE, new Color(255,0,255));
-		ArrayList<Primative.DataType> A = new ArrayList<Primative.DataType>();
-		A.add(Primative.DataType.INTEGER);
-		A.add(Primative.DataType.BOOLEAN);
-		ArrayList<Primative.DataType> B = new ArrayList<Primative.DataType>();
-		B.add(Primative.DataType.INTEGER);
+		colors.put(Variable.DataType.BOOLEAN, Color.green);
+		colors.put(Variable.DataType.INTEGER, Color.red);
+		colors.put(Variable.DataType.DOUBLE, new Color(255,0,255));
+		ArrayList<Variable.DataType> A = new ArrayList<Variable.DataType>();
+		A.add(Variable.DataType.INTEGER);
+		A.add(Variable.DataType.BOOLEAN);
+		ArrayList<Variable.DataType> B = new ArrayList<Variable.DataType>();
+		B.add(Variable.DataType.INTEGER);
 		System.out.println(Node.complement(A, B));
 	}
 	
 	Main(){
 		JFrame window = new JFrame();
 		window.setTitle("VisualIDE");
-		window.setSize(555,325);
+		window.setSize(800,500);
+		window.setMinimumSize(new Dimension(555,325));
 		window.setLocationRelativeTo(null);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        System.out.println("test");
 		
-		try {
-            // Set System L&F
-	        UIManager.setLookAndFeel(
-	            UIManager.getSystemLookAndFeelClassName());
-	    } 
-	    catch (UnsupportedLookAndFeelException e) {
-	       // handle exception
-	    }
-	    catch (ClassNotFoundException e) {
-	       // handle exception
-	    }
-	    catch (InstantiationException e) {
-	       // handle exception
-	    }
-	    catch (IllegalAccessException e) {
-	       // handle exception
-	    }
 		
+	//	Menu Bar
 		JMenuBar menuBar = new JMenuBar();
 		
 		// File Menu, F - Mnemonic
@@ -145,9 +149,73 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 		panel.setPreferredSize(new Dimension(1000, 1000));
 		
 		JScrollPane scrollPane = new JScrollPane(panel);
+			
+		//SIDEBAR
+		
+		Dimension minimumSize = new Dimension(100,100);
+		
+		JPanel varsContainer = new JPanel();
+		
+		varsContainer.setLayout(new BorderLayout(0, 0));
+		
+		JPanel varsHeader = new JPanel();
+		varsContainer.add(varsHeader, BorderLayout.NORTH);
+		varsHeader.setLayout(new BorderLayout(0, 0));
+		
+		JLabel lblVars = new JLabel("Variables");
+		lblVars.setHorizontalAlignment(SwingConstants.CENTER);
+		varsHeader.add(lblVars);
+		
+		JPanel varBurronHolder = new JPanel();
+		varsHeader.add(varBurronHolder, BorderLayout.EAST);
+		
+		vars = new JPanel();
+		JScrollPane scrollVars = new JScrollPane(vars);
+		BoxLayout layout = new BoxLayout(vars, BoxLayout.Y_AXIS);
+		vars.setLayout(layout);
+		
+		JButton addVar = new JButton("+");
+		varBurronHolder.add(addVar);
+		addVar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Variable v = new Variable();
+				v.setName("test");
+				variables.add(v);
+				vars.removeAll();
+				for(Variable var : variables){
+					vars.add(var);
+				}
+				vars.repaint();
+				vars.revalidate();
+			}
+		});
 		
 		
-		window.getContentPane().add(scrollPane, BorderLayout.CENTER);
+		scrollVars.setMinimumSize(minimumSize);
+		varsContainer.add(scrollVars);
+		
+		
+		JPanel funcsContainer = new JPanel();
+		funcsContainer.setLayout(new BoxLayout(funcsContainer, BoxLayout.Y_AXIS));
+		
+		JLabel lblFuncs = new JLabel("Funcs");
+		lblFuncs.setAlignmentX(Component.CENTER_ALIGNMENT);
+		funcsContainer.add(lblFuncs);
+		JPanel funcs = new JPanel();
+		//funcs.setLayout(new BoxLayout(vars,BoxLayout.Y_AXIS));
+		JScrollPane scrollFuncs = new JScrollPane(funcs);
+		scrollFuncs.setMinimumSize(minimumSize);
+		funcsContainer.add(scrollFuncs);
+		
+		JSplitPane sidebar = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+				varsContainer, funcsContainer);
+		
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                sidebar, scrollPane);
+				splitPane.setDividerLocation(150);
+		
+		
+		window.getContentPane().add(splitPane, BorderLayout.CENTER);
 		
 		window.setJMenuBar(menuBar);
 		
@@ -208,13 +276,13 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 		}else{
 			p = VObject.getFreePosition();
 		}
-		if(c == "Boolean"){
+		/*if(c == "Boolean"){
 			objects.add(new VBoolean(p));
 		}else if(c == "Integer"){
 			objects.add(new VInt(p));
 		}else if(c == "Double"){
 			objects.add(new VDouble(p));
-		}else if(c == "Math"){
+		}else */if(c == "Math"){
 			objects.add(new VMath(p));
 		}else if(c == "Timeline"){
 			objects.add(new Timeline(p));

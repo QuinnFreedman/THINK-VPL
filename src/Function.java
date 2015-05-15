@@ -5,8 +5,8 @@ public class Function extends VObject{
 	public VObject inputSend;
 	public Node inputNode;
 	public Node outputNode;
-	public ArrayList<Primative.DataType> inputs;
-	public ArrayList<Primative.DataType> outputs;
+	public ArrayList<Variable.DataType> inputs;
+	public ArrayList<Variable.DataType> outputs;
 	public void run(){
 		
 	}

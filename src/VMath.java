@@ -34,7 +34,7 @@ public class VMath extends Function{
 		valueField.setPreferredSize(new Dimension(90,18));
 		valueField.setOpaque(false);
 	//	valueField.getDocument().addDocumentListener(this);
-		valueField.setBorder(Primative.bodyPadding);
+		valueField.setBorder(Variable.bodyPadding);
 		this.body.add(valueField,BorderLayout.CENTER);
 		
 		nodeHolder = new JPanel();
@@ -43,13 +43,13 @@ public class VMath extends Function{
 		this.body.add(nodeHolder,BorderLayout.LINE_START);
 		
 		this.inputNode = new FlexNode(Node.Direction.WEST,Node.NodeType.RECIEVING,this);
-		inputNode.setBorder(Primative.bodyPadding);
+		inputNode.setBorder(Variable.bodyPadding);
 		inputNode.canHaveMultipleInputs = false;
 		Main.nodes.add(inputNode);
 		nodeHolder.add(inputNode);
 		
-		this.outputNode = new Node(Node.Direction.EAST,Node.NodeType.SENDING,this,new ArrayList<Primative.DataType>(Arrays.asList(Primative.DataType.INTEGER)));
-		outputNode.setBorder(Primative.bodyPadding);
+		this.outputNode = new Node(Node.Direction.EAST,Node.NodeType.SENDING,this,new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.INTEGER)));
+		outputNode.setBorder(Variable.bodyPadding);
 		outputNode.canHaveMultipleInputs = false;
 		Main.nodes.add(outputNode);
 		this.body.add(outputNode,BorderLayout.LINE_END);
@@ -64,7 +64,7 @@ public class VMath extends Function{
 	}
 
 	static class FlexNode extends Node{
-		static final ArrayList<Primative.DataType> generic = new ArrayList<Primative.DataType>(Arrays.asList(Primative.DataType.GENERIC));
+		static final ArrayList<Variable.DataType> generic = new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.GENERIC));
 		FlexNode(Direction dir, NodeType type, VObject parentObj) {
 			super(dir, type, parentObj, generic);
 		}
@@ -74,7 +74,7 @@ public class VMath extends Function{
 			Node newNode = new FlexNode(Node.Direction.WEST,Node.NodeType.RECIEVING,this.parentObject);
 			VMath parent = ((VMath) this.parentObject);
 			parent.additionalInputNodes.add(newNode);
-			newNode.setBorder(Primative.bodyPadding);
+			newNode.setBorder(Variable.bodyPadding);
 			newNode.canHaveMultipleInputs = false;
 			Main.nodes.add(newNode);
 			parent.nodeHolder.add(newNode);
@@ -82,18 +82,18 @@ public class VMath extends Function{
 			
 			setNodeType:{
 			for(Node n : parent.additionalInputNodes){
-				if(n.dataType.contains(Primative.DataType.DOUBLE) ||  parent.inputNode.dataType.contains(Primative.DataType.DOUBLE)){
-					parent.outputNode.dataType = new ArrayList<Primative.DataType>(Arrays.asList(Primative.DataType.DOUBLE));
+				if(n.dataType.contains(Variable.DataType.DOUBLE) ||  parent.inputNode.dataType.contains(Variable.DataType.DOUBLE)){
+					parent.outputNode.dataType = new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE));
 					break setNodeType;
 				}
 			}
 			for(Node n : parent.additionalInputNodes){
-				if(n.dataType.contains(Primative.DataType.FLOAT) ||  parent.inputNode.dataType.contains(Primative.DataType.FLOAT)){
-					parent.outputNode.dataType = new ArrayList<Primative.DataType>(Arrays.asList(Primative.DataType.FLOAT));
+				if(n.dataType.contains(Variable.DataType.FLOAT) ||  parent.inputNode.dataType.contains(Variable.DataType.FLOAT)){
+					parent.outputNode.dataType = new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.FLOAT));
 					break setNodeType;
 				}
 			}
-			parent.outputNode.dataType = new ArrayList<Primative.DataType>(Arrays.asList(Primative.DataType.INTEGER));
+			parent.outputNode.dataType = new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.INTEGER));
 			}
 			
 			Main.panel.repaint();

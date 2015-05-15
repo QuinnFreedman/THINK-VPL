@@ -8,13 +8,13 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
-public class VDouble extends Primative{
+public class VDouble extends Variable{
 	static final String name = "Double";
 	static int idCounter = 0;
 	double value = 0;
 	VDouble(){
 		super();
-		this.dataType = Primative.DataType.DOUBLE;
+		this.dataType = Variable.DataType.DOUBLE;
 		this.headerLabel.setText(name);
 		this.id = "d"+Integer.toString(idCounter);
 		idCounter++;
@@ -45,27 +45,27 @@ public class VDouble extends Primative{
 		valueField.getDocument().removeDocumentListener(this);
 		//this.valueField.setText(Boolean.toString(value));
 	}
-	static class Get extends PrimativeFunction{
-		Get(Point pos, Node parentNode, Primative parent) {
-			super(pos, Primative.DataType.DOUBLE, parentNode, parent, null, new ArrayList<Primative.DataType>(Arrays.asList(Primative.DataType.DOUBLE)));
+	static class Get extends VariableFunction{
+		Get(Point pos, Node parentNode, Variable parent) {
+			super(pos, Variable.DataType.DOUBLE, parentNode, parent, null, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE)));
 		}
 		Get(){
 			super();
 		}
 		
 	}
-	static class Set extends PrimativeFunction{
-		Set(Point pos, Node parentNode, Primative parent) {
-			super(pos, Primative.DataType.DOUBLE, parentNode, parent, new ArrayList<Primative.DataType>(Arrays.asList(Primative.DataType.DOUBLE)),null);
+	static class Set extends VariableFunction{
+		Set(Point pos, Node parentNode, Variable parent) {
+			super(pos, Variable.DataType.DOUBLE, parentNode, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE)),null);
 		}
 		Set(){
 			super();
 		}
 		
 	}
-	static class Subtract_From extends PrimativeFunction{
-		Subtract_From(Point pos, Node parentNode, Primative parent) {
-			super(pos, Primative.DataType.DOUBLE, parentNode, parent, new ArrayList<Primative.DataType>(Arrays.asList(Primative.DataType.DOUBLE)),null);
+	static class Subtract_From extends VariableFunction{
+		Subtract_From(Point pos, Node parentNode, Variable parent) {
+			super(pos, Variable.DataType.DOUBLE, parentNode, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE)),null);
 			this.setSize(120,40);
 		}
 		Subtract_From(){
@@ -73,9 +73,9 @@ public class VDouble extends Primative{
 		}
 		
 	}
-	static class Multiply_By extends PrimativeFunction{
-		Multiply_By(Point pos, Node parentNode, Primative parent) {
-			super(pos, Primative.DataType.DOUBLE, parentNode, parent, new ArrayList<Primative.DataType>(Arrays.asList(Primative.DataType.DOUBLE)),null);
+	static class Multiply_By extends VariableFunction{
+		Multiply_By(Point pos, Node parentNode, Variable parent) {
+			super(pos, Variable.DataType.DOUBLE, parentNode, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE)),null);
 			this.setSize(120,40);
 		}
 		Multiply_By(){

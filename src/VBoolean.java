@@ -8,13 +8,13 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
-class VBoolean extends Primative{
+class VBoolean extends Variable{
 	static String name = "Boolean";
 	static int idCounter = 0;
 	boolean value = false;
 	VBoolean(){
 		super();
-		this.dataType = Primative.DataType.BOOLEAN;
+		this.dataType = Variable.DataType.BOOLEAN;
 		this.headerLabel.setText(name);
 		this.id = "Bool"+Integer.toString(idCounter);
 		idCounter++;
@@ -44,29 +44,29 @@ class VBoolean extends Primative{
 		valueField.getDocument().removeDocumentListener(this);
 	}
 	
-	static class Get extends PrimativeFunction{
-		public ArrayList<Primative.DataType> input = new ArrayList<Primative.DataType>();
-		Get(Point pos, Node parentNode, Primative parent) {
-			super(pos, Primative.DataType.BOOLEAN, parentNode, parent, null, new ArrayList<Primative.DataType>(Arrays.asList(Primative.DataType.BOOLEAN)));
+	static class Get extends VariableFunction{
+		public ArrayList<Variable.DataType> input = new ArrayList<Variable.DataType>();
+		Get(Point pos, Node parentNode, Variable parent) {
+			super(pos, Variable.DataType.BOOLEAN, parentNode, parent, null, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.BOOLEAN)));
 		}
 		Get(){
 			super();
 		}
 		
 	}
-	static class Set extends PrimativeFunction{
-		public ArrayList<Primative.DataType> input = new ArrayList<Primative.DataType>();
-		Set(Point pos, Node parentNode, Primative parent) {
-			super(pos, Primative.DataType.BOOLEAN, parentNode, parent, new ArrayList<Primative.DataType>(Arrays.asList(Primative.DataType.BOOLEAN)),null);
+	static class Set extends VariableFunction{
+		public ArrayList<Variable.DataType> input = new ArrayList<Variable.DataType>();
+		Set(Point pos, Node parentNode, Variable parent) {
+			super(pos, Variable.DataType.BOOLEAN, parentNode, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.BOOLEAN)),null);
 		}
 		Set(){
 			super();
 		}
 		
 	}
-	static class Toggle extends PrimativeFunction{
-		Toggle(Point pos, Node parentNode, Primative parent) {
-			super(pos, Primative.DataType.BOOLEAN, parentNode, parent, new ArrayList<Primative.DataType>(),null);
+	static class Toggle extends VariableFunction{
+		Toggle(Point pos, Node parentNode, Variable parent) {
+			super(pos, Variable.DataType.BOOLEAN, parentNode, parent, new ArrayList<Variable.DataType>(),null);
 		}
 		Toggle(){
 			super();//TODO fix toggle input

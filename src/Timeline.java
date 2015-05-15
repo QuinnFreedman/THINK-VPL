@@ -40,8 +40,8 @@ public class Timeline extends VObject{
 			this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			this.setLayout(new BorderLayout());
 			this.setOpaque(false);
-			input = new Node(Node.Direction.EAST, Node.NodeType.RECIEVING, this.parent, new ArrayList<Primative.DataType>());
-			output = new Node(Node.Direction.WEST, Node.NodeType.SENDING, this.parent, new ArrayList<Primative.DataType>());
+			input = new Node(Node.Direction.EAST, Node.NodeType.RECIEVING, this.parent, new ArrayList<Variable.DataType>());
+			output = new Node(Node.Direction.WEST, Node.NodeType.SENDING, this.parent, new ArrayList<Variable.DataType>());
 			this.add(output, BorderLayout.LINE_START);
 			this.add(input, BorderLayout.LINE_END);
 			this.setPreferredSize(new Dimension(this.getPreferredSize().width,25));

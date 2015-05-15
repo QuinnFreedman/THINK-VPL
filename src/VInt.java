@@ -9,17 +9,17 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
-public class VInt extends Primative{
+public class VInt extends Variable{
 	static final String name = "Int";
 	static int idCounter = 0;
 	int value = 0;
 	VInt(){
 		super();
-		this.dataType = Primative.DataType.INTEGER;
+		this.dataType = Variable.DataType.INTEGER;
 		this.headerLabel.setText(name);
 		this.id = "Int"+Integer.toString(idCounter);
 		idCounter++;
-		this.color = Main.colors.get(Primative.DataType.INTEGER);
+		this.color = Main.colors.get(Variable.DataType.INTEGER);
 		this.valueField.setText(Integer.toString(value));
 		new IntDocumentFilter((AbstractDocument) valueField.getDocument());
 		this.width = 12;
@@ -30,7 +30,7 @@ public class VInt extends Primative{
 		Main.panel.add(this);
 		Main.panel.repaint();
 		Main.panel.revalidate();
-		//this.functions = new ArrayList<Class<? extends PrimativeFunction>>();
+		//this.functions = new ArrayList<Class<? extends VariableFunction>>();
 		//this.functions.add(set.class);
 		//this.functions.add(subtractFrom.class);
 		this.functions.add(new Get());
@@ -52,27 +52,27 @@ public class VInt extends Primative{
 		valueField.getDocument().removeDocumentListener(this);
 	}
 	
-	static class Get extends PrimativeFunction{
-		Get(Point pos, Node parentNode, Primative parent) {
-			super(pos, Primative.DataType.INTEGER, parentNode, parent, null, new ArrayList<Primative.DataType>(Arrays.asList(Primative.DataType.INTEGER)));
+	static class Get extends VariableFunction{
+		Get(Point pos, Node parentNode, Variable parent) {
+			super(pos, Variable.DataType.INTEGER, parentNode, parent, null, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.INTEGER)));
 		}
 		Get(){
 			super();
 		}
 		
 	}
-	static class Set extends PrimativeFunction{
-		Set(Point pos, Node parentNode, Primative parent) {
-			super(pos, Primative.DataType.INTEGER, parentNode, parent, new ArrayList<Primative.DataType>(Arrays.asList(Primative.DataType.INTEGER)),null);
+	static class Set extends VariableFunction{
+		Set(Point pos, Node parentNode, Variable parent) {
+			super(pos, Variable.DataType.INTEGER, parentNode, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.INTEGER)),null);
 		}
 		Set(){
 			super();
 		}
 		
 	}
-	static class Subtract_From extends PrimativeFunction{
-		Subtract_From(Point pos, Node parentNode, Primative parent) {
-			super(pos, Primative.DataType.INTEGER, parentNode, parent, new ArrayList<Primative.DataType>(Arrays.asList(Primative.DataType.INTEGER)),null);
+	static class Subtract_From extends VariableFunction{
+		Subtract_From(Point pos, Node parentNode, Variable parent) {
+			super(pos, Variable.DataType.INTEGER, parentNode, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.INTEGER)),null);
 			this.setSize(120,40);
 		}
 		Subtract_From(){
@@ -80,9 +80,9 @@ public class VInt extends Primative{
 		}
 		
 	}
-	static class Multiply_By extends PrimativeFunction{
-		Multiply_By(Point pos, Node parentNode, Primative parent) {
-			super(pos, Primative.DataType.INTEGER, parentNode, parent, new ArrayList<Primative.DataType>(Arrays.asList(Primative.DataType.INTEGER)),null);
+	static class Multiply_By extends VariableFunction{
+		Multiply_By(Point pos, Node parentNode, Variable parent) {
+			super(pos, Variable.DataType.INTEGER, parentNode, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.INTEGER)),null);
 			this.setSize(120,40);
 		}
 		Multiply_By(){
@@ -90,9 +90,9 @@ public class VInt extends Primative{
 		}
 		
 	}
-	static class Incrament extends PrimativeFunction{
-		Incrament(Point pos, Node parentNode, Primative parent) {
-			super(pos, Primative.DataType.INTEGER, parentNode, parent, new ArrayList<Primative.DataType>(),null);
+	static class Incrament extends VariableFunction{
+		Incrament(Point pos, Node parentNode, Variable parent) {
+			super(pos, Variable.DataType.INTEGER, parentNode, parent, new ArrayList<Variable.DataType>(),null);
 		}
 		Incrament(){
 			super();

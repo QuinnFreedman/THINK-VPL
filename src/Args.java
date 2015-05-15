@@ -42,9 +42,9 @@ public class Args extends VObject{
 		((FlowLayout) inputNodeHolder.getLayout()).setHgap(0);
 		((FlowLayout) inputNodeHolder.getLayout()).setVgap(0);
 		inputNodeHolder.setOpaque(false);
-		ArrayList<Primative.DataType> inputDataType = new ArrayList<Primative.DataType>();
+		ArrayList<Variable.DataType> inputDataType = new ArrayList<Variable.DataType>();
 			inputDataType.addAll(sendNode.dataType);
-		ArrayList<Primative.DataType> outputDataType = recieveNode.dataType;
+		ArrayList<Variable.DataType> outputDataType = recieveNode.dataType;
 		actionNode = new Node(Node.Direction.EAST, Node.NodeType.RECIEVING, this, inputDataType);
 		actionNode.canHaveMultipleInputs = false;
 		outputNode = new Node(Node.Direction.WEST, Node.NodeType.SENDING, this, outputDataType);
@@ -58,8 +58,8 @@ public class Args extends VObject{
 		this.add(inputNodeHolder);
 		this.add(actionNode);
 		
-		for(Primative.DataType inp : Node.complement(inputDataType, outputDataType).get(1)){
-			ArrayList<Primative.DataType> input = new ArrayList<Primative.DataType>();
+		for(Variable.DataType inp : Node.complement(inputDataType, outputDataType).get(1)){
+			ArrayList<Variable.DataType> input = new ArrayList<Variable.DataType>();
 			input.add(inp);
 			Node n = new Node(Node.Direction.NORTH,Node.NodeType.RECIEVING,this,input);
 			n.canHaveMultipleInputs = false;
