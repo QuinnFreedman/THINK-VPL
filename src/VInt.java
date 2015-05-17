@@ -1,49 +1,34 @@
-import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
 public class VInt extends Variable{
+	private static final long serialVersionUID = 1L;
 	static final String name = "Int";
 	static int idCounter = 0;
 	int value = 0;
 	VInt(){
 		super();
-		this.dataType = Variable.DataType.INTEGER;
-		this.headerLabel.setText(name);
-		this.id = "Int"+Integer.toString(idCounter);
-		idCounter++;
-		this.color = Main.colors.get(Variable.DataType.INTEGER);
-		this.valueField.setText(Integer.toString(value));
+		this.dataType = DataType.INTEGER;
+		this.typeField.setText(getSymbol());
+		this.typeField.setBackground(Main.colors.get(this.dataType));
+		this.typeField.setEditable(false);
+		this.typeField.setFocusable(false);
+		
 		new IntDocumentFilter((AbstractDocument) valueField.getDocument());
-		this.width = 12;
-		this.height = 5;
-		this.position = getFreePosition();
-		this.borderWidth = 10;
-		this.setBounds(this.position.x*Main.gridWidth, this.position.y*Main.gridWidth, this.width*Main.gridWidth, this.height*Main.gridWidth);
-		Main.panel.add(this);
-		Main.panel.repaint();
-		Main.panel.revalidate();
-		//this.functions = new ArrayList<Class<? extends VariableFunction>>();
+		
+		//this.functions = new ArrayList<Class<? extends PrimitiveFunction>>();
 		//this.functions.add(set.class);
 		//this.functions.add(subtractFrom.class);
 		this.functions.add(new Get());
 		this.functions.add(new Set());
-		this.functions.add(new Subtract_From());
+		this.functions.add(new Add_To());
 		this.functions.add(new Multiply_By());
 		this.functions.add(new Incrament());//TODO use classes instead of instances
-	}
-	
-	VInt(Point p){
-		this();
-		//this.position = p;
-		this.setBounds(p.x, p.y, this.width*Main.gridWidth, this.height*Main.gridWidth);
 	}
 	
 	@Override
@@ -52,47 +37,61 @@ public class VInt extends Variable{
 		valueField.getDocument().removeDocumentListener(this);
 	}
 	
-	static class Get extends VariableFunction{
-		Get(Point pos, Node parentNode, Variable parent) {
-			super(pos, Variable.DataType.INTEGER, parentNode, parent, null, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.INTEGER)));
+	static class Get extends PrimitiveFunction{
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return (ArrayList<DataType>) Arrays.asList(Variable.DataType.INTEGER);
+		}
+		Get(Point pos, Variable parent) {
+			super(pos, Variable.DataType.INTEGER, parent);
 		}
 		Get(){
 			super();
 		}
 		
 	}
-	static class Set extends VariableFunction{
-		Set(Point pos, Node parentNode, Variable parent) {
-			super(pos, Variable.DataType.INTEGER, parentNode, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.INTEGER)),null);
+	static class Set extends PrimitiveFunction{
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return (ArrayList<DataType>) Arrays.asList(Variable.DataType.INTEGER);
+		}
+		Set(Point pos, Variable parent) {
+			super(pos, Variable.DataType.INTEGER, parent);
 		}
 		Set(){
 			super();
 		}
 		
 	}
-	static class Subtract_From extends VariableFunction{
-		Subtract_From(Point pos, Node parentNode, Variable parent) {
-			super(pos, Variable.DataType.INTEGER, parentNode, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.INTEGER)),null);
-			this.setSize(120,40);
+	static class Add_To extends PrimitiveFunction{
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return (ArrayList<DataType>) Arrays.asList(Variable.DataType.INTEGER);
 		}
-		Subtract_From(){
+		Add_To(Point pos, Variable parent) {
+			super(pos, Variable.DataType.INTEGER, parent);
+		}
+		Add_To(){
 			super();
 		}
 		
 	}
-	static class Multiply_By extends VariableFunction{
-		Multiply_By(Point pos, Node parentNode, Variable parent) {
-			super(pos, Variable.DataType.INTEGER, parentNode, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.INTEGER)),null);
-			this.setSize(120,40);
+	static class Multiply_By extends PrimitiveFunction{
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return (ArrayList<DataType>) Arrays.asList(Variable.DataType.INTEGER);
+		}
+		Multiply_By(Point pos, Variable parent) {
+			super(pos, Variable.DataType.INTEGER, parent);
 		}
 		Multiply_By(){
 			super();
 		}
 		
 	}
-	static class Incrament extends VariableFunction{
-		Incrament(Point pos, Node parentNode, Variable parent) {
-			super(pos, Variable.DataType.INTEGER, parentNode, parent, new ArrayList<Variable.DataType>(),null);
+	static class Incrament extends PrimitiveFunction{
+		Incrament(Point pos, Variable parent) {
+			super(pos, Variable.DataType.INTEGER, parent);
 		}
 		Incrament(){
 			super();
@@ -126,11 +125,10 @@ public class VInt extends Variable{
 		@Override
 		public void replace(DocumentFilter.FilterBypass fb, int offset, int length, String text,
 			AttributeSet attrs) throws BadLocationException {
-			System.out.println(text);
 			StringBuilder sb = new StringBuilder();
 			for(int i = 0; i < text.length(); i++){
 				char c = text.charAt(i);
-				if(c == '0'|| c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7' || c == '8' || c == '9'){
+				if(Character.isDigit(c)){
 					sb.append(c);
 				}
 			}

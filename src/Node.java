@@ -24,7 +24,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	NodeType type;
 	NodeStyle style = null;
 	boolean canHaveMultipleInputs = true;
-	public ArrayList<Variable.DataType> dataType = new ArrayList<Variable.DataType>();
+	public Variable.DataType dataType;
 	protected Dimension size = new Dimension(30,20);
 	Node(NodeType type,VObject parentObj,NodeStyle style){
 		this.style = style;
@@ -51,7 +51,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		this(type,parentObj,NodeStyle.VISIBLE);
 		this.facing = dir;
 	}
-	Node(Direction dir, NodeType type, VObject parentObj, ArrayList<Variable.DataType> dt){
+	Node(Direction dir, NodeType type, VObject parentObj, Variable.DataType dt){
 		this(type,parentObj,NodeStyle.VISIBLE);
 		this.facing = dir;
 		this.dataType = dt;
@@ -159,10 +159,9 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		case VISIBLE:
 			g.setColor(Color.BLACK);
 			g.fillArc(0, 0, this.size.width, this.size.height, 0, 360);
-			if(this.dataType.size() == 1){
-				g.setColor(Main.colors.get(this.dataType.get(0)));
-				g.fillArc(this.size.width/2 - 5, this.size.height/2 - 5, 10, 10, 0, 360);
-			}
+			g.setColor(Main.colors.get(this.dataType));
+			g.fillArc(this.size.width/2 - 5, this.size.height/2 - 5, 10, 10, 0, 360);
+			
 		case INVISIBLE:
 			
 		}
@@ -228,9 +227,8 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 					clearChildren(this);
 					clearChildren(node);
 					//System.out.println(this.dataType+", "+node.dataType);
-					if(this.dataType.size() == 1 && this.dataType.get(0) == Variable.DataType.GENERIC && 
-							((node.dataType.size() > 0 && node.dataType.get(0) != Variable.DataType.GENERIC) /*||
-									(node.dataType.size() == 0)*/
+					/*if(this.dataType == Variable.DataType.GENERIC && 
+							((node.dataType.size() > 0 && node.dataType.get(0) != Variable.DataType.GENERIC) 
 									)
 						)	//if this is generic and node isn't
 					{
@@ -239,8 +237,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 						connect(this,node);
 					}
 					else if(node.dataType.size() == 1 && node.dataType.get(0) == Variable.DataType.GENERIC && 
-						((this.dataType.size() > 0 && this.dataType.get(0) != Variable.DataType.GENERIC)/* ||
-								(this.dataType.size() == 0)*/
+						((this.dataType.size() > 0 && this.dataType.get(0) != Variable.DataType.GENERIC)
 								)
 							)//if node is generic and this isn't
 					{
@@ -262,23 +259,12 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 						}else if(this.parentObject.getClass() != Args.class && node.parentObject.getClass() != Args.class){
 							new Args(this,node);
 						}
-					}
+					}*/
 				}//TODO rules for generic
 				break;
 			}
 		}
-		if(!isHoverAnotherNode){
-			if(this.parentObject instanceof Variable){
-				ChildPicker cp = new ChildPicker(this.parentObject,this,new Point(mouse.x-20,mouse.y-20));
-				Main.objects.add(this.parentObject);
-				Main.panel.add(cp);
-				Main.objects.add(cp);
-				Main.panel.repaint();
-				Main.panel.revalidate();
-				//TODO create child
-				//TODO make createChild method for each primitive type, instead of doing it here
-			}
-		}
+		
 		Main.panel.repaint();
 	}
 

@@ -5,83 +5,60 @@ import java.awt.FlowLayout;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
-import java.util.Arrays;
-
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class PrimitiveFunction extends Function{
+public class PrimitiveFunction extends VObject{
+	private static final long serialVersionUID = 1L;
 	protected Node nodeFromParent;
-	Primitive.DataType type;
+	Variable.DataType type;
 	private JLabel label;
 	private String text = "";
 	private JPanel nodeHolder;
 	public String getFunctionName(){
 		return this.getClass().getSimpleName();
 	}
-	PrimitiveFunction(Point pos, Primitive.DataType type, Node parentNode, Primitive parent, /*String name,*/ ArrayList<Primitive.DataType> inputs, ArrayList<Primitive.DataType> outputs){
+	PrimitiveFunction(Point pos, Variable.DataType type, Variable parent){
 		super();
 		this.type = type;
-		this.color = Main.colors.get(type);
-		this.inputs = inputs;
-		this.outputs = outputs;
-		this.setBounds(new Rectangle(pos,new Dimension(90,40)));
-		this.nodeFromParent = new Node(Node.Direction.WEST, Node.NodeType.INHERITANCE_RECIEVING, this, Node.NodeStyle.INVISIBLE);
 		this.body.add(nodeFromParent);
 		this.body.setLayout(new FlowLayout(FlowLayout.LEFT));
-		this.text = getFunctionName();
+		this.text = parent.nameField.getText()+": "+getFunctionName();
 		label = new JLabel(text);
 		this.body.add(label);
-		nodeHolder = new JPanel();
-		nodeHolder.setLayout(new BoxLayout(nodeHolder, BoxLayout.Y_AXIS));
-		nodeHolder.setOpaque(false);
-		if(this.inputs != null){
-			this.inputNode = new Node(Node.Direction.EAST,Node.NodeType.RECIEVING,this,inputs);
-			Main.nodes.add(inputNode);
-			this.nodeHolder.add(inputNode);
-		}else{
-			JPanel jp = new JPanel();
-			jp.setPreferredSize(new Dimension(30,20));
-			jp.setOpaque(false);
-			this.nodeHolder.add(jp);
+		
+		for(Variable.DataType dt : getInputs()){
+			this.inputNodes.add(new Node(Node.Direction.NORTH,Node.NodeType.RECIEVING,this,dt));
 		}
-		if(this.outputs != null){
-			this.outputNode = new Node(Node.Direction.EAST,Node.NodeType.SENDING,this,outputs);
-			Main.nodes.add(outputNode);
-			this.nodeHolder.add(outputNode);
-		}else{
-			JPanel jp = new JPanel();
-			jp.setPreferredSize(new Dimension(30,20));
-			jp.setOpaque(false);
-			this.nodeHolder.add(jp);
+		
+		for(Variable.DataType dt : getOutputs()){
+			this.outputNodes.add(new Node(Node.Direction.NORTH,Node.NodeType.RECIEVING,this,dt));
 		}
 		this.add(nodeHolder,BorderLayout.LINE_END);
+
+		this.setBounds(new Rectangle(pos,this.getSize()));
 		Main.nodes.add(nodeFromParent);
-		Main.curves.add(new Curve(parentNode,nodeFromParent));
 		Main.panel.add(this);
 	}
 	PrimitiveFunction() {
 		super();
 	}
-	PrimitiveFunction(Point pos, Node parentNode, Variable parent) {
-		super();
-		System.out.println("you shouldn't be using this");
+	
+	@Override
+	public Dimension getSize(){
+		return new Dimension(this.getPreferredSize().width,40);
 	}
 	@Override
 	public void paintComponent(Graphics g){
 		Graphics2D g2 = (Graphics2D) g;
 		GradientPaint gradient = new GradientPaint(0, 
 				0, 
-				new Color(Math.min(color.getRed()+64,255),
-						Math.min(color.getGreen()+64,255),
-						Math.min(color.getBlue()+64,255),
-						color.getAlpha()),
+				color,
 				0, 
 				this.getHeight()/2,
 				new Color(20,20,20,127),true);

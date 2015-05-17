@@ -1,84 +1,84 @@
-import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
 public class VDouble extends Variable{
-	static final String name = "Double";
+	private static final long serialVersionUID = 1L;
+	
+	static final String name = "Int";
 	static int idCounter = 0;
-	double value = 0;
+	int value = 0;
 	VDouble(){
 		super();
-		this.dataType = Variable.DataType.DOUBLE;
-		this.headerLabel.setText(name);
-		this.id = "d"+Integer.toString(idCounter);
-		idCounter++;
-		this.color = Main.colors.get(this.dataType);
-		this.valueField.setText(Double.toString(value));
+		this.dataType = DataType.DOUBLE;
+		this.typeField.setText(getSymbol());
+		this.typeField.setBackground(Main.colors.get(this.dataType));
+		this.typeField.setEditable(false);
+		this.typeField.setFocusable(false);
+		
 		new IntDocumentFilter((AbstractDocument) valueField.getDocument());
-		this.width = 12;
-		this.height = 5;
-		this.position = getFreePosition();
-		this.borderWidth = 10;
-		this.setBounds(this.position.x*Main.gridWidth, this.position.y*Main.gridWidth, this.width*Main.gridWidth, this.height*Main.gridWidth);
-		Main.panel.add(this);
-		Main.panel.repaint();
-		Main.panel.revalidate();
+		
+		//this.functions = new ArrayList<Class<? extends PrimitiveFunction>>();
+		//this.functions.add(set.class);
+		//this.functions.add(subtractFrom.class);
 		this.functions.add(new Get());
 		this.functions.add(new Set());
-		this.functions.add(new Subtract_From());
+		this.functions.add(new Add_To());
 		this.functions.add(new Multiply_By());
+		this.functions.add(new Incrament());
 	}
-	public VDouble(Point p) {
-		this();
-		//this.position = p;
-		this.setBounds(p.x, p.y, this.width*Main.gridWidth, this.height*Main.gridWidth);
-	}
+	
 	@Override
 	protected void setValue(String s){
-		value = Double.parseDouble(s);
+		value = Integer.parseInt(s);
 		valueField.getDocument().removeDocumentListener(this);
-		//this.valueField.setText(Boolean.toString(value));
 	}
-	static class Get extends VariableFunction{
-		Get(Point pos, Node parentNode, Variable parent) {
-			super(pos, Variable.DataType.DOUBLE, parentNode, parent, null, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE)));
+	
+	static class Get extends PrimitiveFunction{
+		Get(Point pos, Variable parent) {
+			super(pos, Variable.DataType.DOUBLE, parent, null, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE)));
 		}
 		Get(){
 			super();
 		}
 		
 	}
-	static class Set extends VariableFunction{
-		Set(Point pos, Node parentNode, Variable parent) {
-			super(pos, Variable.DataType.DOUBLE, parentNode, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE)),null);
+	static class Set extends PrimitiveFunction{
+		Set(Point pos, Variable parent) {
+			super(pos, Variable.DataType.DOUBLE, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE)),null);
 		}
 		Set(){
 			super();
 		}
 		
 	}
-	static class Subtract_From extends VariableFunction{
-		Subtract_From(Point pos, Node parentNode, Variable parent) {
-			super(pos, Variable.DataType.DOUBLE, parentNode, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE)),null);
-			this.setSize(120,40);
+	static class Add_To extends PrimitiveFunction{
+		Add_To(Point pos, Variable parent) {
+			super(pos, Variable.DataType.DOUBLE, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE)),null);
 		}
-		Subtract_From(){
+		Add_To(){
 			super();
 		}
 		
 	}
-	static class Multiply_By extends VariableFunction{
-		Multiply_By(Point pos, Node parentNode, Variable parent) {
-			super(pos, Variable.DataType.DOUBLE, parentNode, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE)),null);
-			this.setSize(120,40);
+	static class Multiply_By extends PrimitiveFunction{
+		Multiply_By(Point pos, Variable parent) {
+			super(pos, Variable.DataType.INTEGER, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE)),null);
 		}
 		Multiply_By(){
+			super();
+		}
+		
+	}
+	static class Incrament extends PrimitiveFunction{
+		Incrament(Point pos, Variable parent) {
+			super(pos, Variable.DataType.INTEGER, parent, new ArrayList<Variable.DataType>(),null);
+		}
+		Incrament(){
 			super();
 		}
 		
@@ -113,7 +113,7 @@ public class VDouble extends Variable{
 			StringBuilder sb = new StringBuilder();
 			for(int i = 0; i < text.length(); i++){
 				char c = text.charAt(i);
-				if(c == '0'|| c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7' || c == '8' || c == '9' || c == '.'){
+				if(Character.isDigit(c) || c == '.'){
 					sb.append(c);
 				}
 			}

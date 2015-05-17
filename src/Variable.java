@@ -1,49 +1,93 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextPane;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
+
 public class Variable extends SidebarItem implements DocumentListener, ContainsChildFunctions{
-	SpecialEditorPane valueField;
+	InputPane valueField;
 	DataType dataType;
 	static final Border bodyPadding = new EmptyBorder(5,10,5,10);
 	protected ArrayList<PrimitiveFunction> functions = new ArrayList<PrimitiveFunction>();
+	protected Variable getThis(){
+		return this;
+	}
 	Variable(){
 		super();
-		JPanel header = new JPanel(new FlowLayout());
 		
-		typeField = new SpecialEditorPane();
-		typeField.setPreferredSize(new Dimension(50,20));
-		typeField.setOpaque(false);
-		header.add(typeField);
+		this.type = Type.VARIABLE;
 		
-		nameField = new SpecialEditorPane();
-		nameField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		nameField.setPreferredSize(new Dimension(50,20));
-		//nameField.setOpaque(false);
-		header.add(nameField);
+		//TODO if is object w/ children, add all children to body, set body visible
 		
-		JPanel body = new JPanel(new FlowLayout());
+		//JPanel body = new JPanel(new FlowLayout());
 		
-		body.setLayout(new BorderLayout());
-		valueField = new SpecialEditorPane();
-		valueField.setPreferredSize(new Dimension(90,18));
-		valueField.setOpaque(false);
+		valueField = new InputPane();
+		valueField.setColumns(5);
 		valueField.getDocument().addDocumentListener(this);
-		valueField.setBorder(bodyPadding);
-		body.add(valueField,BorderLayout.CENTER);
+		header.add(valueField);
+		fields.add(valueField);
 		
-		this.add(header);
+		JRadioButton drag = new JRadioButton();
+		drag.setFocusable(false);
+		drag.setSelected(true);
+		drag.addMouseListener(new MouseListener(){{
+			
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				// Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				drag.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if(getThis().dataType != null){
+					drag.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					Point p = Node.getLocationOnPanel(e);
+					if(p.x > 0 && p.y > 0 && p.x < Main.panel.getWidth() && p.y < Main.panel.getHeight()){
+						Main.objects.add(new PrimitiveChildPicker(getThis(), p));
+					}
+				}
+			}
+			
+		});
+		header.add(drag);
 		
 	}
 	

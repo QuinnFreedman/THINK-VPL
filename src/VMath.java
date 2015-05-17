@@ -55,7 +55,7 @@ public class VMath extends Function{
 		this.body.add(outputNode,BorderLayout.LINE_END);
 		
 		this.valueField.setText("a");
-		new SpecialEditorPane.NoBreakDocumentFilter((AbstractDocument) valueField.getDocument());
+		((AbstractDocument) valueField.getDocument()).setDocumentFilter(new SpecialEditorPane.NoBreakDocumentFilter());
 		
 		
 		Main.panel.repaint();

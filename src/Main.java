@@ -29,6 +29,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JPanel;
@@ -41,6 +42,11 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 //import org.pushingpixels.substance.api.*;
 
+
+
+
+
+import org.pushingpixels.substance.api.skin.SubstanceDustLookAndFeel;
 import org.pushingpixels.substance.api.skin.SubstanceGraphiteLookAndFeel;
 
 public class Main implements ActionListener, MouseInputListener, KeyListener{
@@ -48,7 +54,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 	static ArrayList<Curve> curves = new ArrayList<Curve>();
 	static ArrayList<Node> nodes = new ArrayList<Node>();
 	static final int gridWidth = 10;
-	private static ArrayList<Variable> variables = new ArrayList<Variable>();
+	public static ArrayList<Variable> variables = new ArrayList<Variable>();
 	static Point mousePos = new Point();
 	static HashMap<Variable.DataType,Color> colors = new HashMap<Variable.DataType,Color>();
 	/**
@@ -62,209 +68,222 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 	public static EntryPoint entryPoint;
 	
 	public static void main(String[] args){
-
-        System.out.println("test");
 		new Main();
 		colors.put(Variable.DataType.BOOLEAN, Color.green);
 		colors.put(Variable.DataType.INTEGER, Color.red);
 		colors.put(Variable.DataType.DOUBLE, new Color(255,0,255));
-		ArrayList<Variable.DataType> A = new ArrayList<Variable.DataType>();
-		A.add(Variable.DataType.INTEGER);
-		A.add(Variable.DataType.BOOLEAN);
-		ArrayList<Variable.DataType> B = new ArrayList<Variable.DataType>();
-		B.add(Variable.DataType.INTEGER);
-		System.out.println(Node.complement(A, B));
 	}
 	
 	Main(){
-		JFrame window = new JFrame();
-		window.setTitle("VisualIDE");
-		window.setSize(800,500);
-		window.setMinimumSize(new Dimension(555,325));
-		window.setLocationRelativeTo(null);
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		Main THIS = this;
+		SwingUtilities.invokeLater(new Runnable() {
 
-        System.out.println("test");
-		
-		
-	//	Menu Bar
-		JMenuBar menuBar = new JMenuBar();
-		
-		// File Menu, F - Mnemonic
-	    JMenu fileMenu = new JMenu("File");
-	    menuBar.add(fileMenu);
-	    
-	    JMenuItem mntmOpen = new JMenuItem("Open");
-	    mntmOpen.setEnabled(false);
-	    fileMenu.add(mntmOpen);
-	    
-	    JMenuItem mntmSave = new JMenuItem("Save");
-	    mntmSave.setEnabled(false);
-	    fileMenu.add(mntmSave);
-	    
-	    JMenuItem mntmSaveAs = new JMenuItem("Save As...");
-	    mntmSaveAs.setEnabled(false);
-	    fileMenu.add(mntmSaveAs);
-	    
-		JMenu mnEdit = new JMenu("Edit");
-		menuBar.add(mnEdit);
-		
-		JMenu mnAdd = new JMenu("Add");
-		menuBar.add(mnAdd);
-		
-		JMenuItem mntmBoolean = new JMenuItem("Boolean");
-		mntmBoolean.addActionListener(this);
-		mnAdd.add(mntmBoolean);
-		
-		JMenuItem mntmInt = new JMenuItem("Integer");
-		mntmInt.addActionListener(this);
-		mnAdd.add(mntmInt);
-		
-		JMenuItem mntmDouble = new JMenuItem("Double");
-		mntmDouble.addActionListener(this);
-		mnAdd.add(mntmDouble);
-		
-		mnAdd.addSeparator();
-		
-		JMenuItem mntmMath = new JMenuItem("Math");
-		mntmMath.addActionListener(this);
-		mnAdd.add(mntmMath);
-		
-		JMenuItem mntmFunction = new JMenuItem("Function");
-		mntmFunction.addActionListener(this);
-		mnAdd.add(mntmFunction);
-		
-		JMenuItem mntmTimeline = new JMenuItem("Timeline");
-		mntmTimeline.addActionListener(this);
-		mnAdd.add(mntmTimeline);
-		
-		JMenuItem mntmBlueprint = new JMenuItem("Blueprint");
-		mntmBlueprint.addActionListener(this);
-		mnAdd.add(mntmBlueprint);
-		
-		JMenu mnHelp = new JMenu("Help");
-		menuBar.add(mnHelp);
-		
-		panel = new DisplayPanel();
-		panel.setPreferredSize(new Dimension(1000, 1000));
-		
-		JScrollPane scrollPane = new JScrollPane(panel);
+	        @Override
+	        public void run() {
+				JFrame window = new JFrame();
+				window.setTitle("VisualIDE");
+				window.setSize(800,500);
+				window.setMinimumSize(new Dimension(555,325));
+				window.setLocationRelativeTo(null);
+				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				
 			
-		//SIDEBAR
-		
-		Dimension minimumSize = new Dimension(100,100);
-		
-		JPanel varsContainer = new JPanel();
-		
-		varsContainer.setLayout(new BorderLayout(0, 0));
-		
-		JPanel varsHeader = new JPanel();
-		varsContainer.add(varsHeader, BorderLayout.NORTH);
-		varsHeader.setLayout(new BorderLayout(0, 0));
-		
-		JLabel lblVars = new JLabel("Variables");
-		lblVars.setHorizontalAlignment(SwingConstants.CENTER);
-		varsHeader.add(lblVars);
-		
-		JPanel varBurronHolder = new JPanel();
-		varsHeader.add(varBurronHolder, BorderLayout.EAST);
-		
-		vars = new JPanel();
-		JScrollPane scrollVars = new JScrollPane(vars);
-		BoxLayout layout = new BoxLayout(vars, BoxLayout.Y_AXIS);
-		vars.setLayout(layout);
-		
-		JButton addVar = new JButton("+");
-		varBurronHolder.add(addVar);
-		addVar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Variable v = new Variable();
-				v.setName("test");
-				variables.add(v);
-				vars.removeAll();
-				for(Variable var : variables){
-					vars.add(var);
+				try {
+					UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceGraphiteLookAndFeel");
+				} catch (ClassNotFoundException | InstantiationException
+						| IllegalAccessException | UnsupportedLookAndFeelException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
-				vars.repaint();
-				vars.revalidate();
-			}
+			
+			//Menu Bar
+				JMenuBar menuBar = new JMenuBar();
+				
+				// File Menu, F - Mnemonic
+			    JMenu fileMenu = new JMenu("File");
+			    menuBar.add(fileMenu);
+			    
+			    JMenuItem mntmOpen = new JMenuItem("Open");
+			    mntmOpen.setEnabled(false);
+			    fileMenu.add(mntmOpen);
+			    
+			    JMenuItem mntmSave = new JMenuItem("Save");
+			    mntmSave.setEnabled(false);
+			    fileMenu.add(mntmSave);
+			    
+			    JMenuItem mntmSaveAs = new JMenuItem("Save As...");
+			    mntmSaveAs.setEnabled(false);
+			    fileMenu.add(mntmSaveAs);
+			    
+				JMenu mnEdit = new JMenu("Edit");
+				menuBar.add(mnEdit);
+				
+				JMenu mnAdd = new JMenu("Add");
+				menuBar.add(mnAdd);
+				
+				JMenuItem mntmBoolean = new JMenuItem("Boolean");
+				mntmBoolean.addActionListener(THIS);
+				mnAdd.add(mntmBoolean);
+				
+				JMenuItem mntmInt = new JMenuItem("Integer");
+				mntmInt.addActionListener(THIS);
+				mnAdd.add(mntmInt);
+				
+				JMenuItem mntmDouble = new JMenuItem("Double");
+				mntmDouble.addActionListener(THIS);
+				mnAdd.add(mntmDouble);
+				
+				mnAdd.addSeparator();
+				
+				JMenuItem mntmMath = new JMenuItem("Math");
+				mntmMath.addActionListener(THIS);
+				mnAdd.add(mntmMath);
+				
+				JMenuItem mntmFunction = new JMenuItem("Function");
+				mntmFunction.addActionListener(THIS);
+				mnAdd.add(mntmFunction);
+				
+				JMenuItem mntmTimeline = new JMenuItem("Timeline");
+				mntmTimeline.addActionListener(THIS);
+				mnAdd.add(mntmTimeline);
+				
+				JMenuItem mntmBlueprint = new JMenuItem("Blueprint");
+				mntmBlueprint.addActionListener(THIS);
+				mnAdd.add(mntmBlueprint);
+				
+				JMenu mnHelp = new JMenu("Help");
+				menuBar.add(mnHelp);
+				
+				panel = new DisplayPanel();
+				panel.setPreferredSize(new Dimension(1000, 1000));
+				
+				JScrollPane scrollPane = new JScrollPane(panel);
+					
+			//SIDEBAR
+				
+				Dimension minimumSize = new Dimension(100,100);
+				
+				JPanel varsContainer = new JPanel();
+				
+				varsContainer.setLayout(new BorderLayout(0, 0));
+				
+				JPanel varsHeader = new JPanel();
+				varsContainer.add(varsHeader, BorderLayout.NORTH);
+				varsHeader.setLayout(new BorderLayout(0, 0));
+				
+				JLabel lblVars = new JLabel("Variables");
+				lblVars.setHorizontalAlignment(SwingConstants.CENTER);
+				varsHeader.add(lblVars);
+				
+				JPanel varButtonHolder = new JPanel();
+				varsHeader.add(varButtonHolder, BorderLayout.EAST);
+				
+				vars = new JPanel();
+				JScrollPane scrollVars = new JScrollPane(vars);
+				BoxLayout layout = new BoxLayout(vars, BoxLayout.Y_AXIS);
+				vars.setLayout(layout);
+				
+				JButton addVar = new JButton("+");
+				addVar.setPreferredSize(new Dimension(30,addVar.getPreferredSize().height));
+				//addVar.setFocusable(false);
+				varButtonHolder.add(addVar);
+				addVar.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						Variable v = new Variable();
+						variables.add(0,v);
+						updateVars();
+						variables.get(0).fields.get(0).requestFocusInWindow();
+						scrollVars.getViewport().setViewPosition(new Point(0,0));
+					}
+				});
+				
+				
+				scrollVars.setMinimumSize(minimumSize);
+				varsContainer.add(scrollVars);
+				
+				
+				JPanel funcsContainer = new JPanel();
+				funcsContainer.setLayout(new BoxLayout(funcsContainer, BoxLayout.Y_AXIS));
+				
+				JLabel lblFuncs = new JLabel("Functions");
+				lblFuncs.setAlignmentX(Component.CENTER_ALIGNMENT);
+				funcsContainer.add(lblFuncs);
+				JPanel funcs = new JPanel();
+				//funcs.setLayout(new BoxLayout(vars,BoxLayout.Y_AXIS));
+				JScrollPane scrollFuncs = new JScrollPane(funcs);
+				scrollFuncs.setMinimumSize(minimumSize);
+				funcsContainer.add(scrollFuncs);
+				
+				JSplitPane sidebar = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+						varsContainer, funcsContainer);
+					sidebar.setDividerLocation(300);
+				
+				JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+		                sidebar, scrollPane);
+						splitPane.setDividerLocation(250);
+				
+				
+				window.getContentPane().add(splitPane, BorderLayout.CENTER);
+				
+				window.setJMenuBar(menuBar);
+				
+				window.setVisible(true);
+				
+				window.setFocusTraversalKeysEnabled(false);
+				vars.setFocusTraversalKeysEnabled(false);
+				
+				componentMover = new ComponentMover();
+				componentMover.setEdgeInsets(new Insets(10, 10, 10, 10));
+				
+				panel.addKeyListener(THIS);
+				
+				panelPopup = new JPopupMenu();
+				panel.addMouseListener(THIS);
+				
+				JMenuItem popupBoolean = new JMenuItem("Boolean");
+				popupBoolean.addActionListener(THIS);
+				panelPopup.add(popupBoolean);
+				
+				JMenuItem popupInt = new JMenuItem("Integer");
+				popupInt.addActionListener(THIS);
+				panelPopup.add(popupInt);
+				
+				JMenuItem popupDouble = new JMenuItem("Double");
+				popupDouble.addActionListener(THIS);
+				panelPopup.add(popupDouble);
+				
+				panelPopup.addSeparator();
+				
+				JMenuItem popupMath = new JMenuItem("Math");
+				popupMath.addActionListener(THIS);
+				panelPopup.add(popupMath);
+				
+				JMenuItem popupFunction = new JMenuItem("Function");
+				popupFunction.addActionListener(THIS);
+				panelPopup.add(popupFunction);
+				
+				JMenuItem popupTimeline = new JMenuItem("Timeline");
+				popupTimeline.addActionListener(THIS);
+				panelPopup.add(popupTimeline);
+				
+				JMenuItem popupBlueprint = new JMenuItem("Blueprint");
+				popupBlueprint.addActionListener(THIS);
+				panelPopup.add(popupBlueprint);
+				
+				entryPoint = new EntryPoint();
+				panel.add(entryPoint);
+		
+				Main.panel.requestFocusInWindow();
+	        }
 		});
-		
-		
-		scrollVars.setMinimumSize(minimumSize);
-		varsContainer.add(scrollVars);
-		
-		
-		JPanel funcsContainer = new JPanel();
-		funcsContainer.setLayout(new BoxLayout(funcsContainer, BoxLayout.Y_AXIS));
-		
-		JLabel lblFuncs = new JLabel("Funcs");
-		lblFuncs.setAlignmentX(Component.CENTER_ALIGNMENT);
-		funcsContainer.add(lblFuncs);
-		JPanel funcs = new JPanel();
-		//funcs.setLayout(new BoxLayout(vars,BoxLayout.Y_AXIS));
-		JScrollPane scrollFuncs = new JScrollPane(funcs);
-		scrollFuncs.setMinimumSize(minimumSize);
-		funcsContainer.add(scrollFuncs);
-		
-		JSplitPane sidebar = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				varsContainer, funcsContainer);
-		
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                sidebar, scrollPane);
-				splitPane.setDividerLocation(150);
-		
-		
-		window.getContentPane().add(splitPane, BorderLayout.CENTER);
-		
-		window.setJMenuBar(menuBar);
-		
-		window.setVisible(true);
-		
-		panel.setFocusTraversalKeysEnabled(false);
-		
-		componentMover = new ComponentMover();
-		componentMover.setEdgeInsets(new Insets(10, 10, 10, 10));
-		
-		panel.addKeyListener(this);
-		
-		panelPopup = new JPopupMenu();
-		panel.addMouseListener(this);
-		
-		JMenuItem popupBoolean = new JMenuItem("Boolean");
-		popupBoolean.addActionListener(this);
-		panelPopup.add(popupBoolean);
-		
-		JMenuItem popupInt = new JMenuItem("Integer");
-		popupInt.addActionListener(this);
-		panelPopup.add(popupInt);
-		
-		JMenuItem popupDouble = new JMenuItem("Double");
-		popupDouble.addActionListener(this);
-		panelPopup.add(popupDouble);
-		
-		panelPopup.addSeparator();
-		
-		JMenuItem popupMath = new JMenuItem("Math");
-		popupMath.addActionListener(this);
-		panelPopup.add(popupMath);
-		
-		JMenuItem popupFunction = new JMenuItem("Function");
-		popupFunction.addActionListener(this);
-		panelPopup.add(popupFunction);
-		
-		JMenuItem popupTimeline = new JMenuItem("Timeline");
-		popupTimeline.addActionListener(this);
-		panelPopup.add(popupTimeline);
-		
-		JMenuItem popupBlueprint = new JMenuItem("Blueprint");
-		popupBlueprint.addActionListener(this);
-		panelPopup.add(popupBlueprint);
-		
-		entryPoint = new EntryPoint();
-		panel.add(entryPoint);
-		
-		panel.requestFocusInWindow();
+	}
+	public static void updateVars(){
+		vars.removeAll();
+		for(Variable var : variables){
+			vars.add(var);
+		}
+		vars.repaint();
+		vars.revalidate();
 	}
 	
 	@Override
@@ -283,7 +302,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 		}else if(c == "Double"){
 			objects.add(new VDouble(p));
 		}else */if(c == "Math"){
-			objects.add(new VMath(p));
+			//objects.add(new VMath(p));
 		}else if(c == "Timeline"){
 			objects.add(new Timeline(p));
 		}else{
@@ -293,7 +312,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// Auto-generated method stub
+		panel.requestFocusInWindow();
 		
 	}
 

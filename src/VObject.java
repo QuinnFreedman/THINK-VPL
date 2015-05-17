@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.JEditorPane;
@@ -26,6 +27,10 @@ public class VObject extends JPanel implements MouseInputListener{
 	JPanel header;
 	JPanel body;
 	JLabel headerLabel;
+	public ArrayList<Variable.DataType> getInputs(){return null;};
+	public ArrayList<Variable.DataType> getOutputs(){return null;};
+	protected ArrayList<Node> inputNodes;
+	protected ArrayList<Node> outputNodes;
 	protected static Point getFreePosition(){
 		return new Point(10,10);
 	}
