@@ -1,4 +1,3 @@
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -8,50 +7,51 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.RoundRectangle2D;
-import java.util.ArrayList;
-import javax.swing.BoxLayout;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class PrimitiveFunction extends VObject{
 	private static final long serialVersionUID = 1L;
-	protected Node nodeFromParent;
 	Variable.DataType type;
 	private JLabel label;
 	private String text = "";
-	private JPanel nodeHolder;
+	private Variable parentVar;
+	private Color color;
 	public String getFunctionName(){
 		return this.getClass().getSimpleName();
 	}
-	PrimitiveFunction(Point pos, Variable.DataType type, Variable parent){
+	PrimitiveFunction(Point pos, Variable parent){
 		super();
-		this.type = type;
-		this.body.add(nodeFromParent);
+		this.type = parent.dataType;
+		this.parentVar = parent;
+		this.color = Main.colors.get(parent.dataType);
 		this.body.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.text = parent.nameField.getText()+": "+getFunctionName();
 		label = new JLabel(text);
 		this.body.add(label);
 		
-		for(Variable.DataType dt : getInputs()){
-			this.inputNodes.add(new Node(Node.Direction.NORTH,Node.NodeType.RECIEVING,this,dt));
+		if(getInputs() != null){
+			for(Variable.DataType dt : getInputs()){
+				this.inputNodes.add(new Node(Node.Direction.NORTH,Node.NodeType.RECIEVING,this,dt));
+			}
+		}
+		if(getOutputs() != null){
+			for(Variable.DataType dt : getOutputs()){
+				this.outputNodes.add(new Node(Node.Direction.NORTH,Node.NodeType.RECIEVING,this,dt));
+			}
 		}
 		
-		for(Variable.DataType dt : getOutputs()){
-			this.outputNodes.add(new Node(Node.Direction.NORTH,Node.NodeType.RECIEVING,this,dt));
-		}
-		this.add(nodeHolder,BorderLayout.LINE_END);
-
 		this.setBounds(new Rectangle(pos,this.getSize()));
-		Main.nodes.add(nodeFromParent);
 		Main.panel.add(this);
 	}
 	PrimitiveFunction() {
 		super();
 	}
-	
+
 	@Override
 	public Dimension getSize(){
-		return new Dimension(this.getPreferredSize().width,40);
+		return new Dimension(Math.max(60,this.getPreferredSize().width),40);
 	}
 	@Override
 	public void paintComponent(Graphics g){

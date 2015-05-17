@@ -23,14 +23,18 @@ public class VObject extends JPanel implements MouseInputListener{
 	int width;
 	int height;
 	int borderWidth;
-	Color color;
 	JPanel header;
 	JPanel body;
 	JLabel headerLabel;
+	protected static enum Mode{
+		IN,OUT,BOTH,NONE
+	};
 	public ArrayList<Variable.DataType> getInputs(){return null;};
 	public ArrayList<Variable.DataType> getOutputs(){return null;};
+	public Mode getPrimairyMode(){return Mode.BOTH;};
 	protected ArrayList<Node> inputNodes;
 	protected ArrayList<Node> outputNodes;
+	
 	protected static Point getFreePosition(){
 		return new Point(10,10);
 	}
@@ -38,6 +42,8 @@ public class VObject extends JPanel implements MouseInputListener{
 		this.addMouseListener(this);
 		this.setOpaque(false);
 		this.setLayout(new BorderLayout());
+		inputNodes = new ArrayList<Node>();
+		outputNodes = new ArrayList<Node>();
 		header = new JPanel();
 		header.setOpaque(false);
 		((FlowLayout) header.getLayout()).setHgap(7);
@@ -88,7 +94,7 @@ public class VObject extends JPanel implements MouseInputListener{
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
-		GradientPaint gradient = new GradientPaint(0, 0, color, 0, header.getPreferredSize().height,
+		GradientPaint gradient = new GradientPaint(0, 0, Color.BLACK, 0, header.getPreferredSize().height,
 				new Color(20,20,20,127));
 		g2.setPaint(gradient);
 	    g2.fill(new RoundRectangle2D.Double(0, 0, this.getSize().width, this.getSize().height+20, 20, 20));

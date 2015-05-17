@@ -1,6 +1,7 @@
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -38,12 +39,19 @@ public class VInt extends Variable{
 	}
 	
 	static class Get extends PrimitiveFunction{
+		private static final long serialVersionUID = 1L;
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.INTEGER,DataType.GENERIC));
+		}
 		@Override
 		public ArrayList<Variable.DataType> getOutputs(){
-			return (ArrayList<DataType>) Arrays.asList(Variable.DataType.INTEGER);
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.INTEGER));
 		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.OUT;};
 		Get(Point pos, Variable parent) {
-			super(pos, Variable.DataType.INTEGER, parent);
+			super(pos, parent);
 		}
 		Get(){
 			super();
@@ -51,12 +59,19 @@ public class VInt extends Variable{
 		
 	}
 	static class Set extends PrimitiveFunction{
+		private static final long serialVersionUID = 1L;
 		@Override
 		public ArrayList<Variable.DataType> getInputs(){
-			return (ArrayList<DataType>) Arrays.asList(Variable.DataType.INTEGER);
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.INTEGER,DataType.GENERIC));
 		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.INTEGER));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.IN;};
 		Set(Point pos, Variable parent) {
-			super(pos, Variable.DataType.INTEGER, parent);
+			super(pos, parent);
 		}
 		Set(){
 			super();
@@ -64,12 +79,19 @@ public class VInt extends Variable{
 		
 	}
 	static class Add_To extends PrimitiveFunction{
+		private static final long serialVersionUID = 1L;
 		@Override
 		public ArrayList<Variable.DataType> getInputs(){
-			return (ArrayList<DataType>) Arrays.asList(Variable.DataType.INTEGER);
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.INTEGER,DataType.GENERIC));
 		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.INTEGER));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.IN;};
 		Add_To(Point pos, Variable parent) {
-			super(pos, Variable.DataType.INTEGER, parent);
+			super(pos, parent);
 		}
 		Add_To(){
 			super();
@@ -77,12 +99,19 @@ public class VInt extends Variable{
 		
 	}
 	static class Multiply_By extends PrimitiveFunction{
+		private static final long serialVersionUID = 1L;
 		@Override
 		public ArrayList<Variable.DataType> getInputs(){
-			return (ArrayList<DataType>) Arrays.asList(Variable.DataType.INTEGER);
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.INTEGER,DataType.GENERIC));
 		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.INTEGER));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.IN;};
 		Multiply_By(Point pos, Variable parent) {
-			super(pos, Variable.DataType.INTEGER, parent);
+			super(pos, parent);
 		}
 		Multiply_By(){
 			super();
@@ -90,8 +119,19 @@ public class VInt extends Variable{
 		
 	}
 	static class Incrament extends PrimitiveFunction{
+		private static final long serialVersionUID = 1L;
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(DataType.GENERIC));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.INTEGER));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.IN;};
 		Incrament(Point pos, Variable parent) {
-			super(pos, Variable.DataType.INTEGER, parent);
+			super(pos, parent);
 		}
 		Incrament(){
 			super();
