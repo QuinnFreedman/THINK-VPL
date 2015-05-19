@@ -15,6 +15,7 @@ public class VDouble extends Variable{
 	VDouble(){
 		super();
 		this.dataType = DataType.DOUBLE;
+		varData = new VariableData.Double();
 		this.typeField.setText(getSymbol());
 		this.typeField.setBackground(Main.colors.get(this.dataType));
 		this.typeField.setEditable(false);
@@ -24,9 +25,6 @@ public class VDouble extends Variable{
 		
 		this.valueField.setText(Double.toString(value));
 		
-		//this.functions = new ArrayList<Class<? extends PrimitiveFunction>>();
-		//this.functions.add(set.class);
-		//this.functions.add(subtractFrom.class);
 		this.functions.add(new Get());
 		this.functions.add(new Set());
 		this.functions.add(new Add_To());
@@ -36,7 +34,8 @@ public class VDouble extends Variable{
 	@Override
 	protected void setValue(String s){
 		value = Double.parseDouble(s);
-		valueField.getDocument().removeDocumentListener(this);
+		if(varData != null)
+			((VariableData.Double) varData).value = value;
 	}
 	
 	static class Get extends PrimitiveFunction{

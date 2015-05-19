@@ -12,6 +12,7 @@ public class VFloat extends Variable{
 	VFloat(){
 		super();
 		this.dataType = DataType.FLOAT;
+		varData = new VariableData.Float();
 		this.typeField.setText(getSymbol());
 		this.typeField.setBackground(Main.colors.get(this.dataType));
 		this.typeField.setEditable(false);
@@ -33,7 +34,8 @@ public class VFloat extends Variable{
 	@Override
 	protected void setValue(String s){
 		value = Float.parseFloat(s);
-		valueField.getDocument().removeDocumentListener(this);
+		if(varData != null)
+			((VariableData.Float) varData).value = value;
 	}
 	
 	static class Get extends PrimitiveFunction{

@@ -15,6 +15,7 @@ public class VBoolean extends Variable{
 	VBoolean(){
 		super();
 		this.dataType = DataType.BOOLEAN;
+		varData = new VariableData.Boolean();
 		this.typeField.setText(getSymbol());
 		this.typeField.setBackground(Main.colors.get(this.dataType));
 		this.typeField.setEditable(false);
@@ -35,7 +36,8 @@ public class VBoolean extends Variable{
 	@Override
 	protected void setValue(String s){
 		value = s.equals("true");
-		valueField.getDocument().removeDocumentListener(this);
+		if(varData != null)
+			((VariableData.Boolean) varData).value = value;
 	}
 	
 	static class Get extends PrimitiveFunction{

@@ -97,20 +97,8 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	}
 	
 	public static void connect(Node A, Node B){
-		if(A.type == NodeType.RECIEVING && B.type == NodeType.SENDING){
-			
-			A.parents.add(B);
-			B.children.add(A);
-		
-		}else if(B.type == NodeType.RECIEVING && A.type == NodeType.SENDING){
-		
-			B.parents.add(A);
-			A.children.add(B);
-		
-		}else{
-			System.out.println("connect Failed");
-			return;
-		}
+		B.parents.add(A);
+		A.children.add(B);
 		Main.curves.add(new Curve(A,B));
 		A.onConnect();
 		B.onConnect();
@@ -189,8 +177,19 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 					}
 					clearChildren(this);
 					clearChildren(node);
+					Node A;
+					Node B;
+					if(node.type == NodeType.RECIEVING && this.type == NodeType.SENDING){
+						A = this;
+						B = node;
+					}else{
+						A = node;
+						B = this;
+					}
 					if(this.dataType == node.dataType){
-						connect(this,node);
+						connect(A,B);
+					}else if(Cast.isCastable(A.dataType,B.dataType)){
+						new Cast(A,B);
 					}
 					break;
 				}

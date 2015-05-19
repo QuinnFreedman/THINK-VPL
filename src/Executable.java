@@ -54,6 +54,7 @@ public class Executable extends VObject{
 	}
 	
 	Executable(){
+		super();
 		inputNodes = new ArrayList<Node>();
 		outputNodes = new ArrayList<Node>();
 		
