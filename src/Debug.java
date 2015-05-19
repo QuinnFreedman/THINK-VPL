@@ -9,25 +9,33 @@ public class Debug{
 	private static ArrayList<Executable> stack;
 	private static boolean isStepping = false;
 	
-	private static VariableData varData = null;
-	
 	public static boolean isStepping() {
 		return isStepping;
 	}
 	
 	private static void startStep(){
+		System.out.println("Start Stepping");
 		stack = new ArrayList<Executable>(Arrays.asList(Main.entryPoint));
 		isStepping = true;
 		stack.get(0).setBorder(BorderFactory.createLineBorder(Color.yellow, 2));
 		
 		for(VObject o : Main.objects){
 			if(o instanceof Executable){
-				((Executable) o).activeNode = 1;
+				System.out.println(o);
+				Executable o2 = ((Executable) o);
+				if(o2.getClass() == Cast.class || o2 instanceof Arithmetic){
+					o2.activeNode = 0;
+				}else{
+					o2.activeNode = 1;
+				}
+				o2.workingData = new ArrayList<VariableData>();
+				System.out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
+				
 			}
 		}
 	}
 	
-	private static void exit() {
+	protected static void exit() {
 		isStepping = false;
 		for(VObject o : Main.objects){
 			if(o instanceof Executable){
@@ -44,12 +52,16 @@ public class Debug{
 		}else if(getTop().getInputNodes().isEmpty()){
 			return false;
 		}
-		
+		System.out.println("try to go up from "+getTop());
+		System.out.println("activeNode "+getTop().activeNode);
+		System.out.println("inputs "+getTop().getInputNodes().size());
 		if(getTop().activeNode >= getTop().getInputNodes().size()){
 			return false;
 		}
 		
 		ArrayList<Node> parents = getTop().getInputNodes().get(getTop().activeNode).parents;
+		System.out.println("parents "+parents);
+		
 		if(parents.isEmpty()){
 			exit();
 			return false;
@@ -69,8 +81,11 @@ public class Debug{
 			exit();
 			return;
 		}
-		
-		varData = getTop().execute(varData);
+		System.out.println("executing "+getTop().getClass().getName());
+		System.out.println( getTop().workingData);
+		VariableData[] array = new VariableData[getTop().workingData.size()];
+		array = getTop().workingData.toArray(array);
+		VariableData execute = getTop().execute(array);
 		
 		getTop().setBorder(null);
 		
@@ -86,7 +101,10 @@ public class Debug{
 		}else{
 			stack.remove(stack.size()-1);
 		}
-	
+		if(execute != null){
+			System.out.println("add to "+getTop().workingData);
+			getTop().workingData.add(execute);
+		}
 		getTop().setBorder(BorderFactory.createLineBorder(Color.yellow, 2));
 		
 	}

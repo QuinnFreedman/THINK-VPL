@@ -22,7 +22,7 @@ public class Cast extends Executable{
 	        	getThis().recievingNode = recievingNode;
 				Main.panel.add(getThis());
 				Node inputNode = new Node(Node.NodeType.RECIEVING, getThis(), sendingNode.dataType);
-				Node outputNode = new Node(Node.NodeType.SENDING, getThis(), recievingNode.dataType);
+				Node outputNode = new Node(Node.NodeType.SENDING, getThis(), recievingNode.dataType,true);
 				addInputNode(inputNode);
 				addOutputNode(outputNode);
 				setBounds(new Rectangle(
@@ -37,11 +37,6 @@ public class Cast extends Executable{
 	        }});
 	}
 	
-	@Override
-	public Dimension getSize(){
-		return new Dimension(Math.max(60,this.getPreferredSize().width),
-				30+inputNodeHolder.getPreferredSize().height+outputNodeHolder.getPreferredSize().height);
-	}
 	private static boolean isNumber(Variable.DataType dt){
 		if(dt == Variable.DataType.DOUBLE || dt == Variable.DataType.INTEGER || dt == Variable.DataType.FLOAT || dt == Variable.DataType.SHORT || dt == Variable.DataType.LONG){
 			return true;

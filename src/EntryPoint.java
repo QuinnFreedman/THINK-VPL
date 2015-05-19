@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 public class EntryPoint extends Executable{
 	public Node startNode;
 	EntryPoint(){
+		super();
 		this.setOpaque(false);
 		this.setBounds(350, 50, 80, 80);
 		((FlowLayout) this.body.getLayout()).setVgap(30);
@@ -20,6 +21,7 @@ public class EntryPoint extends Executable{
 		startNode = new StartNode(this);
 		Main.nodes.add(startNode);
 		this.add(startNode,BorderLayout.AFTER_LAST_LINE);
+		Main.objects.add(this);
 	}
 	@Override
 	public void paintComponent(Graphics g){

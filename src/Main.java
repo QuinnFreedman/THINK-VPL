@@ -80,6 +80,8 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
                         	if(!Debug.isStepping()){
                         		Main.panel.requestFocusInWindow();
                         		Debug.tab();
+                        	}else{
+                        		Debug.exit();
                         	}
                         }
                         break;
@@ -262,17 +264,21 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				panelPopup = new JPopupMenu();
 				panel.addMouseListener(THIS);
 				
-				JMenuItem popupBoolean = new JMenuItem("Boolean");
-				popupBoolean.addActionListener(THIS);
-				panelPopup.add(popupBoolean);
+				JMenuItem popupAdd = new JMenuItem("Add");
+				popupAdd.addActionListener(THIS);
+				panelPopup.add(popupAdd);
 				
-				JMenuItem popupInt = new JMenuItem("Integer");
-				popupInt.addActionListener(THIS);
-				panelPopup.add(popupInt);
+				JMenuItem popupSubract = new JMenuItem("Subtract");
+				popupSubract.addActionListener(THIS);
+				panelPopup.add(popupSubract);
 				
-				JMenuItem popupDouble = new JMenuItem("Double");
-				popupDouble.addActionListener(THIS);
-				panelPopup.add(popupDouble);
+				JMenuItem popupMultiply = new JMenuItem("Multiply");
+				popupMultiply.addActionListener(THIS);
+				panelPopup.add(popupMultiply);
+				
+				JMenuItem popupDivide = new JMenuItem("Divide");
+				popupDivide.addActionListener(THIS);
+				panelPopup.add(popupDivide);
 				
 				panelPopup.addSeparator();
 				
@@ -317,16 +323,14 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 		}else{
 			p = VObject.getFreePosition();
 		}
-		/*if(c == "Boolean"){
-			objects.add(new VBoolean(p));
-		}else if(c == "Integer"){
-			objects.add(new VInt(p));
-		}else if(c == "Double"){
-			objects.add(new VDouble(p));
-		}else */if(c == "Math"){
-			//objects.add(new VMath(p));
-		}else if(c == "Timeline"){
-			objects.add(new Timeline(p));
+		if(c == "Add"){
+			objects.add(new Arithmetic.AddDouble(Variable.DataType.DOUBLE,p));
+		}else if(c == "Subtract"){
+			objects.add(new Arithmetic.SubtractDouble(Variable.DataType.DOUBLE,p));
+		}else if(c == "Multiply"){
+			objects.add(new Arithmetic.MultiplyDouble(Variable.DataType.DOUBLE,p));
+		}else if(c == "Divide"){
+			objects.add(new Arithmetic.DivideDouble(Variable.DataType.DOUBLE,p));
 		}else{
 			System.out.println("null Action:"+c);
 		}
@@ -396,6 +400,8 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 		
 	}
 	static class DisplayPanel extends JPanel{
+		private static final long serialVersionUID = 1L;
+
 		DisplayPanel(){
 			this.setFocusTraversalKeysEnabled(false);
 			this.setLayout(null);

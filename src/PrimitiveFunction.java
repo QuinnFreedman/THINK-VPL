@@ -50,7 +50,10 @@ public class PrimitiveFunction extends Executable{
 				
 				if(getInputs() != null){
 					for(Variable.DataType dt : getInputs()){
-						addInputNode(new Node(Node.NodeType.RECIEVING,getThis(),dt,false));
+						if(dt == Variable.DataType.GENERIC)
+							addInputNode(new Node(Node.NodeType.RECIEVING,getThis(),dt,true));
+						else
+							addInputNode(new Node(Node.NodeType.RECIEVING,getThis(),dt,false));
 					}
 				}
 				if(getOutputs() != null){
@@ -84,9 +87,4 @@ public class PrimitiveFunction extends Executable{
 		parentVar.removeChild(this);
 	}
 	
-	@Override
-	public Dimension getSize(){
-		return new Dimension(Math.max(60,this.getPreferredSize().width),
-				30+inputNodeHolder.getPreferredSize().height+outputNodeHolder.getPreferredSize().height);
-	}
 }

@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class Executable extends VObject{
 	private ArrayList<Node> inputNodes;
 	private ArrayList<Node> outputNodes;
 	public int activeNode;
+	public ArrayList<VariableData> workingData;
 	protected ArrayList<Node> getInputNodes(){
 		return inputNodes;
 	}
@@ -65,8 +67,7 @@ public class Executable extends VObject{
 		this.add(outputNodeHolder,BorderLayout.PAGE_END);
 	}
 	
-
-	public VariableData execute(VariableData... inputs){
+	public VariableData execute(VariableData[] inputs){
 		return null;
 	}
 	
@@ -77,7 +78,7 @@ public class Executable extends VObject{
 		GradientPaint gradient = new GradientPaint(0, 
 				inputNodeHolder.getHeight()-5, 
 				color,
-				0, 
+				0,
 				this.getHeight()/2,
 				new Color(20,20,20,127),true);
 		
@@ -93,5 +94,11 @@ public class Executable extends VObject{
 			this.setPreferredSize(new Dimension(15,15));
 			((FlowLayout) this.getLayout()).setVgap(0);
 		}
+	}
+	
+	@Override
+	public Dimension getSize(){
+		return new Dimension(Math.max(60,this.getPreferredSize().width),
+				30+inputNodeHolder.getPreferredSize().height+outputNodeHolder.getPreferredSize().height);
 	}
 }

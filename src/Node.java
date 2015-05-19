@@ -25,6 +25,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	Direction facing;
 	NodeType type;
 	boolean canHaveMultipleInputs = true;
+	boolean isHover = false;
 	public Variable.DataType dataType;
 	protected Dimension size = new Dimension(15,15);
 	Node(NodeType type,VObject parentObj,boolean mi){
@@ -116,6 +117,10 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 			g.setColor(Main.colors.get(this.dataType));
 			g.fillArc(this.size.width/2 - 4, this.size.height/2 - 4, 8, 8, 0, 360);
 		}
+		if(isHover){
+			g2.setColor(new Color(1f,1f,1f,0.5f));
+			g.fillArc(0, 0, 14, 14, 0, 360);
+		}
 			
 	}
 	/*@Override
@@ -134,11 +139,14 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	}
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
-		
+		if(currentlyDragging != null && canConnect(currentlyDragging,this)){
+			this.isHover = true;
+		}
 	}
 	@Override
 	public void mouseExited(MouseEvent arg0) {
-		
+		this.isHover = false;
+		this.repaint();
 	}
 	@Override
 	public void mousePressed(MouseEvent arg0) {
@@ -153,50 +161,59 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		Rectangle rect = new Rectangle();
 		for(Node node : Main.nodes){
 			rect = new Rectangle(getLocationOnPanel(node),new Dimension(node.getWidth(),node.getHeight()));
-			if(rect.contains(mouse)){
-				if(this.parentObject == node.parentObject){
-					continue;
-				}/*else if(this.parentObject instanceof PrimitiveFunction && node.parentObject instanceof PrimitiveFunction &&
-						((PrimitiveFunction) this.parentObject).getParentVar() == ((PrimitiveFunction) node.parentObject).getParentVar()
-					){
-					continue;
-				}*/
-				System.out.println("this : "+this.type+" "+this);
-				System.out.println("node : "+node.type+" "+node);
-				if((this.type == NodeType.SENDING && node.type == NodeType.RECIEVING) ||
-					(this.type == NodeType.RECIEVING && node.type == NodeType.SENDING))
-				{
-					if(this.type == NodeType.RECIEVING){
-						if(this.parents.contains(node) || node.children.contains(this)){
-							continue;
-						}
-					}else{
-						if(node.parents.contains(this) || this.children.contains(node)){
-							continue;
-						}
-					}
-					clearChildren(this);
-					clearChildren(node);
-					Node A;
-					Node B;
-					if(node.type == NodeType.RECIEVING && this.type == NodeType.SENDING){
-						A = this;
-						B = node;
-					}else{
-						A = node;
-						B = this;
-					}
-					if(this.dataType == node.dataType){
-						connect(A,B);
-					}else if(Cast.isCastable(A.dataType,B.dataType)){
-						new Cast(A,B);
-					}
-					break;
+			if(rect.contains(mouse) && canConnect(this,node)){
+				
+				clearChildren(this);
+				clearChildren(node);
+				Node A;
+				Node B;
+				if(node.type == NodeType.RECIEVING && this.type == NodeType.SENDING){
+					A = this;
+					B = node;
+				}else{
+					A = node;
+					B = this;
 				}
+				if(this.dataType == node.dataType){
+					connect(A,B);
+				}else if(Cast.isCastable(A.dataType,B.dataType)){
+					Main.objects.add(new Cast(A,B));
+				}
+				break;
+				
 			}
 		}
 		
 		Main.panel.repaint();
+	}
+	
+	private static boolean canConnect(Node A, Node B){
+		if(A.parentObject == B.parentObject){
+			return false;
+		}
+		if((A.type == NodeType.SENDING && B.type == NodeType.RECIEVING) ||
+			(A.type == NodeType.RECIEVING && B.type == NodeType.SENDING))
+		{
+			if(A.type == NodeType.RECIEVING){
+				if(A.parents.contains(B) || B.children.contains(A)){
+					return false;
+				}
+			}else{
+				if(B.parents.contains(A) || A.children.contains(B)){
+					return false;
+				}
+			}
+			if(A.dataType == B.dataType){
+				return true;
+			}else if(Cast.isCastable(A.dataType,B.dataType)){
+				if(Cast.isCastable(A.dataType, B.dataType)){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override

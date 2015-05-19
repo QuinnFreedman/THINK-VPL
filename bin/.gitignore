@@ -53,3 +53,10 @@
 /VariableData$Short.class
 /VariableData$String.class
 /VariableData$Charecter.class
+/Arithmetic.class
+/Arithmetic$Add.class
+/Arithmetic$1.class
+/Arithmetic$AddDouble.class
+/Arithmetic$MultiplyDouble.class
+/Arithmetic$SubtractDouble.class
+/Arithmetic$DivideDouble.class
