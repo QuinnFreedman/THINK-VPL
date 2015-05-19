@@ -6,13 +6,16 @@ import java.awt.Graphics;
 
 import javax.swing.JLabel;
 
-public class EntryPoint extends VObject{
+public class EntryPoint extends Executable{
 	public Node startNode;
 	EntryPoint(){
 		this.setOpaque(false);
 		this.setBounds(350, 50, 80, 80);
-		((FlowLayout) this.body.getLayout()).setVgap(27);
+		((FlowLayout) this.body.getLayout()).setVgap(30);
+		remove(inputNodeHolder);
+		remove(outputNodeHolder);
 		JLabel text = new JLabel("Start");
+		text.setForeground(Color.BLACK);
 		this.body.add(text);
 		startNode = new StartNode(this);
 		Main.nodes.add(startNode);
@@ -27,7 +30,7 @@ public class EntryPoint extends VObject{
 	private class StartNode extends Node{
 
 		StartNode(VObject parentObj) {
-			super(Node.Direction.SOUTH, Node.NodeType.SENDING, parentObj);
+			super(Node.NodeType.SENDING, parentObj, Variable.DataType.GENERIC);
 			this.size = new Dimension(80,30);
 			this.setOpaque(false);
 			this.canHaveMultipleInputs = false;

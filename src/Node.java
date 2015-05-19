@@ -2,58 +2,49 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 public class Node extends JPanel implements MouseListener, MouseMotionListener{
+	private static final long serialVersionUID = 1L;
+	
 	static Node currentlyDragging;
 	ArrayList<Node> parents = new ArrayList<Node>();
 	ArrayList<Node> children = new ArrayList<Node>();
 	VObject parentObject;
 	Direction facing;
 	NodeType type;
-	NodeStyle style = null;
 	boolean canHaveMultipleInputs = true;
 	public Variable.DataType dataType;
-	protected Dimension size = new Dimension(30,20);
-	Node(NodeType type,VObject parentObj,NodeStyle style){
-		this.style = style;
-		this.setBounds(0, 0, getPreferredSize().width, getPreferredSize().height);
+	protected Dimension size = new Dimension(15,15);
+	Node(NodeType type,VObject parentObj,boolean mi){
+		this.canHaveMultipleInputs = mi;
 		this.setOpaque(false);
 		this.addMouseListener(this);
-		this.facing = Direction.EAST;
+		this.facing = (type == NodeType.SENDING || type == NodeType.INHERITANCE_SENDING) ? Direction.SOUTH : Direction.NORTH;
 		this.type = type;
 		this.parentObject = parentObj;
-		//if(parentObj.instance == Variable){//TODO use 'extends'/'typeof'?
-		//	this.dataType = ((Variable) parentObj).dataType;
-		//}else{
-			//this.dataType = null;
-		//}
 	}
 	Node(NodeType type,VObject parentObj){
-		this(type,parentObj,NodeStyle.VISIBLE);
+		this(type,parentObj,false);
 	}
-	Node(Direction dir, NodeType type, VObject parentObj,NodeStyle style){
-		this(type,parentObj,style);
-		this.facing = dir;
+	Node(NodeType type, VObject parentObj, Variable.DataType dt){
+		this(type,parentObj,false);
+		this.dataType = dt;
 	}
-	Node(Direction dir, NodeType type, VObject parentObj){
-		this(type,parentObj,NodeStyle.VISIBLE);
-		this.facing = dir;
-	}
-	Node(Direction dir, NodeType type, VObject parentObj, Variable.DataType dt){
-		this(type,parentObj,NodeStyle.VISIBLE);
-		this.facing = dir;
+	public Node(NodeType type, VObject parentObj, Variable.DataType dt,
+			boolean b) {
+		this(type,parentObj,b);
 		this.dataType = dt;
 	}
 	public void onConnect(){
@@ -66,7 +57,6 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		if(nodeToClear.canHaveMultipleInputs == false){
 			nodeToClear.onDisconnect(); //TODO be more specific? ie call later in the method only if connection is actually removed
 			Iterator<Curve> itr = Main.curves.iterator();
-			VObject toRemove = null;
 			while(itr.hasNext()){
 				Curve c = itr.next();
 				Node node;
@@ -77,42 +67,16 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 				}else{
 					continue;
 				}
-				if(node.parentObject instanceof Args){
-					boolean argsHasInputs = false;
-					for(Node inpNode : ((Args) node.parentObject).getInputNodes()){
-						if(inpNode.parents != null && inpNode.parents.size() != 0){
-							argsHasInputs = true;
-							break;
-						}
-					}
-					if(!argsHasInputs){
-						if(toRemove != null){
-							System.out.println("ERROR:clearChildren");
-						}
-						toRemove = node.parentObject;
-					}else{
-						if(node.type == Node.NodeType.RECIEVING){
-							node.parents.remove(nodeToClear);
-							nodeToClear.children.remove(node);
-						}else{
-							nodeToClear.parents.remove(node);
-							node.children.remove(nodeToClear);
-						}
-						itr.remove();
-					}
+				
+				if(node.type == Node.NodeType.RECIEVING){
+					node.parents.remove(nodeToClear);
+					nodeToClear.children.remove(node);
 				}else{
-					if(node.type == Node.NodeType.RECIEVING){
-						node.parents.remove(nodeToClear);
-						nodeToClear.children.remove(node);
-					}else{
-						nodeToClear.parents.remove(node);
-						node.children.remove(nodeToClear);
-					}
-					itr.remove();
+					nodeToClear.parents.remove(node);
+					node.children.remove(nodeToClear);
 				}
-			}
-			if(toRemove != null){
-				toRemove.delete();
+				itr.remove();
+				
 			}
 		}
 	}
@@ -155,16 +119,16 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	@Override
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);
-		switch(style){
-		case VISIBLE:
-			g.setColor(Color.BLACK);
-			g.fillArc(0, 0, this.size.width, this.size.height, 0, 360);
+		
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setColor(Color.BLACK);
+		g.fillArc(0, 0, 14, 14, 0, 360);
+		if(this.dataType != Variable.DataType.GENERIC){
 			g.setColor(Main.colors.get(this.dataType));
-			g.fillArc(this.size.width/2 - 5, this.size.height/2 - 5, 10, 10, 0, 360);
-			
-		case INVISIBLE:
-			
+			g.fillArc(this.size.width/2 - 4, this.size.height/2 - 4, 8, 8, 0, 360);
 		}
+			
 	}
 	/*@Override
 	public Dimension getSize(){
@@ -172,17 +136,13 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	}*/
 	@Override
 	public Dimension getPreferredSize(){
-		switch(style){
-		case VISIBLE:
-			return size;
-		case INVISIBLE:
-			return new Dimension(0,0);
-		}
-		return null;
+		return size;
 	}
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		
+		if(Main.altPressed){
+			clearChildren(this);
+		}
 	}
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
@@ -200,18 +160,21 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		currentlyDragging = null;
+		this.removeMouseMotionListener(this);
 		Point mouse = getLocationOnPanel(e);
 		Rectangle rect = new Rectangle();
-		boolean isHoverAnotherNode = false;
 		for(Node node : Main.nodes){
 			rect = new Rectangle(getLocationOnPanel(node),new Dimension(node.getWidth(),node.getHeight()));
 			if(rect.contains(mouse)){
-				isHoverAnotherNode = true;
 				if(this.parentObject == node.parentObject){
 					continue;
-				}
-				System.out.println("this : "+this);
-				System.out.println("node : "+node);
+				}/*else if(this.parentObject instanceof PrimitiveFunction && node.parentObject instanceof PrimitiveFunction &&
+						((PrimitiveFunction) this.parentObject).getParentVar() == ((PrimitiveFunction) node.parentObject).getParentVar()
+					){
+					continue;
+				}*/
+				System.out.println("this : "+this.type+" "+this);
+				System.out.println("node : "+node.type+" "+node);
 				if((this.type == NodeType.SENDING && node.type == NodeType.RECIEVING) ||
 					(this.type == NodeType.RECIEVING && node.type == NodeType.SENDING))
 				{
@@ -226,42 +189,11 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 					}
 					clearChildren(this);
 					clearChildren(node);
-					//System.out.println(this.dataType+", "+node.dataType);
-					/*if(this.dataType == Variable.DataType.GENERIC && 
-							((node.dataType.size() > 0 && node.dataType.get(0) != Variable.DataType.GENERIC) 
-									)
-						)	//if this is generic and node isn't
-					{
-						System.out.println("this is generic");
-						this.dataType = node.dataType;
+					if(this.dataType == node.dataType){
 						connect(this,node);
 					}
-					else if(node.dataType.size() == 1 && node.dataType.get(0) == Variable.DataType.GENERIC && 
-						((this.dataType.size() > 0 && this.dataType.get(0) != Variable.DataType.GENERIC)
-								)
-							)//if node is generic and this isn't
-					{
-						System.out.println("node is generic");
-						node.dataType = this.dataType;
-						connect(this,node);
-					}else if((node.dataType.size() == 1 && node.dataType.get(0) == Variable.DataType.GENERIC && this.dataType.size() == 0) ||
-							(this.dataType.size() == 1 && this.dataType.get(0) == Variable.DataType.GENERIC && node.dataType.size() == 0)
-							){
-						//Don't connect null data nodes with generic nodes
-					}else{
-						ArrayList<ArrayList<Variable.DataType>> compl = complement(this.dataType,node.dataType);
-						System.out.println(compl);
-						if(compl.get(0).size() == 0 && compl.get(1).size() == 0){
-							node.parentObject.repaint();node.parentObject.revalidate();
-							System.out.println("this.getLocationOnPanel() : "+Node.getLocationOnPanel(this));
-							System.out.println("node.getLocationOnPanel() : "+Node.getLocationOnPanel(node));
-							connect(this,node);
-						}else if(this.parentObject.getClass() != Args.class && node.parentObject.getClass() != Args.class){
-							new Args(this,node);
-						}
-					}*/
-				}//TODO rules for generic
-				break;
+					break;
+				}
 			}
 		}
 		

@@ -1,32 +1,40 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 
-import javax.swing.BorderFactory;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JTextPane;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
-
 public class Variable extends SidebarItem implements DocumentListener, ContainsChildFunctions{
 	InputPane valueField;
 	DataType dataType;
+	VariableData varData;
 	static final Border bodyPadding = new EmptyBorder(5,10,5,10);
-	protected ArrayList<PrimitiveFunction> functions = new ArrayList<PrimitiveFunction>();
-	protected Variable getThis(){
+	protected ArrayList<PrimitiveFunction> functions = new ArrayList<PrimitiveFunction>();//TODO use classes
+	private ArrayList<PrimitiveFunction> children = new ArrayList<PrimitiveFunction>();
+	protected PrimitiveChildPicker childPicker;
+	public void removeChild(PrimitiveFunction pf){
+		children.remove(pf);
+	}
+	public void addChild(PrimitiveFunction pf){
+		children.add(pf);
+	}
+	public void clearChildren(){
+		Iterator itr = this.children.iterator();
+		while(children.size() > 0) {
+			children.get(0).delete();
+		}
+		if(childPicker != null)
+			childPicker.delete();
+	}
+	private Variable getThis(){
 		return this;
 	}
 	Variable(){
@@ -38,7 +46,9 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 		
 		//JPanel body = new JPanel(new FlowLayout());
 		
-		valueField = new InputPane();
+		nameField.getDocument().addDocumentListener(new NameDocListener(this));
+		
+		valueField = new InputPane(this);
 		valueField.setColumns(5);
 		valueField.getDocument().addDocumentListener(this);
 		header.add(valueField);
@@ -80,8 +90,13 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 				if(getThis().dataType != null){
 					drag.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 					Point p = Node.getLocationOnPanel(e);
+					if(getThis().childPicker != null){
+						childPicker.delete();
+					}
 					if(p.x > 0 && p.y > 0 && p.x < Main.panel.getWidth() && p.y < Main.panel.getHeight()){
-						Main.objects.add(new PrimitiveChildPicker(getThis(), p));
+						PrimitiveChildPicker childPicker = new PrimitiveChildPicker(getThis(), p);
+						Main.objects.add(childPicker);
+						getThis().childPicker = childPicker;
 					}
 				}
 			}
@@ -93,6 +108,11 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 	
 	protected void setValue(String s){
 		//Overwritten in subclasses
+	}
+	protected void setChildTexts(String s){
+		for(PrimitiveFunction child : children){
+			child.setText(s);
+		}
 	}
 	
     @Override
@@ -121,8 +141,45 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 			e1.printStackTrace();
 		}
     }
+    static class NameDocListener implements DocumentListener{
+
+    	Variable var;
+    	
+    	NameDocListener(Variable var){
+    		this.var = var;
+    	}
+    
+		@Override
+	    public void removeUpdate(DocumentEvent e) {
+	    	try {
+				var.setChildTexts(e.getDocument().getText(0, e.getDocument().getLength()));
+			} catch (BadLocationException e1) {
+				e1.printStackTrace();
+			}
+	    }
+
+	    @Override
+	    public void insertUpdate(DocumentEvent e) {
+	    	try {
+		    	var.setChildTexts(e.getDocument().getText(0, e.getDocument().getLength()));
+			} catch (BadLocationException e1) {
+				e1.printStackTrace();
+			}
+	    }
+
+	    @Override
+	    public void changedUpdate(DocumentEvent e) {
+	    	try {
+	    		var.setChildTexts(e.getDocument().getText(0, e.getDocument().getLength()));
+			} catch (BadLocationException e1) {
+				e1.printStackTrace();
+			}
+	    }
+    	
+    }
     public enum DataType{
-    	BOOLEAN,BYTE,SHORT,INTEGER,FLOAT,DOUBLE,LONG,CHARACTER,STRING,GENERIC
+    	BOOLEAN,BYTE,SHORT,INTEGER,FLOAT,DOUBLE,LONG,CHARACTER,STRING,GENERIC;
+    	
     }
 	@Override
 	public ArrayList<PrimitiveFunction> getFunctions() {

@@ -8,6 +8,8 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -16,12 +18,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.swing.Box;
-import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
@@ -40,14 +39,6 @@ import java.awt.Component;
 
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
-//import org.pushingpixels.substance.api.*;
-
-
-
-
-
-import org.pushingpixels.substance.api.skin.SubstanceDustLookAndFeel;
-import org.pushingpixels.substance.api.skin.SubstanceGraphiteLookAndFeel;
 
 public class Main implements ActionListener, MouseInputListener, KeyListener{
 	static ArrayList<VObject> objects = new ArrayList<VObject>();
@@ -57,6 +48,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 	public static ArrayList<Variable> variables = new ArrayList<Variable>();
 	static Point mousePos = new Point();
 	static HashMap<Variable.DataType,Color> colors = new HashMap<Variable.DataType,Color>();
+	public static boolean altPressed = false;
 	/**
 	 * @wbp.parser.entryPoint
 	 */
@@ -71,7 +63,37 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 		new Main();
 		colors.put(Variable.DataType.BOOLEAN, Color.green);
 		colors.put(Variable.DataType.INTEGER, Color.red);
-		colors.put(Variable.DataType.DOUBLE, new Color(255,0,255));
+		colors.put(Variable.DataType.DOUBLE, new Color(196,0,167));
+		colors.put(Variable.DataType.FLOAT, new Color(207,0,91));
+		colors.put(Variable.DataType.GENERIC, Color.WHITE);
+		
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+
+            @Override
+            public boolean dispatchKeyEvent(KeyEvent ke) {
+                synchronized (Main.class) {
+                    switch (ke.getID()) {
+                    case KeyEvent.KEY_PRESSED:
+                        if (ke.getKeyCode() == KeyEvent.VK_ALT) {
+                            altPressed = true;
+                        }else if (ke.getKeyCode() == KeyEvent.VK_F1){
+                        	if(!Debug.isStepping()){
+                        		Main.panel.requestFocusInWindow();
+                        		Debug.tab();
+                        	}
+                        }
+                        break;
+
+                    case KeyEvent.KEY_RELEASED:
+                        if (ke.getKeyCode() == KeyEvent.VK_ALT) {
+                        	altPressed = false;
+                        }
+                        break;
+                    }
+                    return false;
+                }
+            }
+        });
 	}
 	
 	Main(){
@@ -197,7 +219,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 					}
 				});
 				
-				
+				scrollVars.addKeyListener(THIS);//TODO doesn't work
 				scrollVars.setMinimumSize(minimumSize);
 				varsContainer.add(scrollVars);
 				
@@ -220,7 +242,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				
 				JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 		                sidebar, scrollPane);
-						splitPane.setDividerLocation(250);
+						splitPane.setDividerLocation(253);
 				
 				
 				window.getContentPane().add(splitPane, BorderLayout.CENTER);
@@ -312,7 +334,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		panel.requestFocusInWindow();
+		// Auto-generated method stub
 		
 	}
 
@@ -330,7 +352,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 
 	@Override
 	public void mousePressed(MouseEvent arg0) {
-		// Auto-generated method stub
+		panel.requestFocusInWindow();
 		
 	}
 
@@ -356,16 +378,14 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == 9){
+		if(e.getKeyCode() == KeyEvent.VK_TAB){
 			Debug.tab();
-		}else if(e.getKeyCode() == 88){
-			//Point p = getLocationOnPanel();
 		}
 		
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
+	public void keyReleased(KeyEvent e) {
 		// Auto-generated method stub
 		
 	}
@@ -377,6 +397,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 	}
 	static class DisplayPanel extends JPanel{
 		DisplayPanel(){
+			this.setFocusTraversalKeysEnabled(false);
 			this.setLayout(null);
 			this.setBackground(new Color(0x5D5D5D));
 		}

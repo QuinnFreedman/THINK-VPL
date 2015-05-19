@@ -6,11 +6,14 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,17 +26,8 @@ public class VObject extends JPanel implements MouseInputListener{
 	int width;
 	int height;
 	int borderWidth;
-	JPanel header;
 	JPanel body;
 	JLabel headerLabel;
-	protected static enum Mode{
-		IN,OUT,BOTH,NONE
-	};
-	public ArrayList<Variable.DataType> getInputs(){return null;};
-	public ArrayList<Variable.DataType> getOutputs(){return null;};
-	public Mode getPrimairyMode(){return Mode.BOTH;};
-	protected ArrayList<Node> inputNodes;
-	protected ArrayList<Node> outputNodes;
 	
 	protected static Point getFreePosition(){
 		return new Point(10,10);
@@ -42,23 +36,17 @@ public class VObject extends JPanel implements MouseInputListener{
 		this.addMouseListener(this);
 		this.setOpaque(false);
 		this.setLayout(new BorderLayout());
-		inputNodes = new ArrayList<Node>();
-		outputNodes = new ArrayList<Node>();
-		header = new JPanel();
-		header.setOpaque(false);
-		((FlowLayout) header.getLayout()).setHgap(7);
-		((FlowLayout) header.getLayout()).setVgap(2);
-		headerLabel = new JLabel();
-		headerLabel.setOpaque(false);
-		header.add(headerLabel);
+
 		Main.componentMover.registerComponent(this);
-		this.add(header,BorderLayout.PAGE_START);
 		body = new JPanel();
 		body.setOpaque(false);
 		this.add(body,BorderLayout.CENTER);
 	}
 	
 	public void delete(){
+		if(this instanceof PrimitiveFunction){
+			((PrimitiveFunction) this).removeFromParent();
+		}
 		Main.objects.remove(this);
 		Main.panel.remove(this);
 		Iterator<Curve> itr = Main.curves.iterator();
@@ -81,12 +69,6 @@ public class VObject extends JPanel implements MouseInputListener{
 				itrN.remove();
 			}
 		}
-		/*System.out.println("del "+this.getClass());
-		if(this instanceof ContainsChildFunctions){
-			for(VObject o : ((ContainsChildFunctions) this).getFunctions()){
-				o.delete();
-			}
-		}*/
 		Main.panel.repaint();
 	}
 	
@@ -94,10 +76,11 @@ public class VObject extends JPanel implements MouseInputListener{
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
-		GradientPaint gradient = new GradientPaint(0, 0, Color.BLACK, 0, header.getPreferredSize().height,
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		GradientPaint gradient = new GradientPaint(0, 0, Color.BLACK, 0, headerLabel.getPreferredSize().height,
 				new Color(20,20,20,127));
 		g2.setPaint(gradient);
-	    g2.fill(new RoundRectangle2D.Double(0, 0, this.getSize().width, this.getSize().height+20, 20, 20));
+	    g2.fill(new RoundRectangle2D.Double(0, 0, this.getWidth(), this.body.getHeight()+20, 20, 20));
 	    g2.setPaint(Color.black);
 	}
 	@Override

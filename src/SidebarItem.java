@@ -5,12 +5,15 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.font.TextAttribute;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -23,13 +26,17 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 public class SidebarItem extends JPanel{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String name;
 	protected Type type;
 	protected JPanel header;
 	protected InputPane nameField;
 	protected InputPane typeField;
 	protected ArrayList<InputPane> fields = new ArrayList<InputPane>();
-	protected SidebarItem getThis(){
+	private SidebarItem getThis(){
 		return this;
 	}
 	public enum Type{
@@ -41,7 +48,6 @@ public class SidebarItem extends JPanel{
 
 		switch (this.type) {
 		case VARIABLE:
-			System.out.println(this.type);
 			switch(((Variable) this).dataType){
 	        case BOOLEAN: symbol = "bool";
 	        	break;
@@ -102,7 +108,10 @@ public class SidebarItem extends JPanel{
 
 						@Override
 						public void mouseClicked(MouseEvent e) {
-							Main.variables.remove(getThis());
+							if(getThis().type == Type.VARIABLE){
+								Main.variables.remove(getThis());
+								((Variable) getThis()).clearChildren();
+							}
 							Container parent = getThis().getParent();
 							parent.remove(getThis());
 							parent.revalidate();
@@ -133,14 +142,15 @@ public class SidebarItem extends JPanel{
 		
 		header.add(close);
 		
-		typeField = new TypeField();
+		typeField = new TypeField(this);
 		typeField.setColumns(2);
 		header.add(typeField);
 		fields.add(typeField);
 		
-		nameField = new InputPane();
+		nameField = new InputPane(this);
 		nameField.setColumns(7);
 		nameField.addIllegalChar(' ');
+		nameField.addFocusListener(new NoDuplicateNames(nameField));
 		header.add(nameField);
 		fields.add(nameField);
 		
@@ -156,8 +166,13 @@ public class SidebarItem extends JPanel{
 	}
 
 	static class InputPane extends SpecialEditorPane{
-		InputPane(){
+		private static final long serialVersionUID = 1L;
+		
+		public SidebarItem sidebarItemParent;
+		
+		InputPane(SidebarItem si){
 			super();
+			this.sidebarItemParent = si;
 			SwingUtilities.invokeLater(new Runnable() {
 		        @Override
 		        public void run() {
@@ -168,7 +183,7 @@ public class SidebarItem extends JPanel{
 							));
 		        }});
 		}
-		protected void gotoNext(SidebarItem sidebarItemParent){
+		protected void gotoNext(){
 			ArrayList<InputPane> fields = sidebarItemParent.fields;
 			int index = fields.indexOf(this);
 			if(index + 1 < fields.size()){
@@ -182,44 +197,134 @@ public class SidebarItem extends JPanel{
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_TAB){
-				if(this.getParent() != null && this.getParent().getParent() instanceof SidebarItem){
-					gotoNext((SidebarItem) this.getParent().getParent());
-				}
+				gotoNext();
 			}
 			
 		}
 	}
 	
 	static class TypeField extends InputPane{
-		TypeField(){
-			super();
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		TypeField(SidebarItem si){
+			super(si);
 		}
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_TAB){
-				if(this.getParent() != null && this.getParent().getParent() instanceof SidebarItem){
-					SidebarItem sidebarItemParent = (SidebarItem) this.getParent().getParent();
-					if(this.getText().toLowerCase().equals("i") || this.getText().toLowerCase().equals("in") || this.getText().toLowerCase().equals("int") || this.getText().toLowerCase().equals("integer")){
-						VInt newint = new VInt();
-						Main.variables.set(
-								Main.variables.indexOf(sidebarItemParent),
-								newint);
-						Main.updateVars();
-						newint.nameField.requestFocusInWindow();
-					}else if(this.getText().toLowerCase().equals("d") || this.getText().toLowerCase().equals("db") || this.getText().toLowerCase().equals("do") || this.getText().toLowerCase().equals("double")){
-						VDouble newdouble = new VDouble();
-						Main.variables.set(
-								Main.variables.indexOf(sidebarItemParent),
-								newdouble);
-						Main.updateVars();
-						newdouble.nameField.requestFocusInWindow();
-					}else{
-						return;
-					}
-					//gotoNext(sidebarItemParent);
+				if(this.getText().toLowerCase().equals("i") || this.getText().toLowerCase().equals("in") || this.getText().toLowerCase().equals("int") || this.getText().toLowerCase().equals("integer")){
+					VInt newint = new VInt();
+					Main.variables.set(
+							Main.variables.indexOf(sidebarItemParent),
+							newint);
+					Main.updateVars();
+					newint.nameField.requestFocusInWindow();
+				}else if(this.getText().toLowerCase().equals("d") || this.getText().toLowerCase().equals("db") || this.getText().toLowerCase().equals("do") || this.getText().toLowerCase().equals("double")){
+					VDouble newdouble = new VDouble();
+					Main.variables.set(
+							Main.variables.indexOf(sidebarItemParent),
+							newdouble);
+					Main.updateVars();
+					newdouble.nameField.requestFocusInWindow();
+				}else if(this.getText().toLowerCase().equals("f") || this.getText().toLowerCase().equals("fl") || this.getText().toLowerCase().equals("flo") || this.getText().toLowerCase().equals("float")){
+					VFloat newdouble = new VFloat();
+					Main.variables.set(
+							Main.variables.indexOf(sidebarItemParent),
+							newdouble);
+					Main.updateVars();
+					newdouble.nameField.requestFocusInWindow();
+				}else if(this.getText().toLowerCase().equals("b") || this.getText().toLowerCase().equals("bo") || this.getText().toLowerCase().equals("bool") || this.getText().toLowerCase().equals("boolean")){
+					VBoolean newBool = new VBoolean();
+					Main.variables.set(
+							Main.variables.indexOf(sidebarItemParent),
+							newBool);
+					Main.updateVars();
+					newBool.nameField.requestFocusInWindow();
+				}else{
+					return;
 				}
+				
 			}
 			
 		}
+	}
+	static class NoDuplicateNames implements FocusListener{
+		
+		SidebarItem si;
+		InputPane ip;
+		
+		NoDuplicateNames(InputPane ip){
+			this.ip = ip;
+			this.si = ip.sidebarItemParent;
+		}
+		
+		@Override
+		public void focusGained(FocusEvent arg0) {
+			if(si.getClass() != Variable.class && si instanceof Variable){//if datatype has been set
+				Boolean b = fixName();
+				if(b)
+					this.ip.selectAll();
+			}
+		}
+
+		@Override
+		public void focusLost(FocusEvent arg0) {
+			if(si.getClass() != Variable.class && si instanceof Variable){
+				fixName();
+			}
+		}
+		public boolean fixName(){
+			String s = ip.getText();
+			int i = -1;
+			if(ip.getText().length() == 0){
+				switch(si.type){
+				case VARIABLE:
+					s = ((Variable) si).getSymbol();
+					i = 1;
+					break;
+				case FUNCTION:
+					s = "func";
+					i = 1;
+					break;
+				case CLASS:
+					s = "class";
+					i = 1;
+					break;
+				}
+			}
+			ArrayList<? extends SidebarItem> list = null;
+			switch(si.type){
+			case VARIABLE:
+				list = Main.variables;
+				break;
+			case FUNCTION:
+				list = null;//TODO
+				break;
+			case CLASS:
+				list = null;//TODO
+				break;
+			}
+			while((isConflict(s, list) && i == -1) ||
+					isConflict(s+i, list)
+					){
+				i++;
+			}
+			ip.setText(s+((i == -1) ? "" : i));
+			if(i == -1)
+				return false;
+			else
+				return true;
+		}
+		private boolean isConflict(String s, ArrayList<? extends SidebarItem> list){
+			for(SidebarItem listItem : list){
+				if(listItem != si && listItem.nameField.getText().equals(s)){
+					return true;
+				}
+			}
+			return false;
+		}
+		
 	}
 }

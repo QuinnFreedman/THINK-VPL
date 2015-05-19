@@ -4,67 +4,89 @@ import java.awt.FlowLayout;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
-public class PrimitiveFunction extends VObject{
+public class PrimitiveFunction extends Executable{
 	private static final long serialVersionUID = 1L;
 	Variable.DataType type;
 	private JLabel label;
 	private String text = "";
 	private Variable parentVar;
-	private Color color;
+	public Variable getParentVar(){
+		return parentVar;
+	}
 	public String getFunctionName(){
 		return this.getClass().getSimpleName();
+	}
+	protected PrimitiveFunction getThis(){
+		return this;
 	}
 	PrimitiveFunction(Point pos, Variable parent){
 		super();
 		this.type = parent.dataType;
 		this.parentVar = parent;
+		this.parentVar.addChild(this);
 		this.color = Main.colors.get(parent.dataType);
-		this.body.setLayout(new FlowLayout(FlowLayout.LEFT));
-		this.text = parent.nameField.getText()+": "+getFunctionName();
-		label = new JLabel(text);
-		this.body.add(label);
 		
-		if(getInputs() != null){
-			for(Variable.DataType dt : getInputs()){
-				this.inputNodes.add(new Node(Node.Direction.NORTH,Node.NodeType.RECIEVING,this,dt));
-			}
+		SwingUtilities.invokeLater(new Runnable() {
+	        @Override
+	        public void run() {
+				body.setLayout(new GridBagLayout());
+		        GridBagConstraints gbc = new GridBagConstraints();
+		        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+				label = new JLabel();
+				setText(parentVar.nameField.getText());
+				body.add(label,gbc);
+				
+				if(getInputs() != null){
+					for(Variable.DataType dt : getInputs()){
+						addInputNode(new Node(Node.NodeType.RECIEVING,getThis(),dt,false));
+					}
+				}
+				if(getOutputs() != null){
+					for(Variable.DataType dt : getOutputs()){
+						boolean b = (dt != Variable.DataType.GENERIC);
+						addOutputNode(new Node(Node.NodeType.SENDING,getThis(),dt,b));
+					}
+				}
+				
+				setBounds(new Rectangle(pos,getSize()));
+				Main.panel.add(getThis());
+	        }});
+	}
+	
+	public void setText(String s) {
+		this.text = crop(s,15)+": "+crop(getFunctionName(),15);
+		label.setText(text);
+		this.setSize(this.getSize());
+	}
+	private String crop(String s, int i){
+		if(s.length() <= i){
+			return s;
 		}
-		if(getOutputs() != null){
-			for(Variable.DataType dt : getOutputs()){
-				this.outputNodes.add(new Node(Node.Direction.NORTH,Node.NodeType.RECIEVING,this,dt));
-			}
-		}
-		
-		this.setBounds(new Rectangle(pos,this.getSize()));
-		Main.panel.add(this);
+		return s.substring(0, i-2)+"...";
 	}
 	PrimitiveFunction() {
 		super();
 	}
 
+	public void removeFromParent(){
+		parentVar.removeChild(this);
+	}
+	
 	@Override
 	public Dimension getSize(){
-		return new Dimension(Math.max(60,this.getPreferredSize().width),40);
-	}
-	@Override
-	public void paintComponent(Graphics g){
-		Graphics2D g2 = (Graphics2D) g;
-		GradientPaint gradient = new GradientPaint(0, 
-				0, 
-				color,
-				0, 
-				this.getHeight()/2,
-				new Color(20,20,20,127),true);
-		
-		g2.setPaint(gradient);
-	    g2.fill(new RoundRectangle2D.Double(0, 0, this.getSize().width, this.getSize().height, 20, 20));
-	    g2.setPaint(Color.black);
+		return new Dimension(Math.max(60,this.getPreferredSize().width),
+				30+inputNodeHolder.getPreferredSize().height+outputNodeHolder.getPreferredSize().height);
 	}
 }

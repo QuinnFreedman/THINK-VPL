@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,68 +7,104 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
-class VBoolean extends Variable{
-	static String name = "Boolean";
+public class VBoolean extends Variable{
+	private static final long serialVersionUID = 1L;
+	static final String name = "Int";
 	static int idCounter = 0;
 	boolean value = false;
 	VBoolean(){
 		super();
-		this.dataType = Variable.DataType.BOOLEAN;
-		this.headerLabel.setText(name);
-		this.id = "Bool"+Integer.toString(idCounter);
-		idCounter++;
-		this.color = Main.colors.get(this.dataType);
-		this.valueField.setText(Boolean.toString(value));
+		this.dataType = DataType.BOOLEAN;
+		this.typeField.setText(getSymbol());
+		this.typeField.setBackground(Main.colors.get(this.dataType));
+		this.typeField.setEditable(false);
+		this.typeField.setFocusable(false);
+		
 		new BooleanDocumentFilter((AbstractDocument) valueField.getDocument());
-		this.width = 12;
-		this.height = 5;
-		this.position = getFreePosition();
-		this.borderWidth = 10;
-		this.setBounds(this.position.x*Main.gridWidth, this.position.y*Main.gridWidth, this.width*Main.gridWidth, this.height*Main.gridWidth);
-		Main.panel.add(this);
-		Main.panel.repaint();
-		Main.panel.revalidate();
+		
+		this.valueField.setText(Boolean.toString(value));
+		
+		//this.functions = new ArrayList<Class<? extends PrimitiveFunction>>();
+		//this.functions.add(set.class);
+		//this.functions.add(subtractFrom.class);
 		this.functions.add(new Get());
 		this.functions.add(new Set());
 		this.functions.add(new Toggle());
 	}
-	public VBoolean(Point p) {
-		this();
-		//this.position = p;
-		this.setBounds(p.x, p.y, this.width*Main.gridWidth, this.height*Main.gridWidth);
-	}
+	
 	@Override
 	protected void setValue(String s){
-		value = (s.equals("true") || s.equals("True") || s.equals("TRUE"));
+		value = s.equals("true");
 		valueField.getDocument().removeDocumentListener(this);
 	}
 	
-	static class Get extends VariableFunction{
-		public ArrayList<Variable.DataType> input = new ArrayList<Variable.DataType>();
-		Get(Point pos, Node parentNode, Variable parent) {
-			super(pos, Variable.DataType.BOOLEAN, parentNode, parent, null, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.BOOLEAN)));
+	static class Get extends PrimitiveFunction{
+		private static final long serialVersionUID = 1L;
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.BOOLEAN));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.OUT;};
+		@Override
+		public VariableData execute(VariableData... input){
+			return getParentVar().varData;
+		}
+		Get(Point pos, Variable parent) {
+			super(pos, parent);
 		}
 		Get(){
 			super();
 		}
 		
 	}
-	static class Set extends VariableFunction{
-		public ArrayList<Variable.DataType> input = new ArrayList<Variable.DataType>();
-		Set(Point pos, Node parentNode, Variable parent) {
-			super(pos, Variable.DataType.BOOLEAN, parentNode, parent, new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.BOOLEAN)),null);
+	static class Set extends PrimitiveFunction{
+		private static final long serialVersionUID = 1L;
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.GENERIC,DataType.BOOLEAN));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.GENERIC));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.IN;};
+		@Override
+		public VariableData execute(VariableData... input){
+			getParentVar().varData = input[0];
+			return null;
+		}
+		Set(Point pos, Variable parent) {
+			super(pos, parent);
 		}
 		Set(){
 			super();
 		}
 		
 	}
-	static class Toggle extends VariableFunction{
-		Toggle(Point pos, Node parentNode, Variable parent) {
-			super(pos, Variable.DataType.BOOLEAN, parentNode, parent, new ArrayList<Variable.DataType>(),null);
+	static class Toggle extends PrimitiveFunction{
+		private static final long serialVersionUID = 1L;
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(DataType.GENERIC));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.GENERIC));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.IN;};
+		@Override
+		public VariableData execute(VariableData... input){
+			((VariableData.Boolean) getParentVar().varData).value = !(((VariableData.Boolean) getParentVar().varData).value);
+			return null;
+		}
+		Toggle(Point pos, Variable parent) {
+			super(pos, parent);
 		}
 		Toggle(){
-			super();//TODO fix toggle input
+			super();
 		}
 		
 	}
