@@ -1,5 +1,4 @@
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 
@@ -9,6 +8,8 @@ public class Cast extends Executable{
 	private static final long serialVersionUID = 1L;
 	private Node sendingNode;
 	private Node recievingNode;
+	private Variable.DataType input;
+	private Variable.DataType output;
 	protected Cast getThis(){
 		return this;
 	}
@@ -25,6 +26,8 @@ public class Cast extends Executable{
 				Node outputNode = new Node(Node.NodeType.SENDING, getThis(), recievingNode.dataType,true);
 				addInputNode(inputNode);
 				addOutputNode(outputNode);
+				input = inputNode.dataType;
+				output = outputNode.dataType;
 				setBounds(new Rectangle(
 						new Point(
 								((Node.getLocationOnPanel(recievingNode).x+(recievingNode.getPreferredSize().width/2))+(Node.getLocationOnPanel(sendingNode).x+(sendingNode.getPreferredSize().width/2)))/2 - getThis().getSize().width/2, 
@@ -46,8 +49,9 @@ public class Cast extends Executable{
 	public static boolean isCastable(Variable.DataType dataType, Variable.DataType dataType2) {
 		
 		if((isNumber(dataType) && isNumber(dataType2)) ||
-				(dataType == Variable.DataType.CHARACTER && dataType == Variable.DataType.STRING) ||
-				(dataType == Variable.DataType.BOOLEAN && dataType == Variable.DataType.INTEGER)
+				(dataType == Variable.DataType.CHARACTER && dataType2 == Variable.DataType.STRING) ||
+				(dataType == Variable.DataType.BOOLEAN && dataType2 == Variable.DataType.INTEGER) ||
+				(dataType2 == Variable.DataType.STRING)
 		){
 			return true;
 		}
@@ -55,7 +59,10 @@ public class Cast extends Executable{
 		return false;
 	}
 	@Override
-	public VariableData execute(VariableData... inputs){
+	public VariableData execute(VariableData[] inputs){
+		if(this.output == Variable.DataType.STRING){
+			return new VariableData.String(inputs[0].getValueAsString());
+		}
 		switch(this.sendingNode.dataType){
 		case BOOLEAN:
 			switch(this.recievingNode.dataType){

@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	private static final long serialVersionUID = 1L;
@@ -24,6 +26,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	VObject parentObject;
 	Direction facing;
 	NodeType type;
+	private static JPopupMenu nodePopup;
 	boolean canHaveMultipleInputs = true;
 	boolean isHover = false;
 	public Variable.DataType dataType;
@@ -132,8 +135,53 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		return size;
 	}
 	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		if(Main.altPressed){
+	public void mouseClicked(MouseEvent e) {
+		if(Debug.isStepping()){
+			
+			String s = "";
+			
+			Node recievingNode;
+			
+			if(this.dataType == Variable.DataType.GENERIC){
+				return;
+			}
+			if(this.type == NodeType.RECIEVING){
+				recievingNode = this;
+			}else/* if(this.children != null && this.parents.size() == 1){
+				sendingNode = this.parents.get(0);
+			}else*/{
+				return;
+			}
+			
+			if(((Executable) recievingNode.parentObject).workingData != null && !((Executable) recievingNode.parentObject).workingData.isEmpty()){
+				int index = 
+						((Executable) recievingNode.parentObject).getInputNodes().indexOf(recievingNode)
+						-((((Executable) recievingNode.parentObject).getInputNodes().get(0).dataType == Variable.DataType.GENERIC) ? 1 : 0);
+				
+				ArrayList<VariableData> workingData = ((Executable) recievingNode.parentObject).workingData;
+				if(index < workingData.size()){
+					VariableData data = workingData.get(index);
+					s = data.getValueAsString();
+					if(data.getClass() == VariableData.String.class){
+						s = "\""+s+"\"";
+					}else if(data.getClass() == VariableData.Charecter.class){
+						s = "\'"+s+"\'";
+					}
+				}else{
+					s = "undefined";
+				}
+			}else{
+				s = "undefined";
+			}
+			
+			nodePopup = new JPopupMenu();
+			
+			JMenuItem popupAdd = new JMenuItem(s);
+			nodePopup.add(popupAdd);
+			
+			nodePopup.show(this, e.getX(), e.getY());
+			
+		}else if(Main.altPressed){
 			clearChildren(this);
 		}
 	}
@@ -150,6 +198,8 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	}
 	@Override
 	public void mousePressed(MouseEvent arg0) {
+		if(Debug.isStepping())
+			return;
 		currentlyDragging = this;
 		this.addMouseMotionListener(this);
 	}
@@ -157,6 +207,8 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	public void mouseReleased(MouseEvent e) {
 		currentlyDragging = null;
 		this.removeMouseMotionListener(this);
+		if(Debug.isStepping())
+			return;
 		Point mouse = getLocationOnPanel(e);
 		Rectangle rect = new Rectangle();
 		for(Node node : Main.nodes){

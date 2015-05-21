@@ -37,14 +37,21 @@ public class VInt extends Variable{
 		this.functions.add(new Multiply_By());
 		this.functions.add(new Incrament());//TODO use classes instead of instances
 		
-		this.varData = new VariableData.Integer();
+		resetVariableData();
+	}
+	@Override
+	public void resetVariableData(){
+		this.varData = new VariableData.Integer(value);
 	}
 	
 	@Override
 	protected void setValue(String s){
-		value = (s.length() == 0) ? 0 : Integer.parseInt(s);
-		if(varData != null)
-			((VariableData.Integer) varData).value = value;
+		if(s.length() > 0){
+			value = Integer.parseInt(s);
+		}else{
+			value = 0;
+		}
+		resetVariableData();
 	}
 	
 	static class Get extends PrimitiveFunction{
@@ -57,7 +64,7 @@ public class VInt extends Variable{
 		public Mode getPrimairyMode(){return Mode.OUT;};
 		
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			return getParentVar().varData;
 			
 		}
@@ -83,7 +90,7 @@ public class VInt extends Variable{
 		public Mode getPrimairyMode(){return Mode.IN;};
 		
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			getParentVar().varData = input[0];
 			return null;
 			
@@ -109,7 +116,7 @@ public class VInt extends Variable{
 		@Override
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			((VariableData.Integer) getParentVar().varData).value += ((VariableData.Integer) input[0]).value;
 			return null;
 		}
@@ -134,7 +141,7 @@ public class VInt extends Variable{
 		@Override
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			((VariableData.Integer) getParentVar().varData).value *= ((VariableData.Integer) input[0]).value;
 			return null;
 		}
@@ -159,7 +166,7 @@ public class VInt extends Variable{
 		@Override
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			((VariableData.Integer) getParentVar().varData).value++;
 			return null;
 		}

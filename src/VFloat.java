@@ -12,7 +12,6 @@ public class VFloat extends Variable{
 	VFloat(){
 		super();
 		this.dataType = DataType.FLOAT;
-		varData = new VariableData.Float();
 		this.typeField.setText(getSymbol());
 		this.typeField.setBackground(Main.colors.get(this.dataType));
 		this.typeField.setEditable(false);
@@ -29,13 +28,22 @@ public class VFloat extends Variable{
 		this.functions.add(new Set());
 		this.functions.add(new Add_To());
 		this.functions.add(new Multiply_By());
+		
+		resetVariableData();
+	}
+	@Override
+	public void resetVariableData(){
+		this.varData = new VariableData.Float(value);
 	}
 	
 	@Override
 	protected void setValue(String s){
-		value = Float.parseFloat(s);
-		if(varData != null)
-			((VariableData.Float) varData).value = value;
+		if(s.length() > 0){
+			value = Float.parseFloat(s);
+		}else{
+			value = 0;
+		}
+		resetVariableData();
 	}
 	
 	static class Get extends PrimitiveFunction{
@@ -47,7 +55,7 @@ public class VFloat extends Variable{
 		@Override
 		public Mode getPrimairyMode(){return Mode.OUT;};
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			return getParentVar().varData;
 		}
 		Get(Point pos, Variable parent) {
@@ -71,7 +79,7 @@ public class VFloat extends Variable{
 		@Override
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			getParentVar().varData = input[0];
 			return null;
 		}
@@ -96,7 +104,7 @@ public class VFloat extends Variable{
 		@Override
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			((VariableData.Float) getParentVar().varData).value += ((VariableData.Float) input[0]).value;
 			return null;
 		}
@@ -121,7 +129,7 @@ public class VFloat extends Variable{
 		@Override
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			((VariableData.Float) getParentVar().varData).value *= ((VariableData.Float) input[0]).value;
 			return null;
 		}

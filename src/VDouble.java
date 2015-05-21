@@ -15,7 +15,6 @@ public class VDouble extends Variable{
 	VDouble(){
 		super();
 		this.dataType = DataType.DOUBLE;
-		varData = new VariableData.Double();
 		this.typeField.setText(getSymbol());
 		this.typeField.setBackground(Main.colors.get(this.dataType));
 		this.typeField.setEditable(false);
@@ -29,13 +28,22 @@ public class VDouble extends Variable{
 		this.functions.add(new Set());
 		this.functions.add(new Add_To());
 		this.functions.add(new Multiply_By());
+
+		resetVariableData();
+	}
+	@Override
+	public void resetVariableData(){
+		this.varData = new VariableData.Double(value);
 	}
 	
 	@Override
 	protected void setValue(String s){
-		value = Double.parseDouble(s);
-		if(varData != null)
-			((VariableData.Double) varData).value = value;
+		if(s.length() > 0){
+			value = Double.parseDouble(s);
+		}else{
+			value = 0;
+		}
+		resetVariableData();
 	}
 	
 	static class Get extends PrimitiveFunction{
@@ -47,7 +55,7 @@ public class VDouble extends Variable{
 		@Override
 		public Mode getPrimairyMode(){return Mode.OUT;};
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			return getParentVar().varData;
 		}
 		Get(Point pos, Variable parent) {
@@ -71,7 +79,7 @@ public class VDouble extends Variable{
 		@Override
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			getParentVar().varData = input[0];
 			return null;
 		}
@@ -96,7 +104,7 @@ public class VDouble extends Variable{
 		@Override
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			((VariableData.Double) getParentVar().varData).value += ((VariableData.Double) input[0]).value;
 			return null;
 		}
@@ -121,7 +129,7 @@ public class VDouble extends Variable{
 		@Override
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			((VariableData.Double) getParentVar().varData).value *= ((VariableData.Double) input[0]).value;
 			return null;
 		}
@@ -158,11 +166,11 @@ public class VDouble extends Variable{
 		@Override
 		public void replace(DocumentFilter.FilterBypass fb, int offset, int length, String text,
 			AttributeSet attrs) throws BadLocationException {
-			StringBuilder sb = new StringBuilder();
+			String sb = "";
 			for(int i = 0; i < text.length(); i++){
 				char c = text.charAt(i);
-				if(Character.isDigit(c) || c == '.'){
-					sb.append(c);
+				if(Character.isDigit(c) || (c == '.' && !(sb.contains(".") || doc.getText(0, doc.getLength()).contains(".")))){
+					sb += c;
 				}
 			}
 			text = sb.toString();

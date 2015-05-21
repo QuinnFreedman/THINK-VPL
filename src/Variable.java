@@ -3,7 +3,6 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.swing.JRadioButton;
 import javax.swing.border.Border;
@@ -13,11 +12,13 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
 public class Variable extends SidebarItem implements DocumentListener, ContainsChildFunctions{
+	private static final long serialVersionUID = 1L;
+	
 	InputPane valueField;
 	DataType dataType;
 	VariableData varData;
 	static final Border bodyPadding = new EmptyBorder(5,10,5,10);
-	protected ArrayList<PrimitiveFunction> functions = new ArrayList<PrimitiveFunction>();//TODO use classes
+	protected ArrayList<PrimitiveFunction> functions = new ArrayList<PrimitiveFunction>();
 	private ArrayList<PrimitiveFunction> children = new ArrayList<PrimitiveFunction>();
 	protected PrimitiveChildPicker childPicker;
 	public void removeChild(PrimitiveFunction pf){
@@ -27,12 +28,14 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 		children.add(pf);
 	}
 	public void clearChildren(){
-		Iterator itr = this.children.iterator();
 		while(children.size() > 0) {
 			children.get(0).delete();
 		}
 		if(childPicker != null)
 			childPicker.delete();
+	}
+	public void resetVariableData(){
+		this.varData = null;
 	}
 	private Variable getThis(){
 		return this;
@@ -41,10 +44,6 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 		super();
 		
 		this.type = Type.VARIABLE;
-		
-		//TODO if is object w/ children, add all children to body, set body visible
-		
-		//JPanel body = new JPanel(new FlowLayout());
 		
 		nameField.getDocument().addDocumentListener(new NameDocListener(this));
 		
@@ -104,6 +103,13 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 		});
 		header.add(drag);
 		
+	}
+	
+	@Override
+	public void setEditable(boolean b){
+		for(int i = 1; i < fields.size(); i++){
+			fields.get(i).setEditable(b);
+		}
 	}
 	
 	protected void setValue(String s){

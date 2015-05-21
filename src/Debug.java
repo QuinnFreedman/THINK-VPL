@@ -3,11 +3,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 
 public class Debug{
 	
 	private static ArrayList<Executable> stack;
 	private static boolean isStepping = false;
+	public static Console console;
 	
 	public static boolean isStepping() {
 		return isStepping;
@@ -15,19 +17,26 @@ public class Debug{
 	
 	private static void startStep(){
 		System.out.println("Start Stepping");
-		stack = new ArrayList<Executable>(Arrays.asList(Main.entryPoint));
+		Main.addVar.setEnabled(false);
+		for(Variable var : Main.variables){
+			var.setEditable(false);
+			var.resetVariableData();
+		}
+		if(console == null){
+			console = new Console();
+		}
+		console.clear();
+		console.setVisible(true);
+		Main.panel.requestFocus();
 		isStepping = true;
+		stack = new ArrayList<Executable>(Arrays.asList(Main.entryPoint));
 		stack.get(0).setBorder(BorderFactory.createLineBorder(Color.yellow, 2));
 		
 		for(VObject o : Main.objects){
 			if(o instanceof Executable){
 				System.out.println(o);
 				Executable o2 = ((Executable) o);
-				if(o2.getClass() == Cast.class || o2 instanceof Arithmetic){
-					o2.activeNode = 0;
-				}else{
-					o2.activeNode = 1;
-				}
+				resetActiveNode(o2);
 				o2.workingData = new ArrayList<VariableData>();
 				System.out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
 				
@@ -35,12 +44,24 @@ public class Debug{
 		}
 	}
 	
+	private static void resetActiveNode(Executable o2){
+		if(o2.getClass() == Cast.class || o2 instanceof Arithmetic){
+			o2.activeNode = 0;
+		}else{
+			o2.activeNode = 1;
+		}
+	}
+	
 	protected static void exit() {
 		isStepping = false;
+		Main.addVar.setEnabled(true);
 		for(VObject o : Main.objects){
 			if(o instanceof Executable){
 				((Executable) o).setBorder(null);
 			}
+		}
+		for(Variable var : Main.variables){
+			var.setEditable(true);
 		}
 	}
 	
@@ -56,6 +77,7 @@ public class Debug{
 		System.out.println("activeNode "+getTop().activeNode);
 		System.out.println("inputs "+getTop().getInputNodes().size());
 		if(getTop().activeNode >= getTop().getInputNodes().size()){
+			System.out.println("failed: activeNode > input nodes");
 			return false;
 		}
 		
@@ -63,12 +85,16 @@ public class Debug{
 		System.out.println("parents "+parents);
 		
 		if(parents.isEmpty()){
+			System.out.println("falied: parents is empty; exiting...");
 			exit();
 			return false;
 		}
 		Executable next = (Executable) parents.get(0).parentObject;
 		getTop().activeNode++;
-				
+		
+		next.workingData.clear();
+		resetActiveNode(next);
+		
 		getTop().setBorder(null);
 		stack.add(next);
 		next.setBorder(BorderFactory.createLineBorder(Color.yellow, 2));
@@ -78,11 +104,16 @@ public class Debug{
 	
 	private static void moveDownStack(){
 		if(stack.isEmpty()){
+			System.out.println("stack is empty; exiting...");
 			exit();
 			return;
 		}
 		System.out.println("executing "+getTop().getClass().getName());
-		System.out.println( getTop().workingData);
+		System.out.print(getTop().getClass().getName()+" workingData = ");
+		for(VariableData var : getTop().workingData){
+			System.out.print(var.getValueAsString());
+		}
+		System.out.println();
 		VariableData[] array = new VariableData[getTop().workingData.size()];
 		array = getTop().workingData.toArray(array);
 		VariableData execute = getTop().execute(array);
@@ -93,6 +124,8 @@ public class Debug{
 			Executable next = getNext(getTop());
 			stack.remove(stack.size()-1);
 			if(next != null){
+				next.workingData.clear();
+				resetActiveNode(next);
 				stack.add(next);
 			}else{
 				exit();

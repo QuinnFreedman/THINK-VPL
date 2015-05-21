@@ -1,4 +1,9 @@
 class VariableData{
+	
+	public java.lang.String getValueAsString(){
+		return null;
+	}
+	
 	static class Integer extends VariableData{
 		int value = 0;
 		public Integer(int input) {
@@ -6,6 +11,10 @@ class VariableData{
 		}
 		public Integer(){
 			
+		}
+		@Override
+		public java.lang.String getValueAsString(){
+			return java.lang.Integer.toString(value);
 		}
 	}
 	static class Double extends VariableData{
@@ -16,6 +25,10 @@ class VariableData{
 		public Double(){
 			
 		}
+		@Override
+		public java.lang.String getValueAsString(){
+			return java.lang.Double.toString(value);
+		}
 	}
 	static class Float extends VariableData{
 		float value = 0;
@@ -24,6 +37,10 @@ class VariableData{
 		}
 		public Float(){
 			
+		}
+		@Override
+		public java.lang.String getValueAsString(){
+			return java.lang.Float.toString(value);
 		}
 	}
 	static class Long extends VariableData{
@@ -34,6 +51,10 @@ class VariableData{
 		public Long(){
 			
 		}
+		@Override
+		public java.lang.String getValueAsString(){
+			return java.lang.Long.toString(value);
+		}
 	}
 	static class Short extends VariableData{
 		short value = 0;
@@ -42,6 +63,10 @@ class VariableData{
 		}
 		public Short(){
 			
+		}
+		@Override
+		public java.lang.String getValueAsString(){
+			return java.lang.Short.toString(value);
 		}
 	}
 	static class Byte extends VariableData{
@@ -52,6 +77,10 @@ class VariableData{
 		public Byte(){
 			
 		}
+		@Override
+		public java.lang.String getValueAsString(){
+			return java.lang.Byte.toString(value);
+		}
 	}
 	static class Boolean extends VariableData{
 		boolean value = false;
@@ -60,6 +89,10 @@ class VariableData{
 		}
 		public Boolean(){
 			
+		}
+		@Override
+		public java.lang.String getValueAsString(){
+			return java.lang.Boolean.toString(value);
 		}
 	}
 	static class String extends VariableData{
@@ -70,6 +103,10 @@ class VariableData{
 		public String(){
 			
 		}
+		@Override
+		public java.lang.String getValueAsString(){
+			return value;
+		}
 	}
 	static class Charecter extends VariableData{
 		char value = ' ';
@@ -78,6 +115,10 @@ class VariableData{
 		}
 		public Charecter(){
 			
+		}
+		@Override
+		public java.lang.String getValueAsString(){
+			return java.lang.Character.toString(value);
 		}
 	}
 }

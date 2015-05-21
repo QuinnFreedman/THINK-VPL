@@ -15,7 +15,6 @@ public class VBoolean extends Variable{
 	VBoolean(){
 		super();
 		this.dataType = DataType.BOOLEAN;
-		varData = new VariableData.Boolean();
 		this.typeField.setText(getSymbol());
 		this.typeField.setBackground(Main.colors.get(this.dataType));
 		this.typeField.setEditable(false);
@@ -25,19 +24,21 @@ public class VBoolean extends Variable{
 		
 		this.valueField.setText(Boolean.toString(value));
 		
-		//this.functions = new ArrayList<Class<? extends PrimitiveFunction>>();
-		//this.functions.add(set.class);
-		//this.functions.add(subtractFrom.class);
 		this.functions.add(new Get());
 		this.functions.add(new Set());
 		this.functions.add(new Toggle());
+
+		resetVariableData();
+	}
+	@Override
+	public void resetVariableData(){
+		this.varData = new VariableData.Boolean(value);
 	}
 	
 	@Override
 	protected void setValue(String s){
 		value = s.equals("true");
-		if(varData != null)
-			((VariableData.Boolean) varData).value = value;
+		resetVariableData();
 	}
 	
 	static class Get extends PrimitiveFunction{
@@ -49,7 +50,7 @@ public class VBoolean extends Variable{
 		@Override
 		public Mode getPrimairyMode(){return Mode.OUT;};
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			return getParentVar().varData;
 		}
 		Get(Point pos, Variable parent) {
@@ -73,7 +74,7 @@ public class VBoolean extends Variable{
 		@Override
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			getParentVar().varData = input[0];
 			return null;
 		}
@@ -98,7 +99,7 @@ public class VBoolean extends Variable{
 		@Override
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
-		public VariableData execute(VariableData... input){
+		public VariableData execute(VariableData[] input){
 			((VariableData.Boolean) getParentVar().varData).value = !(((VariableData.Boolean) getParentVar().varData).value);
 			return null;
 		}

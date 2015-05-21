@@ -160,6 +160,13 @@ public class SidebarItem extends JPanel{
 		this();
 		this.type = t;
 	}
+	
+	public void setEditable(boolean b){
+		for(InputPane ip : fields){
+			ip.setEditable(b);
+		}
+	}
+	
 	@Override
 	public Dimension getMaximumSize(){
 		return new Dimension(32767,this.getPreferredSize().height);
@@ -242,6 +249,13 @@ public class SidebarItem extends JPanel{
 							newBool);
 					Main.updateVars();
 					newBool.nameField.requestFocusInWindow();
+				}else if(this.getText().toLowerCase().equals("s") || this.getText().toLowerCase().equals("st") || this.getText().toLowerCase().equals("str") || this.getText().toLowerCase().equals("string")){
+					VString newStr = new VString();
+					Main.variables.set(
+							Main.variables.indexOf(sidebarItemParent),
+							newStr);
+					Main.updateVars();
+					newStr.nameField.requestFocusInWindow();
 				}else{
 					return;
 				}

@@ -29,7 +29,7 @@ public class VObject extends JPanel implements MouseInputListener{
 		this.addMouseListener(this);
 		this.setOpaque(false);
 		this.setLayout(new BorderLayout());
-
+		
 		Main.componentMover.registerComponent(this);
 		body = new JPanel();
 		body.setOpaque(false);
@@ -37,6 +37,9 @@ public class VObject extends JPanel implements MouseInputListener{
 	}
 	
 	public void delete(){
+		if(Debug.isStepping() && this.getClass() != PrimitiveChildPicker.class)
+			return;
+		
 		if(this instanceof PrimitiveFunction){
 			((PrimitiveFunction) this).removeFromParent();
 		}
@@ -46,14 +49,27 @@ public class VObject extends JPanel implements MouseInputListener{
 		Curve c = null;
 		while(itr.hasNext()){
 			c = itr.next();
+			Node nodeCut = null;
 			if(c.isNode[0] && c.nodes[0].parentObject == this){
 				itr.remove();
-				c.nodes[0].onDisconnect();
+				nodeCut = c.nodes[0];
 			}else if(c.isNode[1] && c.nodes[1].parentObject == this){
 				itr.remove();
-				c.nodes[1].onDisconnect();
+				nodeCut = c.nodes[1];
+			}
+			
+			if(nodeCut != null){
+				for(Node node : nodeCut.children){
+					node.parents.remove(nodeCut);
+				}
+				for(Node node : nodeCut.parents){
+					node.children.remove(nodeCut);
+				}
+				nodeCut.onDisconnect();
 			}
 		}
+		
+		
 		Iterator<Node> itrN = Main.nodes.iterator();
 		Node n = null;
 		while(itrN.hasNext()){

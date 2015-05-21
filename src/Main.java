@@ -54,6 +54,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 	 */
 	static ComponentMover componentMover;
 	static JPanel panel;
+	static JButton addVar;
 	private static JPanel vars;
 	private static JPopupMenu panelPopup;
 	private static Point clickLocation;
@@ -65,6 +66,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 		colors.put(Variable.DataType.INTEGER, Color.red);
 		colors.put(Variable.DataType.DOUBLE, new Color(196,0,167));
 		colors.put(Variable.DataType.FLOAT, new Color(207,0,91));
+		colors.put(Variable.DataType.STRING, new Color(1,162,1));
 		colors.put(Variable.DataType.GENERIC, Color.WHITE);
 		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
@@ -111,7 +113,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				window.setLocationRelativeTo(null);
 				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				
-			
+				
 				try {
 					UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceGraphiteLookAndFeel");
 				} catch (ClassNotFoundException | InstantiationException
@@ -207,7 +209,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				BoxLayout layout = new BoxLayout(vars, BoxLayout.Y_AXIS);
 				vars.setLayout(layout);
 				
-				JButton addVar = new JButton("+");
+				addVar = new JButton("+");
 				addVar.setPreferredSize(new Dimension(30,addVar.getPreferredSize().height));
 				//addVar.setFocusable(false);
 				varButtonHolder.add(addVar);
@@ -282,6 +284,10 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				
 				panelPopup.addSeparator();
 				
+				JMenuItem popupLog = new JMenuItem("Log");
+				popupLog.addActionListener(THIS);
+				panelPopup.add(popupLog);
+				
 				JMenuItem popupMath = new JMenuItem("Math");
 				popupMath.addActionListener(THIS);
 				panelPopup.add(popupMath);
@@ -331,6 +337,11 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 			objects.add(new Arithmetic.MultiplyDouble(Variable.DataType.DOUBLE,p));
 		}else if(c == "Divide"){
 			objects.add(new Arithmetic.DivideDouble(Variable.DataType.DOUBLE,p));
+		}else if(c == "Log"){
+			if(Debug.console == null){
+				Debug.console = new Console();
+			}
+			objects.add(Debug.console.new Log(p));
 		}else{
 			System.out.println("null Action:"+c);
 		}
