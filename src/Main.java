@@ -17,7 +17,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -56,9 +55,11 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 	static JPanel panel;
 	static JButton addVar;
 	private static JPanel vars;
+	private JScrollPane scrollVars;
 	private static JPopupMenu panelPopup;
 	private static Point clickLocation;
 	public static EntryPoint entryPoint;
+	
 	
 	public static void main(String[] args){
 		new Main();
@@ -68,6 +69,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 		colors.put(Variable.DataType.FLOAT, new Color(207,0,91));
 		colors.put(Variable.DataType.STRING, new Color(1,162,1));
 		colors.put(Variable.DataType.GENERIC, Color.WHITE);
+		colors.put(Variable.DataType.NUMBER, Color.GRAY);
 		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 
@@ -144,38 +146,44 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				JMenu mnEdit = new JMenu("Edit");
 				menuBar.add(mnEdit);
 				
-				JMenu mnAdd = new JMenu("Add");
-				menuBar.add(mnAdd);
+				JMenu mnVariable = new JMenu("Variable");
+				menuBar.add(mnVariable);
 				
-				JMenuItem mntmBoolean = new JMenuItem("Boolean");
-				mntmBoolean.addActionListener(THIS);
-				mnAdd.add(mntmBoolean);
+				JMenuItem mntmNewInteger = new JMenuItem("New Integer");
+				mntmNewInteger.addActionListener(THIS);
+				mnVariable.add(mntmNewInteger);
 				
-				JMenuItem mntmInt = new JMenuItem("Integer");
-				mntmInt.addActionListener(THIS);
-				mnAdd.add(mntmInt);
+				JMenuItem mntmNewFloat = new JMenuItem("New Float");
+				mntmNewFloat.addActionListener(THIS);
+				mnVariable.add(mntmNewFloat);
 				
-				JMenuItem mntmDouble = new JMenuItem("Double");
-				mntmDouble.addActionListener(THIS);
-				mnAdd.add(mntmDouble);
+				JMenuItem mntmNewDouble = new JMenuItem("New Double");
+				mntmNewDouble.addActionListener(THIS);
+				mnVariable.add(mntmNewDouble);
 				
-				mnAdd.addSeparator();
+				JMenuItem mntmNewLong = new JMenuItem("New Long");
+				mntmNewLong.addActionListener(THIS);
+				mnVariable.add(mntmNewLong);
 				
-				JMenuItem mntmMath = new JMenuItem("Math");
-				mntmMath.addActionListener(THIS);
-				mnAdd.add(mntmMath);
+				JMenuItem mntmNewShort = new JMenuItem("New Short");
+				mntmNewShort.addActionListener(THIS);
+				mnVariable.add(mntmNewShort);
 				
-				JMenuItem mntmFunction = new JMenuItem("Function");
-				mntmFunction.addActionListener(THIS);
-				mnAdd.add(mntmFunction);
+				JMenuItem mntmNewByte = new JMenuItem("New Byte");
+				mntmNewByte.addActionListener(THIS);
+				mnVariable.add(mntmNewByte);
 				
-				JMenuItem mntmTimeline = new JMenuItem("Timeline");
-				mntmTimeline.addActionListener(THIS);
-				mnAdd.add(mntmTimeline);
+				JMenuItem mntmNewBoolean = new JMenuItem("New Boolean");
+				mntmNewBoolean.addActionListener(THIS);
+				mnVariable.add(mntmNewBoolean);
 				
-				JMenuItem mntmBlueprint = new JMenuItem("Blueprint");
-				mntmBlueprint.addActionListener(THIS);
-				mnAdd.add(mntmBlueprint);
+				JMenuItem mntmNewString = new JMenuItem("New String");
+				mntmNewString.addActionListener(THIS);
+				mnVariable.add(mntmNewString);
+				
+				JMenuItem mntmNewCharacter = new JMenuItem("new Character");
+				mntmNewCharacter.addActionListener(THIS);
+				mnVariable.add(mntmNewCharacter);
 				
 				JMenu mnHelp = new JMenu("Help");
 				menuBar.add(mnHelp);
@@ -205,7 +213,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				varsHeader.add(varButtonHolder, BorderLayout.EAST);
 				
 				vars = new JPanel();
-				JScrollPane scrollVars = new JScrollPane(vars);
+				scrollVars = new JScrollPane(vars);
 				BoxLayout layout = new BoxLayout(vars, BoxLayout.Y_AXIS);
 				vars.setLayout(layout);
 				
@@ -326,25 +334,54 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 		Point p;
 		if(((JComponent) e.getSource()).getParent() == panelPopup){
 			p = clickLocation;
+			if(c == "Add"){
+				objects.add(new Arithmetic.AddDouble(Variable.DataType.DOUBLE,p));
+			}else if(c == "Subtract"){
+				objects.add(new Arithmetic.Subtract(Variable.DataType.DOUBLE,p));
+			}else if(c == "Multiply"){
+				objects.add(new Arithmetic.Multiply(Variable.DataType.DOUBLE,p));
+			}else if(c == "Divide"){
+				objects.add(new Arithmetic.Divide(Variable.DataType.DOUBLE,p));
+			}else if(c == "Log"){
+				if(Debug.console == null){
+					Debug.console = new Console();
+				}
+				objects.add(Debug.console.new Log(p));
+			}else{
+				System.out.println("null Action:"+c);
+			}
 		}else{
 			p = VObject.getFreePosition();
-		}
-		if(c == "Add"){
-			objects.add(new Arithmetic.AddDouble(Variable.DataType.DOUBLE,p));
-		}else if(c == "Subtract"){
-			objects.add(new Arithmetic.SubtractDouble(Variable.DataType.DOUBLE,p));
-		}else if(c == "Multiply"){
-			objects.add(new Arithmetic.MultiplyDouble(Variable.DataType.DOUBLE,p));
-		}else if(c == "Divide"){
-			objects.add(new Arithmetic.DivideDouble(Variable.DataType.DOUBLE,p));
-		}else if(c == "Log"){
-			if(Debug.console == null){
-				Debug.console = new Console();
+			if(c == "New Integer"){
+				Main.variables.add(0, new VInt());updateVars();
+				updateVars();
+				scrollVars.getViewport().setViewPosition(new Point(0,0));
+				Main.variables.get(0).nameField.requestFocusInWindow();
+			}else if(c == "New Double"){
+				Main.variables.add(0, new VDouble());
+				updateVars();
+				scrollVars.getViewport().setViewPosition(new Point(0,0));
+				Main.variables.get(0).nameField.requestFocusInWindow();
+			}else if(c == "New Float"){
+				Main.variables.add(0, new VFloat());
+				updateVars();
+				scrollVars.getViewport().setViewPosition(new Point(0,0));
+				Main.variables.get(0).nameField.requestFocusInWindow();
+			}else if(c == "New Boolean"){
+				Main.variables.add(0, new VBoolean());
+				updateVars();
+				scrollVars.getViewport().setViewPosition(new Point(0,0));
+				Main.variables.get(0).nameField.requestFocusInWindow();
+			}else if(c == "New String"){
+				Main.variables.add(0, new VString());
+				updateVars();
+				scrollVars.getViewport().setViewPosition(new Point(0,0));
+				Main.variables.get(0).nameField.requestFocusInWindow();
+			}else{
+				System.out.println("null Action:"+c);
 			}
-			objects.add(Debug.console.new Log(p));
-		}else{
-			System.out.println("null Action:"+c);
 		}
+		
     }
 
 	@Override

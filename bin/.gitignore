@@ -77,3 +77,7 @@
 /VString$Get_Length.class
 /VString$Replace.class
 /VString$Get_Char_At.class
+/Arithmetic$NumberNode.class
+/Arithmetic$Divide.class
+/Arithmetic$Multiply.class
+/Arithmetic$Subtract.class

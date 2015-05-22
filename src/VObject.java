@@ -50,12 +50,15 @@ public class VObject extends JPanel implements MouseInputListener{
 		while(itr.hasNext()){
 			c = itr.next();
 			Node nodeCut = null;
+			Node connectedNode = null;
 			if(c.isNode[0] && c.nodes[0].parentObject == this){
 				itr.remove();
 				nodeCut = c.nodes[0];
+				connectedNode = c.nodes[1];
 			}else if(c.isNode[1] && c.nodes[1].parentObject == this){
 				itr.remove();
 				nodeCut = c.nodes[1];
+				connectedNode = c.nodes[0];
 			}
 			
 			if(nodeCut != null){
@@ -65,7 +68,7 @@ public class VObject extends JPanel implements MouseInputListener{
 				for(Node node : nodeCut.parents){
 					node.children.remove(nodeCut);
 				}
-				nodeCut.onDisconnect();
+				connectedNode.onDisconnect();
 			}
 		}
 		

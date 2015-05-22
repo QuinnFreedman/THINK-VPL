@@ -57,9 +57,8 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	public void onDisconnect(){
 		//override in subclass
 	}
-	private static void clearChildren(Node nodeToClear){
-		if(nodeToClear.canHaveMultipleInputs == false){
-			nodeToClear.onDisconnect(); //TODO be more specific? ie call later in the method only if connection is actually removed
+	protected static void clearChildren(Node nodeToClear){
+			System.out.println("clear children "+nodeToClear.type.toString()+" "+nodeToClear);
 			Iterator<Curve> itr = Main.curves.iterator();
 			while(itr.hasNext()){
 				Curve c = itr.next();
@@ -71,7 +70,6 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 				}else{
 					continue;
 				}
-				
 				if(node.type == Node.NodeType.RECIEVING){
 					node.parents.remove(nodeToClear);
 					nodeToClear.children.remove(node);
@@ -82,7 +80,9 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 				itr.remove();
 				
 			}
-		}
+			nodeToClear.onDisconnect();
+			
+		
 	}
 	
 	public static ArrayList<ArrayList<Variable.DataType>> complement(ArrayList<Variable.DataType> A, ArrayList<Variable.DataType> B){
@@ -101,6 +101,12 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	}
 	
 	public static void connect(Node A, Node B){
+		
+		if(!A.canHaveMultipleInputs)
+			clearChildren(A);
+		if(!B.canHaveMultipleInputs)
+			clearChildren(B);
+		
 		B.parents.add(A);
 		A.children.add(B);
 		Main.curves.add(new Curve(A,B));
@@ -214,9 +220,6 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		for(Node node : Main.nodes){
 			rect = new Rectangle(getLocationOnPanel(node),new Dimension(node.getWidth(),node.getHeight()));
 			if(rect.contains(mouse) && canConnect(this,node)){
-				
-				clearChildren(this);
-				clearChildren(node);
 				Node A;
 				Node B;
 				if(node.type == NodeType.RECIEVING && this.type == NodeType.SENDING){
@@ -226,7 +229,10 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 					A = node;
 					B = this;
 				}
-				if(this.dataType == node.dataType){
+				if(A.dataType == B.dataType || 
+						((A.dataType == Variable.DataType.NUMBER && B.dataType.isNumber()) || 
+						(B.dataType == Variable.DataType.NUMBER && A.dataType.isNumber())
+						)){
 					connect(A,B);
 				}else if(Cast.isCastable(A.dataType,B.dataType)){
 					Main.objects.add(new Cast(A,B));
@@ -263,6 +269,10 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 				}else{
 					return false;
 				}
+			}else if((A.dataType == Variable.DataType.NUMBER && B.dataType.isNumber()) || 
+					(B.dataType == Variable.DataType.NUMBER && A.dataType.isNumber())
+					){
+				return true;
 			}
 		}
 		return false;
