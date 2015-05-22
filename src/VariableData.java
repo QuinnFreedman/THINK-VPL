@@ -3,6 +3,9 @@ class VariableData{
 	public java.lang.String getValueAsString(){
 		return null;
 	}
+	public double getValueAsDouble(){
+		return 0;
+	}
 	
 	static class Integer extends VariableData{
 		int value = 0;
@@ -15,6 +18,10 @@ class VariableData{
 		@Override
 		public java.lang.String getValueAsString(){
 			return java.lang.Integer.toString(value);
+		}
+		@Override
+		public double getValueAsDouble(){
+			return value;
 		}
 	}
 	static class Double extends VariableData{
@@ -29,6 +36,10 @@ class VariableData{
 		public java.lang.String getValueAsString(){
 			return java.lang.Double.toString(value);
 		}
+		@Override
+		public double getValueAsDouble(){
+			return value;
+		}
 	}
 	static class Float extends VariableData{
 		float value = 0;
@@ -41,6 +52,10 @@ class VariableData{
 		@Override
 		public java.lang.String getValueAsString(){
 			return java.lang.Float.toString(value);
+		}
+		@Override
+		public double getValueAsDouble(){
+			return value;
 		}
 	}
 	static class Long extends VariableData{
@@ -55,6 +70,10 @@ class VariableData{
 		public java.lang.String getValueAsString(){
 			return java.lang.Long.toString(value);
 		}
+		@Override
+		public double getValueAsDouble(){
+			return value;
+		}
 	}
 	static class Short extends VariableData{
 		short value = 0;
@@ -68,6 +87,10 @@ class VariableData{
 		public java.lang.String getValueAsString(){
 			return java.lang.Short.toString(value);
 		}
+		@Override
+		public double getValueAsDouble(){
+			return value;
+		}
 	}
 	static class Byte extends VariableData{
 		byte value = 0;
@@ -80,6 +103,10 @@ class VariableData{
 		@Override
 		public java.lang.String getValueAsString(){
 			return java.lang.Byte.toString(value);
+		}
+		@Override
+		public double getValueAsDouble(){
+			return value;
 		}
 	}
 	static class Boolean extends VariableData{
