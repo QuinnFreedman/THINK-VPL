@@ -45,11 +45,12 @@ public class Debug{
 	}
 	
 	private static void resetActiveNode(Executable o2){
-		if(o2.getClass() == Cast.class || o2 instanceof Arithmetic){
+		/*if(o2.getClass() == Cast.class || o2 instanceof Arithmetic){
 			o2.activeNode = 0;
 		}else{
 			o2.activeNode = 1;
-		}
+		}*/
+		o2.resetActiveNode();
 	}
 	
 	protected static void exit() {
@@ -74,14 +75,14 @@ public class Debug{
 			return false;
 		}
 		System.out.println("try to go up from "+getTop());
-		System.out.println("activeNode "+getTop().activeNode);
+		System.out.println("activeNode "+getTop().getActiveNode());
 		System.out.println("inputs "+getTop().getInputNodes().size());
-		if(getTop().activeNode >= getTop().getInputNodes().size()){
+		if(getTop().getActiveNode() >= getTop().getInputNodes().size()){
 			System.out.println("failed: activeNode > input nodes");
 			return false;
 		}
 		
-		ArrayList<Node> parents = getTop().getInputNodes().get(getTop().activeNode).parents;
+		ArrayList<Node> parents = getTop().getInputNodes().get(getTop().getActiveNode()).parents;
 		System.out.println("parents "+parents);
 		
 		if(parents.isEmpty()){
@@ -90,7 +91,7 @@ public class Debug{
 			return false;
 		}
 		Executable next = (Executable) parents.get(0).parentObject;
-		getTop().activeNode++;
+		getTop().incrementActiveNode();
 		
 		next.workingData.clear();
 		resetActiveNode(next);

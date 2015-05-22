@@ -81,3 +81,15 @@
 /Arithmetic$Divide.class
 /Arithmetic$Multiply.class
 /Arithmetic$Subtract.class
+/VArray
+/VArray$Add_To.class
+/VArray$Get.class
+/VArray$Incrament.class
+/VArray$IntDocumentFilter.class
+/VArray$Multiply_By.class
+/VArray$Set.class
+/VArray.class
+/VArray$ArrayDocumentFilter.class
+/VArray$Add.class
+/VArray$Remove.class
+/VArray$Get_Length.class

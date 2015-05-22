@@ -245,36 +245,41 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		Main.panel.repaint();
 	}
 	
-	private static boolean canConnect(Node A, Node B){
-		if(A.parentObject == B.parentObject){
+	private static boolean canConnect(Node node1, Node node2){
+		if(node1.parentObject == node2.parentObject){
 			return false;
 		}
-		if((A.type == NodeType.SENDING && B.type == NodeType.RECIEVING) ||
-			(A.type == NodeType.RECIEVING && B.type == NodeType.SENDING))
-		{
-			if(A.type == NodeType.RECIEVING){
-				if(A.parents.contains(B) || B.children.contains(A)){
-					return false;
-				}
-			}else{
-				if(B.parents.contains(A) || A.children.contains(B)){
-					return false;
-				}
-			}
-			if(A.dataType == B.dataType){
-				return true;
-			}else if(Cast.isCastable(A.dataType,B.dataType)){
-				if(Cast.isCastable(A.dataType, B.dataType)){
-					return true;
-				}else{
-					return false;
-				}
-			}else if((A.dataType == Variable.DataType.NUMBER && B.dataType.isNumber()) || 
-					(B.dataType == Variable.DataType.NUMBER && A.dataType.isNumber())
-					){
-				return true;
-			}
+		Node A;
+		Node B;
+		if(node1.type == NodeType.SENDING && node2.type == NodeType.RECIEVING){
+			A = node1;
+			B = node2;
+		}else if(node1.type == NodeType.RECIEVING && node2.type == NodeType.SENDING){
+			A = node2;
+			B = node1;
+		}else{
+			return false;
 		}
+		
+		
+		if(B.parents.contains(A) || A.children.contains(B)){
+			return false;
+		}
+		
+		if(A.dataType == B.dataType){
+			return true;
+		}else if(Cast.isCastable(A.dataType,B.dataType)){
+			if(Cast.isCastable(A.dataType, B.dataType)){
+				return true;
+			}else{
+				return false;
+			}
+		}else if((A.dataType == Variable.DataType.NUMBER && B.dataType.isNumber()) || 
+				(B.dataType == Variable.DataType.NUMBER && A.dataType.isNumber())
+				){
+			return true;
+		}
+		
 		return false;
 	}
 

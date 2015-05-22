@@ -59,6 +59,10 @@ public class Cast extends Executable{
 		return false;
 	}
 	@Override
+	public void resetActiveNode() {
+		activeNode = 0;
+	};
+	@Override
 	public VariableData execute(VariableData[] inputs){
 		if(this.output == Variable.DataType.STRING){
 			return new VariableData.String(inputs[0].getValueAsString());

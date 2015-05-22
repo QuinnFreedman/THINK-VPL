@@ -21,13 +21,12 @@ public class Executable extends VObject{
 	};
 	NodeHolder inputNodeHolder;
 	NodeHolder outputNodeHolder;
-	public ArrayList<Variable.DataType> getInputs(){return null;};
-	public ArrayList<Variable.DataType> getOutputs(){return null;};
 	public Mode getPrimairyMode(){return Mode.BOTH;};
 	private ArrayList<Node> inputNodes;
 	private ArrayList<Node> outputNodes;
-	public int activeNode;
+	protected int activeNode;
 	public ArrayList<VariableData> workingData;
+	private boolean selected = false;
 	protected ArrayList<Node> getInputNodes(){
 		return inputNodes;
 	}
@@ -54,7 +53,18 @@ public class Executable extends VObject{
 		outputNodeHolder.add(node);
 		Main.nodes.add(node);
 	}
-	
+	public void setSelected(boolean b){
+		selected = b;
+	}
+	public void resetActiveNode() {
+		activeNode = 1;
+	}
+	public int getActiveNode() {
+		return activeNode;
+	}
+	public void incrementActiveNode() {
+		activeNode++;
+	}
 	Executable(){
 		super();
 		inputNodes = new ArrayList<Node>();

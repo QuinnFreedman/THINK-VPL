@@ -10,6 +10,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -22,6 +23,8 @@ public class PrimitiveFunction extends Executable{
 	private JLabel label;
 	private String text = "";
 	private Variable parentVar;
+	public ArrayList<Variable.DataType> getInputs(){return null;};
+	public ArrayList<Variable.DataType> getOutputs(){return null;};
 	public Variable getParentVar(){
 		return parentVar;
 	}

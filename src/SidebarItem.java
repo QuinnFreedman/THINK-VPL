@@ -25,6 +25,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+
 public class SidebarItem extends JPanel{
 	/**
 	 * 
@@ -44,36 +46,36 @@ public class SidebarItem extends JPanel{
     }
 	
 	public String getSymbol(){
-		String symbol = "";
+		String symbol = (this.getClass() == VArray.class) ? "<" : "";
 
 		switch (this.type) {
 		case VARIABLE:
 			switch(((Variable) this).dataType){
-	        case BOOLEAN: symbol = "bool";
+	        case BOOLEAN: symbol += "bool";
 	        	break;
 	
-	        case BYTE: symbol = "byt";
+	        case BYTE: symbol += "byt";
 		        break;
 		        
-	        case SHORT: symbol = "sh";
+	        case SHORT: symbol += "sh";
 		        break;
 		        
-	        case INTEGER: symbol = "int";
+	        case INTEGER: symbol += "int";
 		        break;
 		        
-	        case FLOAT: symbol = "fl";
+	        case FLOAT: symbol += "fl";
 		        break;
 		        
-	        case DOUBLE: symbol = "db";
+	        case DOUBLE: symbol += "db";
 		        break;
 		        
-	        case LONG: symbol = "long";
+	        case LONG: symbol += "long";
 		        break;
 		        
-	        case CHARACTER: symbol = "char";
+	        case CHARACTER: symbol += "char";
 		        break;
 		        
-		    case STRING: symbol = "str";
+		    case STRING: symbol += "str";
 		        break;
 			default:
 				break;
@@ -86,6 +88,8 @@ public class SidebarItem extends JPanel{
         case CLASS: symbol = "C";
         	break;
 	    }
+		
+		symbol += (this.getClass() == VArray.class) ? ">" : "";
 		
 		return symbol;
 	}
@@ -221,36 +225,75 @@ public class SidebarItem extends JPanel{
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_TAB){
-				if(this.getText().toLowerCase().equals("i") || this.getText().toLowerCase().equals("in") || this.getText().toLowerCase().equals("int") || this.getText().toLowerCase().equals("integer")){
+				String text = this.getText().toLowerCase();
+				if(text.equals("i") || text.equals("in") || text.equals("int") || text.equals("integer")){
 					VInt newint = new VInt();
 					Main.variables.set(
 							Main.variables.indexOf(sidebarItemParent),
 							newint);
 					Main.updateVars();
 					newint.nameField.requestFocusInWindow();
-				}else if(this.getText().toLowerCase().equals("d") || this.getText().toLowerCase().equals("db") || this.getText().toLowerCase().equals("do") || this.getText().toLowerCase().equals("double")){
+				}else if(text.equals("d") || text.equals("db") || text.equals("do") || text.equals("double")){
 					VDouble newdouble = new VDouble();
 					Main.variables.set(
 							Main.variables.indexOf(sidebarItemParent),
 							newdouble);
 					Main.updateVars();
 					newdouble.nameField.requestFocusInWindow();
-				}else if(this.getText().toLowerCase().equals("f") || this.getText().toLowerCase().equals("fl") || this.getText().toLowerCase().equals("flo") || this.getText().toLowerCase().equals("float")){
+				}else if(text.equals("f") || text.equals("fl") || text.equals("flo") || text.equals("float")){
 					VFloat newdouble = new VFloat();
 					Main.variables.set(
 							Main.variables.indexOf(sidebarItemParent),
 							newdouble);
 					Main.updateVars();
 					newdouble.nameField.requestFocusInWindow();
-				}else if(this.getText().toLowerCase().equals("b") || this.getText().toLowerCase().equals("bo") || this.getText().toLowerCase().equals("bool") || this.getText().toLowerCase().equals("boolean")){
+				}else if(text.equals("b") || text.equals("bo") || text.equals("bool") || text.equals("boolean")){
 					VBoolean newBool = new VBoolean();
 					Main.variables.set(
 							Main.variables.indexOf(sidebarItemParent),
 							newBool);
 					Main.updateVars();
 					newBool.nameField.requestFocusInWindow();
-				}else if(this.getText().toLowerCase().equals("s") || this.getText().toLowerCase().equals("st") || this.getText().toLowerCase().equals("str") || this.getText().toLowerCase().equals("string")){
+				}else if(text.equals("s") || text.equals("st") || text.equals("str") || text.equals("string")){
 					VString newStr = new VString();
+					Main.variables.set(
+							Main.variables.indexOf(sidebarItemParent),
+							newStr);
+					Main.updateVars();
+					newStr.nameField.requestFocusInWindow();
+				}
+				
+			//ARRAYS
+				else if(text.equals("<i") || text.equals("<in") || text.equals("<int") || text.equals("<int>")){
+					VArray newint = new VArray(Variable.DataType.INTEGER);
+					Main.variables.set(
+							Main.variables.indexOf(sidebarItemParent),
+							newint);
+					Main.updateVars();
+					newint.nameField.requestFocusInWindow();
+				}else if(text.equals("<d") || text.equals("<db") || text.equals("<do") || text.equals("<db>")){
+					VArray newdouble = new VArray(Variable.DataType.DOUBLE);
+					Main.variables.set(
+							Main.variables.indexOf(sidebarItemParent),
+							newdouble);
+					Main.updateVars();
+					newdouble.nameField.requestFocusInWindow();
+				}else if(text.equals("<f") || text.equals("<fl") || text.equals("<fl>") || text.equals("<float>")){
+					VArray newdouble = new VArray(Variable.DataType.FLOAT);
+					Main.variables.set(
+							Main.variables.indexOf(sidebarItemParent),
+							newdouble);
+					Main.updateVars();
+					newdouble.nameField.requestFocusInWindow();
+				}else if(text.equals("<b") || text.equals("<bo") || text.equals("<bool") || text.equals("<bool>")){
+					VArray newBool = new VArray(Variable.DataType.BOOLEAN);
+					Main.variables.set(
+							Main.variables.indexOf(sidebarItemParent),
+							newBool);
+					Main.updateVars();
+					newBool.nameField.requestFocusInWindow();
+				}else if(text.equals("<s") || text.equals("<st") || text.equals("<str") || text.equals("<string")){
+					VArray newStr = new VArray(Variable.DataType.STRING);
 					Main.variables.set(
 							Main.variables.indexOf(sidebarItemParent),
 							newStr);
@@ -293,19 +336,24 @@ public class SidebarItem extends JPanel{
 			String s = ip.getText();
 			int i = -1;
 			if(ip.getText().length() == 0){
+				if(si.getClass() == VArray.class){
+					s = "Array";
+					i = 1;
+				}else{
 				switch(si.type){
-				case VARIABLE:
-					s = ((Variable) si).getSymbol();
-					i = 1;
-					break;
-				case FUNCTION:
-					s = "func";
-					i = 1;
-					break;
-				case CLASS:
-					s = "class";
-					i = 1;
-					break;
+					case VARIABLE:
+						s = ((Variable) si).getSymbol();
+						i = 1;
+						break;
+					case FUNCTION:
+						s = "func";
+						i = 1;
+						break;
+					case CLASS:
+						s = "class";
+						i = 1;
+						break;
+					}
 				}
 			}
 			ArrayList<? extends SidebarItem> list = null;
