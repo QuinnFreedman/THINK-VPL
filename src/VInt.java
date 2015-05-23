@@ -35,7 +35,7 @@ public class VInt extends Variable{
 		this.functions.add(new Set());
 		this.functions.add(new Add_To());
 		this.functions.add(new Multiply_By());
-		this.functions.add(new Incrament());//TODO use classes instead of instances
+		this.functions.add(new Increment());//TODO use classes instead of instances
 		
 		resetVariableData();
 	}
@@ -153,7 +153,7 @@ public class VInt extends Variable{
 		}
 		
 	}
-	static class Incrament extends PrimitiveFunction{
+	static class Increment extends PrimitiveFunction{
 		private static final long serialVersionUID = 1L;
 		@Override
 		public ArrayList<Variable.DataType> getInputs(){
@@ -170,10 +170,10 @@ public class VInt extends Variable{
 			((VariableData.Integer) getParentVar().varData).value++;
 			return null;
 		}
-		Incrament(Point pos, Variable parent) {
+		Increment(Point pos, Variable parent) {
 			super(pos, parent);
 		}
-		Incrament(){
+		Increment(){
 			super();
 		}
 		

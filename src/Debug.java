@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 
 public class Debug{
 	
@@ -11,6 +10,11 @@ public class Debug{
 	private static boolean isStepping = false;
 	private static Variable.DataType waitingForInput = null;
 	public static Console console;
+	private static RunMode mode;
+	
+	private enum RunMode{
+		RUN,FAST,SLOW
+	}
 	
 	public static boolean isStepping() {
 		return isStepping;
@@ -35,28 +39,25 @@ public class Debug{
 		Main.panel.requestFocusInWindow();
 		isStepping = true;
 		stack = new ArrayList<Executable>(Arrays.asList(Main.entryPoint));
-		stack.get(0).setBorder(BorderFactory.createLineBorder(Color.yellow, 2));
+		if(mode != RunMode.RUN)
+			stack.get(0).setBorder(BorderFactory.createLineBorder(Color.yellow, 2));
 		
 		for(VObject o : Main.objects){
 			if(o instanceof Executable){
 				System.out.println(o);
 				Executable o2 = ((Executable) o);
-				resetActiveNode(o2);
+				o2.resetActiveNode();
 				o2.workingData = new ArrayList<VariableData>();
 				System.out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
 				
 			}
 		}
+		if(mode == RunMode.RUN){
+			step();
+			
+		}
 	}
-	
-	private static void resetActiveNode(Executable o2){
-		/*if(o2.getClass() == Cast.class || o2 instanceof Arithmetic){
-			o2.activeNode = 0;
-		}else{
-			o2.activeNode = 1;
-		}*/
-		o2.resetActiveNode();
-	}
+
 	
 	protected static void exit() {
 		isStepping = false;
@@ -99,11 +100,15 @@ public class Debug{
 		getTop().incrementActiveNode();
 		
 		next.workingData.clear();
-		resetActiveNode(next);
+		next.resetActiveNode();
 		
-		getTop().setBorder(null);
+		if(mode != RunMode.RUN)
+			getTop().setBorder(null);
+		
 		stack.add(next);
-		next.setBorder(BorderFactory.createLineBorder(Color.yellow, 2));
+		
+		if(mode != RunMode.RUN)
+			next.setBorder(BorderFactory.createLineBorder(Color.yellow, 2));
 		
 		return true;
 	}
@@ -137,14 +142,15 @@ public class Debug{
 	public static void moveDownStack2(VariableData execute){
 		waitingForInput = null;
 		
-		getTop().setBorder(null);
+		if(mode != RunMode.RUN)
+			getTop().setBorder(null);
 		
 		if(stack.size() == 1){
 			Executable next = getNext(getTop());
 			stack.remove(stack.size()-1);
 			if(next != null){
 				next.workingData.clear();
-				resetActiveNode(next);
+				next.resetActiveNode();
 				stack.add(next);
 			}else{
 				exit();
@@ -157,14 +163,19 @@ public class Debug{
 			System.out.println("add to "+getTop().workingData);
 			getTop().workingData.add(execute);
 		}
-		getTop().setBorder(BorderFactory.createLineBorder(Color.yellow, 2));
-		
+		if(mode != RunMode.RUN){
+			getTop().setBorder(BorderFactory.createLineBorder(Color.yellow, 2));
+		}else{
+			step();
+		}
 	}
 
 	private static void step(){
 		
 		if(!moveUpStack())
 			moveDownStack();
+		else if(mode == RunMode.RUN)
+			step();
 
 		System.out.println("stack:");
 		for(VObject o : stack){
@@ -196,7 +207,7 @@ public class Debug{
 	}
 	
 	public static void tab() {
-		if(isStepping && waitingForInput == null){
+		if(isStepping && waitingForInput == null && mode != RunMode.RUN){
 			step();
 		}
 	}
@@ -204,6 +215,22 @@ public class Debug{
 		if(isStepping()){
 			exit();
 		}else{
+			mode = RunMode.RUN;
+			startStep();
+		}
+	}
+	public static void f2() {
+		/*if(isStepping()){
+			exit();
+		}else{
+			startStep();
+		}*/
+	}
+	public static void f3() {
+		if(isStepping()){
+			exit();
+		}else{
+			mode = RunMode.SLOW;
 			startStep();
 		}
 	}

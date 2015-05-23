@@ -89,6 +89,13 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
                         	}else{
                         		Debug.exit();
                         	}
+                        }else if (ke.getKeyCode() == KeyEvent.VK_F3){
+                        	if(!Debug.isStepping()){
+                        		Main.panel.requestFocusInWindow();
+                        		Debug.f3();
+                        	}else{
+                        		Debug.exit();
+                        	}
                         }
                         break;
 
@@ -194,6 +201,17 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				mntmNewCharacter.addActionListener(THIS);
 				mnVariable.add(mntmNewCharacter);
 				
+				JMenu mnRun = new JMenu("Run");
+				menuBar.add(mnRun);
+				
+				JMenuItem mntmRun = new JMenuItem("Run (f1)");
+				mntmRun.addActionListener(THIS);
+				mnRun.add(mntmRun);
+				
+				JMenuItem mntmDebug = new JMenuItem("Debug (f3)");
+				mntmDebug.addActionListener(THIS);
+				mnRun.add(mntmDebug);
+				
 				JMenu mnHelp = new JMenu("Help");
 				menuBar.add(mnHelp);
 				
@@ -298,6 +316,14 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				popupDivide.addActionListener(THIS);
 				panelPopup.add(popupDivide);
 				
+				JMenuItem popupRand = new JMenuItem("Random");
+				popupRand.addActionListener(THIS);
+				panelPopup.add(popupRand);
+				
+				JMenuItem popupRound = new JMenuItem("Round");
+				popupRound.addActionListener(THIS);
+				panelPopup.add(popupRound);
+				
 				JMenuItem popupConcat = new JMenuItem("Concatenate");
 				popupConcat.addActionListener(THIS);
 				panelPopup.add(popupConcat);
@@ -387,6 +413,10 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				objects.add(new Arithmetic.Multiply(p));
 			}else if(c == "Divide"){
 				objects.add(new Arithmetic.Divide(p));
+			}else if(c == "Random"){
+				objects.add(new Arithmetic.Random(p));
+			}else if(c == "Round"){
+				objects.add(new Arithmetic.Round(p));
 			}else if(c == "Concatenate"){
 				objects.add(new Arithmetic.Concat(p));
 			}else if(c == "Branch"){
@@ -446,6 +476,10 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				updateVars();
 				scrollVars.getViewport().setViewPosition(new Point(0,0));
 				Main.variables.get(0).nameField.requestFocusInWindow();
+			}else if(c == "Run (f1)"){
+				Debug.f1();
+			}else if(c == "Debug (f3)"){
+				Debug.f2();
 			}else{
 				System.out.println("null Action:"+c);
 			}
