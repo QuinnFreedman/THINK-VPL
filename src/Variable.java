@@ -184,7 +184,7 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
     	
     }
     public enum DataType{
-    	BOOLEAN,BYTE,SHORT,INTEGER,FLOAT,DOUBLE,LONG,CHARACTER,STRING,GENERIC,NUMBER;
+    	BOOLEAN,BYTE,SHORT,INTEGER,FLOAT,DOUBLE,LONG,CHARACTER,STRING,GENERIC,NUMBER,FLEX;
 
 		public boolean isNumber() {
 			if(this == BYTE || this == SHORT || this == INTEGER || this == FLOAT || this == DOUBLE || this == LONG)

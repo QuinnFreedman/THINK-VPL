@@ -182,6 +182,8 @@ public class Debug{
 		ArrayList<Node> children;
 		if(o instanceof EntryPoint){
 			children = ((EntryPoint) o).startNode.children;
+		}else if(o instanceof Logic.Branch){
+			children = o.getOutputNodes().get((((Logic.Branch) o).isTrue()) ? 0 : 1).children;
 		}else{
 			children = o.getOutputNodes().get(0).children;
 		}

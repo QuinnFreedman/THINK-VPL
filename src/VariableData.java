@@ -6,7 +6,12 @@ class VariableData{
 	public double getValueAsDouble(){
 		return 0;
 	}
-	
+	public static boolean isNumber(VariableData v){
+		if(v.getClass() == Double.class || v.getClass() == Float.class || v.getClass() == Integer.class || v.getClass() == Long.class)
+			return true;
+		else
+			return false;
+	}
 	static class Integer extends VariableData{
 		int value = 0;
 		public Integer(int input) {

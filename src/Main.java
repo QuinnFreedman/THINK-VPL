@@ -64,13 +64,14 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 	
 	public static void main(String[] args){
 		new Main();
-		colors.put(Variable.DataType.BOOLEAN, Color.green);
+		colors.put(Variable.DataType.BOOLEAN, new Color(20,210,20));
 		colors.put(Variable.DataType.INTEGER, Color.red);
 		colors.put(Variable.DataType.DOUBLE, new Color(196,0,167));
 		colors.put(Variable.DataType.FLOAT, new Color(207,0,91));
-		colors.put(Variable.DataType.STRING, new Color(1,162,1));
+		colors.put(Variable.DataType.STRING, new Color(0,132,0));
 		colors.put(Variable.DataType.GENERIC, Color.WHITE);
 		colors.put(Variable.DataType.NUMBER, Color.GRAY);
+		colors.put(Variable.DataType.FLEX, Color.GRAY);
 		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 
@@ -303,6 +304,32 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				
 				panelPopup.addSeparator();
 				
+				JMenuItem popupLogic = new JMenuItem("Branch");
+				popupLogic.addActionListener(THIS);
+				panelPopup.add(popupLogic);
+				
+				JMenuItem popupEquals = new JMenuItem("Equals");
+				popupEquals.addActionListener(THIS);
+				panelPopup.add(popupEquals);
+				
+				JMenuItem popupLessThan = new JMenuItem("Is Less Than");
+				popupLessThan.addActionListener(THIS);
+				panelPopup.add(popupLessThan);
+				
+				JMenuItem popupGreaterThan = new JMenuItem("Is Greater Than");
+				popupGreaterThan.addActionListener(THIS);
+				panelPopup.add(popupGreaterThan);
+				
+				JMenuItem popupLessEqual = new JMenuItem("Is Less Than Or Equal To");
+				popupLessEqual.addActionListener(THIS);
+				panelPopup.add(popupLessEqual);
+				
+				JMenuItem popupGreaterEqual = new JMenuItem("Is Greater Than Or Equal To");
+				popupGreaterEqual.addActionListener(THIS);
+				panelPopup.add(popupGreaterEqual);
+				
+				panelPopup.addSeparator();
+				
 				JMenuItem popupLog = new JMenuItem("Log To Console");
 				popupLog.addActionListener(THIS);
 				panelPopup.add(popupLog);
@@ -315,7 +342,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				popupGetNum.addActionListener(THIS);
 				panelPopup.add(popupGetNum);
 				
-				JMenuItem popupMath = new JMenuItem("Math");
+				/*JMenuItem popupMath = new JMenuItem("Math");
 				popupMath.setEnabled(false);
 				popupMath.addActionListener(THIS);
 				panelPopup.add(popupMath);
@@ -328,7 +355,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				JMenuItem popupBlueprint = new JMenuItem("Blueprint");
 				popupBlueprint.addActionListener(THIS);
 				popupBlueprint.setEnabled(false);
-				panelPopup.add(popupBlueprint);
+				panelPopup.add(popupBlueprint);*/
 				
 				entryPoint = new EntryPoint();
 				panel.add(entryPoint);
@@ -362,6 +389,18 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				objects.add(new Arithmetic.Divide(p));
 			}else if(c == "Concatenate"){
 				objects.add(new Arithmetic.Concat(p));
+			}else if(c == "Branch"){
+				objects.add(new Logic.Branch(p));
+			}else if(c == "Equals"){
+				objects.add(new Logic.Equals(p));
+			}else if(c == "Is Less Than"){
+				objects.add(new Logic.LessThan(p));
+			}else if(c == "Is Greater Than"){
+				objects.add(new Logic.GreaterThan(p));
+			}else if(c == "Is Less Than Or Equal To"){
+				objects.add(new Logic.LessOrEqual(p));
+			}else if(c == "Is Greater Than Or Equal To"){
+				objects.add(new Logic.GreaterOrEqual(p));
 			}else if(c == "Log To Console"){
 				if(Debug.console == null){
 					Debug.console = new Console();

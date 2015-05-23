@@ -123,7 +123,17 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		g.setColor(Color.BLACK);
 		g.fillArc(0, 0, 14, 14, 0, 360);
 		if(this.dataType != Variable.DataType.GENERIC){
-			g.setColor(Main.colors.get(this.dataType));
+			if(this.dataType != Variable.DataType.NUMBER && this.dataType != Variable.DataType.FLEX){
+				g.setColor(Main.colors.get(this.dataType));
+			}else{
+				if(!this.parents.isEmpty()){
+					g.setColor(Main.colors.get(this.parents.get(0).dataType));
+				}else if(!this.children.isEmpty()){
+					g.setColor(Main.colors.get(this.children.get(0).dataType));
+				}else{
+					g.setColor(Main.colors.get(this.dataType));
+				}
+			}
 			g.fillArc(this.size.width/2 - 4, this.size.height/2 - 4, 8, 8, 0, 360);
 		}
 		if(isHover){
@@ -231,7 +241,9 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 				}
 				if(A.dataType == B.dataType || 
 						((A.dataType == Variable.DataType.NUMBER && B.dataType.isNumber()) || 
-						(B.dataType == Variable.DataType.NUMBER && A.dataType.isNumber())
+						(B.dataType == Variable.DataType.NUMBER && A.dataType.isNumber()) ||
+						(A.dataType == Variable.DataType.FLEX && B.dataType != Variable.DataType.NUMBER) ||
+						(B.dataType == Variable.DataType.FLEX && A.dataType != Variable.DataType.NUMBER)
 						)){
 					connect(A,B);
 				}else if(Cast.isCastable(A.dataType,B.dataType)){
@@ -248,6 +260,10 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	private static boolean canConnect(Node node1, Node node2){
 		if(node1.parentObject == node2.parentObject){
 			return false;
+		}
+		if((node1.dataType == Variable.DataType.FLEX && node2.dataType != Variable.DataType.NUMBER) || 
+				(node2.dataType == Variable.DataType.FLEX  && node1.dataType != Variable.DataType.NUMBER)){
+			return true;
 		}
 		Node A;
 		Node B;
