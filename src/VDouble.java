@@ -38,7 +38,7 @@ public class VDouble extends Variable{
 	
 	@Override
 	protected void setValue(String s){
-		if(s.length() > 0){
+		if(s.length() > 0 && !s.equals("-")){
 			value = Double.parseDouble(s);
 		}else{
 			value = 0;
@@ -169,7 +169,7 @@ public class VDouble extends Variable{
 			String sb = "";
 			for(int i = 0; i < text.length(); i++){
 				char c = text.charAt(i);
-				if(Character.isDigit(c) || (c == '.' && !(sb.contains(".") || doc.getText(0, doc.getLength()).contains(".")))){
+				if(Character.isDigit(c) || (c == '-' && doc.getLength() == 0 && i == 0) || (c == '.' && !(sb.contains(".") || doc.getText(0, doc.getLength()).contains(".")))){
 					sb += c;
 				}
 			}

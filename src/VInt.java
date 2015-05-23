@@ -46,7 +46,7 @@ public class VInt extends Variable{
 	
 	@Override
 	protected void setValue(String s){
-		if(s.length() > 0){
+		if(s.length() > 0 && !s.equals("-")){
 			value = Integer.parseInt(s);
 		}else{
 			value = 0;
@@ -206,7 +206,7 @@ public class VInt extends Variable{
 			StringBuilder sb = new StringBuilder();
 			for(int i = 0; i < text.length(); i++){
 				char c = text.charAt(i);
-				if(Character.isDigit(c)){
+				if(Character.isDigit(c) || (c == '-' && doc.getLength() == 0 && i == 0)){
 					sb.append(c);
 				}
 			}

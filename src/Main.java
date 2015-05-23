@@ -52,6 +52,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 	 * @wbp.parser.entryPoint
 	 */
 	static ComponentMover componentMover;
+	public static JFrame window;
 	static JPanel panel;
 	static JButton addVar;
 	private static JPanel vars;
@@ -83,7 +84,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
                         }else if (ke.getKeyCode() == KeyEvent.VK_F1){
                         	if(!Debug.isStepping()){
                         		Main.panel.requestFocusInWindow();
-                        		Debug.tab();
+                        		Debug.f1();
                         	}else{
                         		Debug.exit();
                         	}
@@ -108,7 +109,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 
 	        @Override
 	        public void run() {
-				JFrame window = new JFrame();
+				window = new JFrame();
 				window.setTitle("VisualIDE");
 				window.setSize(800,500);
 				window.setMinimumSize(new Dimension(555,325));
@@ -120,7 +121,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 					UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceGraphiteLookAndFeel");
 				} catch (ClassNotFoundException | InstantiationException
 						| IllegalAccessException | UnsupportedLookAndFeelException e1) {
-					// TODO Auto-generated catch block
+					// Auto-generated catch block
 					e1.printStackTrace();
 				}
 			
@@ -163,19 +164,26 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				
 				JMenuItem mntmNewLong = new JMenuItem("New Long");
 				mntmNewLong.addActionListener(THIS);
+				mntmNewLong.setEnabled(false);
 				mnVariable.add(mntmNewLong);
 				
 				JMenuItem mntmNewShort = new JMenuItem("New Short");
 				mntmNewShort.addActionListener(THIS);
+				mntmNewShort.setEnabled(false);
 				mnVariable.add(mntmNewShort);
 				
 				JMenuItem mntmNewByte = new JMenuItem("New Byte");
 				mntmNewByte.addActionListener(THIS);
+				mntmNewByte.setEnabled(false);
 				mnVariable.add(mntmNewByte);
+				
+				mnVariable.addSeparator();
 				
 				JMenuItem mntmNewBoolean = new JMenuItem("New Boolean");
 				mntmNewBoolean.addActionListener(THIS);
 				mnVariable.add(mntmNewBoolean);
+				
+				mnVariable.addSeparator();
 				
 				JMenuItem mntmNewString = new JMenuItem("New String");
 				mntmNewString.addActionListener(THIS);
@@ -231,7 +239,6 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 					}
 				});
 				
-				scrollVars.addKeyListener(THIS);//TODO doesn't work
 				scrollVars.setMinimumSize(minimumSize);
 				varsContainer.add(scrollVars);
 				
@@ -290,26 +297,37 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				popupDivide.addActionListener(THIS);
 				panelPopup.add(popupDivide);
 				
+				JMenuItem popupConcat = new JMenuItem("Concatenate");
+				popupConcat.addActionListener(THIS);
+				panelPopup.add(popupConcat);
+				
 				panelPopup.addSeparator();
 				
-				JMenuItem popupLog = new JMenuItem("Log");
+				JMenuItem popupLog = new JMenuItem("Log To Console");
 				popupLog.addActionListener(THIS);
 				panelPopup.add(popupLog);
 				
+				JMenuItem popupGet = new JMenuItem("Get String From Console");
+				popupGet.addActionListener(THIS);
+				panelPopup.add(popupGet);
+				
+				JMenuItem popupGetNum = new JMenuItem("Get Number From Console");
+				popupGetNum.addActionListener(THIS);
+				panelPopup.add(popupGetNum);
+				
 				JMenuItem popupMath = new JMenuItem("Math");
+				popupMath.setEnabled(false);
 				popupMath.addActionListener(THIS);
 				panelPopup.add(popupMath);
 				
-				JMenuItem popupFunction = new JMenuItem("Function");
-				popupFunction.addActionListener(THIS);
-				panelPopup.add(popupFunction);
-				
 				JMenuItem popupTimeline = new JMenuItem("Timeline");
 				popupTimeline.addActionListener(THIS);
+				popupTimeline.setEnabled(false);
 				panelPopup.add(popupTimeline);
 				
 				JMenuItem popupBlueprint = new JMenuItem("Blueprint");
 				popupBlueprint.addActionListener(THIS);
+				popupBlueprint.setEnabled(false);
 				panelPopup.add(popupBlueprint);
 				
 				entryPoint = new EntryPoint();
@@ -335,18 +353,30 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 		if(((JComponent) e.getSource()).getParent() == panelPopup){
 			p = clickLocation;
 			if(c == "Add"){
-				objects.add(new Arithmetic.AddDouble(Variable.DataType.DOUBLE,p));
+				objects.add(new Arithmetic.AddDouble(p));
 			}else if(c == "Subtract"){
-				objects.add(new Arithmetic.Subtract(Variable.DataType.DOUBLE,p));
+				objects.add(new Arithmetic.Subtract(p));
 			}else if(c == "Multiply"){
-				objects.add(new Arithmetic.Multiply(Variable.DataType.DOUBLE,p));
+				objects.add(new Arithmetic.Multiply(p));
 			}else if(c == "Divide"){
-				objects.add(new Arithmetic.Divide(Variable.DataType.DOUBLE,p));
-			}else if(c == "Log"){
+				objects.add(new Arithmetic.Divide(p));
+			}else if(c == "Concatenate"){
+				objects.add(new Arithmetic.Concat(p));
+			}else if(c == "Log To Console"){
 				if(Debug.console == null){
 					Debug.console = new Console();
 				}
 				objects.add(Debug.console.new Log(p));
+			}else if(c == "Get String From Console"){
+				if(Debug.console == null){
+					Debug.console = new Console();
+				}
+				objects.add(Debug.console.new getStr(p, Variable.DataType.STRING));
+			}else if(c == "Get Number From Console"){
+				if(Debug.console == null){
+					Debug.console = new Console();
+				}
+				objects.add(Debug.console.new getStr(p, Variable.DataType.DOUBLE));
 			}else{
 				System.out.println("null Action:"+c);
 			}

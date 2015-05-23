@@ -9,10 +9,14 @@ public class Debug{
 	
 	private static ArrayList<Executable> stack;
 	private static boolean isStepping = false;
+	private static Variable.DataType waitingForInput = null;
 	public static Console console;
 	
 	public static boolean isStepping() {
 		return isStepping;
+	}
+	public static Variable.DataType waitingForInput() {
+		return waitingForInput;
 	}
 	
 	private static void startStep(){
@@ -27,7 +31,8 @@ public class Debug{
 		}
 		console.clear();
 		console.setVisible(true);
-		Main.panel.requestFocus();
+		Main.window.requestFocus();
+		Main.panel.requestFocusInWindow();
 		isStepping = true;
 		stack = new ArrayList<Executable>(Arrays.asList(Main.entryPoint));
 		stack.get(0).setBorder(BorderFactory.createLineBorder(Color.yellow, 2));
@@ -119,6 +124,19 @@ public class Debug{
 		array = getTop().workingData.toArray(array);
 		VariableData execute = getTop().execute(array);
 		
+		if(getTop().getClass() == Console.getStr.class){
+			waitingForInput = ((Console.getStr) getTop()).getDataType();
+			System.out.println("isWaitingForInput = "+waitingForInput);
+			console.requestFocus();
+			console.input.requestFocusInWindow();
+		}else{
+			moveDownStack2(execute);
+		}
+	}
+	
+	public static void moveDownStack2(VariableData execute){
+		waitingForInput = null;
+		
 		getTop().setBorder(null);
 		
 		if(stack.size() == 1){
@@ -176,12 +194,16 @@ public class Debug{
 	}
 	
 	public static void tab() {
-		if(!isStepping){
-			startStep();
-		}else{
+		if(isStepping && waitingForInput == null){
 			step();
 		}
-		
+	}
+	public static void f1() {
+		if(isStepping()){
+			exit();
+		}else{
+			startStep();
+		}
 	}
 	
 }

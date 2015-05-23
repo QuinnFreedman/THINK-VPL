@@ -93,3 +93,6 @@
 /VArray$Add.class
 /VArray$Remove.class
 /VArray$Get_Length.class
+/Console$getStr.class
+/Arithmetic$Concat.class
+/Arithmetic$Concat$1.class
