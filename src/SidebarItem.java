@@ -10,22 +10,15 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.font.TextAttribute;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
-
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+import javax.swing.border.LineBorder;
 
 public class SidebarItem extends JPanel{
 	/**
@@ -38,6 +31,7 @@ public class SidebarItem extends JPanel{
 	protected InputPane nameField;
 	protected InputPane typeField;
 	protected ArrayList<InputPane> fields = new ArrayList<InputPane>();
+	static protected BufferedImage bufferedImage = null;
 	private SidebarItem getThis(){
 		return this;
 	}
@@ -94,10 +88,11 @@ public class SidebarItem extends JPanel{
 		return symbol;
 	}
 	SidebarItem(){
-	  	setBorder(BorderFactory.createLineBorder(new Color(0x414141)));
+	  	setBorder(BorderFactory.createCompoundBorder(new LineBorder(new Color(0x414141)), new EmptyBorder(new Insets(0,0,0,-5))));
     	setOpaque(false);
     	setLayout(new FlowLayout(FlowLayout.LEFT));
-
+		
+    	
 		header = new JPanel(new FlowLayout());
 		
 		JLabel close = new JLabel("\u00D7");

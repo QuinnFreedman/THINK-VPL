@@ -1,19 +1,25 @@
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import javax.swing.BorderFactory;
 
 public class Debug{
 	
 	private static ArrayList<Executable> stack;
+	private static ArrayList<Executable> remember;
 	private static boolean isStepping = false;
 	private static Variable.DataType waitingForInput = null;
 	public static Console console;
 	private static RunMode mode;
 	
-	private enum RunMode{
+	public static enum RunMode{
 		RUN,FAST,SLOW
+	}
+	
+	public static void setRunMode(RunMode rm){
+		mode = rm;
 	}
 	
 	public static boolean isStepping() {
@@ -39,9 +45,11 @@ public class Debug{
 		Main.panel.requestFocusInWindow();
 		isStepping = true;
 		stack = new ArrayList<Executable>(Arrays.asList(Main.entryPoint));
-		if(mode != RunMode.RUN)
-			stack.get(0).setBorder(BorderFactory.createLineBorder(Color.yellow, 2));
-		
+		remember = new ArrayList<Executable>();
+		if(mode != RunMode.RUN){
+			stack.get(0).setSelected(true);
+			stack.get(0).repaint();
+		}
 		for(VObject o : Main.objects){
 			if(o instanceof Executable){
 				System.out.println(o);
@@ -52,19 +60,23 @@ public class Debug{
 				
 			}
 		}
+		stepForever();
+	}
+	
+	public static void stepForever(){
 		if(mode == RunMode.RUN){
-			step();
+			while(step()){};
 			
 		}
 	}
-
 	
 	protected static void exit() {
 		isStepping = false;
 		Main.addVar.setEnabled(true);
 		for(VObject o : Main.objects){
 			if(o instanceof Executable){
-				((Executable) o).setBorder(null);
+				((Executable) o).setSelected(false);
+				((Executable) o).repaint();
 			}
 		}
 		for(Variable var : Main.variables){
@@ -102,22 +114,26 @@ public class Debug{
 		next.workingData.clear();
 		next.resetActiveNode();
 		
-		if(mode != RunMode.RUN)
-			getTop().setBorder(null);
+		if(mode != RunMode.RUN){
+			getTop().setSelected(false);
+			getTop().repaint();
+		}
 		
 		stack.add(next);
 		
-		if(mode != RunMode.RUN)
-			next.setBorder(BorderFactory.createLineBorder(Color.yellow, 2));
+		if(mode != RunMode.RUN){
+			next.setSelected(true);
+			next.repaint();
+		}
 		
 		return true;
 	}
 	
-	private static void moveDownStack(){
+	private static boolean moveDownStack(){
 		if(stack.isEmpty()){
 			System.out.println("stack is empty; exiting...");
 			exit();
-			return;
+			return false;
 		}
 		System.out.println("executing "+getTop().getClass().getName());
 		System.out.print(getTop().getClass().getName()+" workingData = ");
@@ -134,27 +150,40 @@ public class Debug{
 			System.out.println("isWaitingForInput = "+waitingForInput);
 			console.requestFocus();
 			console.input.requestFocusInWindow();
+			return false;
 		}else{
-			moveDownStack2(execute);
+			return moveDownStack2(execute);
 		}
 	}
 	
-	public static void moveDownStack2(VariableData execute){
+	public static boolean moveDownStack2(VariableData execute){
 		waitingForInput = null;
 		
-		if(mode != RunMode.RUN)
-			getTop().setBorder(null);
+		if(mode != RunMode.RUN){
+			getTop().setSelected(false);
+			getTop().repaint();
+		}
 		
 		if(stack.size() == 1){
 			Executable next = getNext(getTop());
 			stack.remove(stack.size()-1);
 			if(next != null){
+				if(next instanceof Repeater){
+					remember.add(next);
+					if(next instanceof Logic.Sequence){
+						((Logic.Sequence) next).activeOutNode = 0;
+					}
+				}
 				next.workingData.clear();
 				next.resetActiveNode();
 				stack.add(next);
 			}else{
-				exit();
-				return;
+				if(!remember.isEmpty()){
+					stack.add(remember.get(remember.size()-1));
+				}else{
+					exit();
+					return false;
+				}
 			}
 		}else{
 			stack.remove(stack.size()-1);
@@ -164,25 +193,54 @@ public class Debug{
 			getTop().workingData.add(execute);
 		}
 		if(mode != RunMode.RUN){
-			getTop().setBorder(BorderFactory.createLineBorder(Color.yellow, 2));
+			getTop().setSelected(true);
+			getTop().repaint();
 		}else{
-			step();
+			//step();
 		}
+		return true;
 	}
 
-	private static void step(){
+	private static boolean step(){
 		
-		if(!moveUpStack())
-			moveDownStack();
-		else if(mode == RunMode.RUN)
-			step();
-
+		/*System.out.println();
 		System.out.println("stack:");
 		for(VObject o : stack){
 			System.out.println(o.getClass().getSimpleName());
 		}
-		System.out.println();
+		System.out.println();*/
 		
+		try{
+			
+			boolean b;
+			
+			if(mode == RunMode.FAST){
+				b = moveUpStack();
+				
+				if(!b){
+					return moveDownStack();
+				}else{
+					do{
+						b = moveUpStack();
+					}while(b);
+					return b;
+				}
+				
+			}else{
+			
+				b = moveUpStack();
+				
+				if(!b){
+					return moveDownStack();
+				}else{
+					return b;
+				}
+			}
+			
+		}catch(Exception e){
+			console.post("ERROR: an unexpected error occured"+((stack.isEmpty() && stack.get(stack.size()-1).headerLabel != null) ? "" : " when executing \""+stack.get(stack.size()-1).headerLabel.getText()+"\"")+". The program will now exit.");
+			return false;
+		}
 	}
 	
 	private static Executable getTop(){
@@ -195,6 +253,23 @@ public class Debug{
 			children = ((EntryPoint) o).startNode.children;
 		}else if(o instanceof Logic.Branch){
 			children = o.getOutputNodes().get((((Logic.Branch) o).isTrue()) ? 0 : 1).children;
+		}else if(o instanceof Logic.While){
+			if(((Repeater) o).isContinue()){
+				o.resetActiveNode();
+				o.workingData = new ArrayList<VariableData>();
+				children = o.getOutputNodes().get(0).children;
+			}else{
+				children = o.getOutputNodes().get(1).children;
+				removeFromEnd(remember,o);
+			}
+		}else if(o instanceof Logic.Sequence){
+			if(((Logic.Sequence) o).activeOutNode < o.getOutputNodes().size()){
+				children = o.getOutputNodes().get(((Logic.Sequence) o).activeOutNode).children;
+				((Logic.Sequence) o).activeOutNode++;
+			}else{
+				children = new ArrayList<Node>();
+				removeFromEnd(remember,o);
+			}
 		}else{
 			children = o.getOutputNodes().get(0).children;
 		}
@@ -212,27 +287,38 @@ public class Debug{
 		}
 	}
 	public static void f1() {
-		if(isStepping()){
-			exit();
-		}else{
+		if(!isStepping()){
+    		Main.panel.requestFocusInWindow();
 			mode = RunMode.RUN;
 			startStep();
-		}
+    	}else{
+    		setRunMode(RunMode.RUN);
+    		stepForever();
+    	}
+
 	}
 	public static void f2() {
-		/*if(isStepping()){
-			exit();
-		}else{
+		if(!isStepping()){
+    		Main.panel.requestFocusInWindow();
+			mode = RunMode.FAST;
 			startStep();
-		}*/
+    	}else{
+    		setRunMode(RunMode.FAST);
+    		step();
+    	}
 	}
 	public static void f3() {
-		if(isStepping()){
-			exit();
-		}else{
-			mode = RunMode.SLOW;
+    	if(!isStepping()){
+    		Main.panel.requestFocusInWindow();
+    		mode = RunMode.SLOW;
 			startStep();
-		}
+    	}else{
+    		exit();
+    	}
 	}
-	
+	private static void removeFromEnd(ArrayList<Executable> list, Executable o){
+		ArrayList<Executable> reverseList = new ArrayList<Executable>(list);
+		Collections.reverse(reverseList);
+		list.remove(list.size() - 1 - reverseList.indexOf(o));
+	}
 }

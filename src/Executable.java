@@ -1,3 +1,4 @@
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -5,8 +6,13 @@ import java.awt.FlowLayout;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.LinearGradientPaint;
+import java.awt.MultipleGradientPaint;
 import java.awt.Point;
+import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
+import java.awt.geom.Point2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 
@@ -26,7 +32,7 @@ public class Executable extends VObject{
 	private ArrayList<Node> outputNodes;
 	protected int activeNode;
 	public ArrayList<VariableData> workingData;
-	private boolean selected = false;
+	protected boolean selected = false;
 	protected ArrayList<Node> getInputNodes(){
 		return inputNodes;
 	}
@@ -85,6 +91,18 @@ public class Executable extends VObject{
 	public void paintComponent(Graphics g){
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		if(selected){
+			 Point2D start = new Point2D.Float(0, 0);
+		     Point2D end = new Point2D.Float(this.getWidth()/2, 0);
+		     float[] dist = {0.0f, 0.7f};
+		     Color[] colors = {new Color(0,0,0,0), Color.YELLOW};
+		     LinearGradientPaint p =
+		         new LinearGradientPaint(start, end, dist, colors, MultipleGradientPaint.CycleMethod.REFLECT);
+			
+			g2.setPaint(p);
+			g2.setStroke(new BasicStroke(5));
+			g2.draw(new RoundRectangle2D.Double(-3, inputNodeHolder.getHeight()-8, this.getSize().width+4, this.body.getSize().height+14, 20, 20));
+		}
 		GradientPaint gradient = new GradientPaint(0, 
 				inputNodeHolder.getHeight()-5, 
 				color,
@@ -101,8 +119,13 @@ public class Executable extends VObject{
 
 		NodeHolder(){
 			this.setOpaque(false);
-			this.setPreferredSize(new Dimension(15,15));
+			//this.setPreferredSize(new Dimension(15,15));
 			((FlowLayout) this.getLayout()).setVgap(0);
+		}
+		
+		@Override
+		public Dimension getPreferredSize(){
+			return new Dimension(Math.max((((FlowLayout) this.getLayout()).getHgap()+15)*this.getComponentCount(),15),15);
 		}
 	}
 	

@@ -1,3 +1,4 @@
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
@@ -35,6 +36,7 @@ import javax.swing.event.MouseInputListener;
 import javax.swing.JLabel;
 
 import java.awt.Component;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
@@ -73,6 +75,12 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 		colors.put(Variable.DataType.NUMBER, Color.GRAY);
 		colors.put(Variable.DataType.FLEX, Color.GRAY);
 		
+		try {
+			SidebarItem.bufferedImage = ImageIO.read(Main.class.getResource("/drag.png"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 
             @Override
@@ -83,17 +91,13 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
                         if (ke.getKeyCode() == KeyEvent.VK_ALT) {
                             altPressed = true;
                         }else if (ke.getKeyCode() == KeyEvent.VK_F1){
-                        	if(!Debug.isStepping()){
-                        		Main.panel.requestFocusInWindow();
-                        		Debug.f1();
-                        	}else{
-                        		Debug.exit();
-                        	}
+                        	Debug.f1();
+                        }else if (ke.getKeyCode() == KeyEvent.VK_F2){
+                        	Debug.f2();
                         }else if (ke.getKeyCode() == KeyEvent.VK_F3){
-                        	if(!Debug.isStepping()){
-                        		Main.panel.requestFocusInWindow();
-                        		Debug.f3();
-                        	}else{
+                        	Debug.f3();
+                        }else if (ke.getKeyCode() == KeyEvent.VK_ESCAPE){
+                        	if(Debug.isStepping()){
                         		Debug.exit();
                         	}
                         }
@@ -208,6 +212,10 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				mntmRun.addActionListener(THIS);
 				mnRun.add(mntmRun);
 				
+				mntmRun = new JMenuItem("Fast Debug (f2)");
+				mntmRun.addActionListener(THIS);
+				mnRun.add(mntmRun);
+				
 				JMenuItem mntmDebug = new JMenuItem("Debug (f3)");
 				mntmDebug.addActionListener(THIS);
 				mnRun.add(mntmDebug);
@@ -216,7 +224,6 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				menuBar.add(mnHelp);
 				
 				panel = new DisplayPanel();
-				panel.setPreferredSize(new Dimension(1000, 1000));
 				
 				JScrollPane scrollPane = new JScrollPane(panel);
 					
@@ -354,6 +361,28 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				popupGreaterEqual.addActionListener(THIS);
 				panelPopup.add(popupGreaterEqual);
 				
+				JMenuItem popupItem = new JMenuItem("And");
+				popupItem.addActionListener(THIS);
+				panelPopup.add(popupItem);
+				
+				popupItem = new JMenuItem("Or");
+				popupItem.addActionListener(THIS);
+				panelPopup.add(popupItem);
+				
+				popupItem = new JMenuItem("Not");
+				popupItem.addActionListener(THIS);
+				panelPopup.add(popupItem);
+
+				panelPopup.addSeparator();
+				
+				popupItem = new JMenuItem("While");
+				popupItem.addActionListener(THIS);
+				panelPopup.add(popupItem);
+				
+				popupItem = new JMenuItem("Sequence");
+				popupItem.addActionListener(THIS);
+				panelPopup.add(popupItem);
+				
 				panelPopup.addSeparator();
 				
 				JMenuItem popupLog = new JMenuItem("Log To Console");
@@ -421,6 +450,10 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				objects.add(new Arithmetic.Concat(p));
 			}else if(c == "Branch"){
 				objects.add(new Logic.Branch(p));
+			}else if(c == "While"){
+				objects.add(new Logic.While(p));
+			}else if(c == "Sequence"){
+				objects.add(new Logic.Sequence(p));
 			}else if(c == "Equals"){
 				objects.add(new Logic.Equals(p));
 			}else if(c == "Is Less Than"){
@@ -431,6 +464,12 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				objects.add(new Logic.LessOrEqual(p));
 			}else if(c == "Is Greater Than Or Equal To"){
 				objects.add(new Logic.GreaterOrEqual(p));
+			}else if(c == "And"){
+				objects.add(new Logic.And(p));
+			}else if(c == "Or"){
+				objects.add(new Logic.Or(p));
+			}else if(c == "Not"){
+				objects.add(new Logic.Not(p));
 			}else if(c == "Log To Console"){
 				if(Debug.console == null){
 					Debug.console = new Console();
@@ -478,8 +517,10 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				Main.variables.get(0).nameField.requestFocusInWindow();
 			}else if(c == "Run (f1)"){
 				Debug.f1();
-			}else if(c == "Debug (f3)"){
+			}else if(c == "Fast Debug (f2)"){
 				Debug.f2();
+			}else if(c == "Debug (f3)"){
+				Debug.f3();
 			}else{
 				System.out.println("null Action:"+c);
 			}
@@ -557,6 +598,20 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 			this.setFocusTraversalKeysEnabled(false);
 			this.setLayout(null);
 			this.setBackground(new Color(0x5D5D5D));
+		}
+		
+		@Override
+		public Dimension getPreferredSize(){
+			Dimension dimension = new Dimension(1000, 1000);
+			for(VObject o : Main.objects){
+				if(o.getX() + o.getWidth() > dimension.width){
+					dimension.width = o.getX() + o.getWidth() + 10;
+				}
+				if(o.getY() + o.getHeight() > dimension.height){
+					dimension.height = o.getY() + o.getHeight() + 10;
+				}
+			}
+			return dimension;
 		}
 		
 		@Override

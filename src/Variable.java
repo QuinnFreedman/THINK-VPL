@@ -1,9 +1,14 @@
 import java.awt.Cursor;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -53,9 +58,10 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 		header.add(valueField);
 		fields.add(valueField);
 		
-		JRadioButton drag = new JRadioButton();
+		JLabel drag = new JLabel();
+		ImageIcon image = new ImageIcon(bufferedImage);
+		drag.setIcon(image);
 		drag.setFocusable(false);
-		drag.setSelected(true);
 		drag.addMouseListener(new MouseListener(){{
 			
 			}
