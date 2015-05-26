@@ -33,6 +33,8 @@ public class Executable extends VObject{
 	protected int activeNode;
 	public ArrayList<VariableData> workingData;
 	protected boolean selected = false;
+	protected boolean executeOnce = false;
+	public ArrayList<VariableData> outputData;
 	protected ArrayList<Node> getInputNodes(){
 		return inputNodes;
 	}
@@ -71,6 +73,30 @@ public class Executable extends VObject{
 	public void incrementActiveNode() {
 		activeNode++;
 	}
+
+	public ArrayList<Variable.DataType> getTypeInputs(){
+		if(this.inputNodes.isEmpty()){
+			return null;
+		}else{
+			ArrayList<Variable.DataType> inputs = new ArrayList<Variable.DataType>();
+			for(Node n : inputNodes){
+				inputs.add(n.dataType);
+			}
+			return inputs;
+		}
+	}
+	public ArrayList<Variable.DataType> getTypeOutputs(){
+		if(this.outputNodes.isEmpty()){
+			return null;
+		}else{
+			ArrayList<Variable.DataType> outputs = new ArrayList<Variable.DataType>();
+			for(Node n : outputNodes){
+				outputs.add(n.dataType);
+			}
+			return outputs;
+		}
+	}
+	
 	Executable(GraphEditor owner){
 		super(owner);
 		inputNodes = new ArrayList<Node>();
@@ -136,5 +162,8 @@ public class Executable extends VObject{
 	public Dimension getSize(){
 		return new Dimension(Math.max(60,this.getPreferredSize().width),
 				30+inputNodeHolder.getPreferredSize().height+outputNodeHolder.getPreferredSize().height);
+	}
+	public String getFunctionName(){
+		return this.getClass().getSimpleName().replace('_',' ');
 	}
 }

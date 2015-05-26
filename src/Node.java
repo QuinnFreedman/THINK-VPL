@@ -31,6 +31,8 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	boolean isHover = false;
 	public Variable.DataType dataType;
 	protected Dimension size = new Dimension(15,15);
+	private ChildPicker childPicker;
+	
 	Node(NodeType type,VObject parentObj,boolean mi){
 		this.canHaveMultipleInputs = mi;
 		this.setOpaque(false);
@@ -156,27 +158,36 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 			
 			String s = "";
 			
-			Node recievingNode;
+			ArrayList<VariableData> dataList = null;
+			
+			int index = 0;
 			
 			if(this.dataType == Variable.DataType.GENERIC){
 				return;
 			}
 			if(this.type == NodeType.RECIEVING){
-				recievingNode = this;
-			}else/* if(this.children != null && this.parents.size() == 1){
-				sendingNode = this.parents.get(0);
-			}else*/{
-				return;
+				if(((Executable) this.parentObject).workingData != null && !((Executable) this.parentObject).workingData.isEmpty()){
+					dataList = ((Executable) this.parentObject).workingData;
+					index = ((Executable) this.parentObject).getInputNodes().indexOf(this)
+							-((((Executable) this.parentObject).getInputNodes().get(0).dataType == Variable.DataType.GENERIC) ? 1 : 0);
+				}else{
+					s = "undefined";
+				}
+			}else{
+				if(((Executable) this.parentObject).outputData != null && !((Executable) this.parentObject).outputData.isEmpty()){
+					dataList = ((Executable) this.parentObject).outputData;
+					index = ((Executable) this.parentObject).getOutputNodes().indexOf(this)
+							-((((Executable) this.parentObject).getOutputNodes().get(0).dataType == Variable.DataType.GENERIC) ? 1 : 0);
+				}else{
+					s = "undefined";
+				}
 			}
 			
-			if(((Executable) recievingNode.parentObject).workingData != null && !((Executable) recievingNode.parentObject).workingData.isEmpty()){
-				int index = 
-						((Executable) recievingNode.parentObject).getInputNodes().indexOf(recievingNode)
-						-((((Executable) recievingNode.parentObject).getInputNodes().get(0).dataType == Variable.DataType.GENERIC) ? 1 : 0);
 				
-				ArrayList<VariableData> workingData = ((Executable) recievingNode.parentObject).workingData;
-				if(index < workingData.size()){
-					VariableData data = workingData.get(index);
+			if(s.equals("")){
+				
+				if(index < dataList.size()){
+					VariableData data = dataList.get(index);
 					s = data.getValueAsString();
 					if(data.getClass() == VariableData.String.class){
 						s = "\""+s+"\"";
@@ -186,8 +197,6 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 				}else{
 					s = "undefined";
 				}
-			}else{
-				s = "undefined";
 			}
 			
 			nodePopup = new JPopupMenu();
@@ -221,6 +230,9 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	}
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		if(Main.altPressed){
+			return;
+		}
 		currentlyDragging = null;
 		this.removeMouseMotionListener(this);
 		if(Debug.isStepping())
@@ -230,34 +242,55 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		for(Node node : Main.nodes){
 			rect = new Rectangle(getLocationOnPanel(node,node.parentObject.owner.getPanel()),new Dimension(node.getWidth(),node.getHeight()));
 			if(rect.contains(mouse) && canConnect(this,node)){
-				Node A;
-				Node B;
-				if(node.type == NodeType.RECIEVING && this.type == NodeType.SENDING){
-					A = this;
-					B = node;
-				}else{
-					A = node;
-					B = this;
-				}
-				if(A.dataType == B.dataType || 
-						((A.dataType == Variable.DataType.NUMBER && B.dataType.isNumber()) || 
-						(B.dataType == Variable.DataType.NUMBER && A.dataType.isNumber()) ||
-						(A.dataType == Variable.DataType.FLEX && B.dataType != Variable.DataType.NUMBER) ||
-						(B.dataType == Variable.DataType.FLEX && A.dataType != Variable.DataType.NUMBER)
-						)){
-					connect(A,B);
-				}else if(Cast.isCastable(A.dataType,B.dataType)){
-					Main.objects.add(new Cast(A,B));
-				}
-				break;
+				
+				castOrConnect(node,this);
+				
+				return;
 				
 			}
 		}
+		Point p = getLocationOnPanel(this,this.parentObject.owner.getPanel());
+		rect = new Rectangle(
+				new Point(p.x-this.getWidth()/2,p.y-this.getHeight()/2),new Dimension(2*this.getWidth(),2*this.getHeight()));
+		if(rect.contains(mouse)){
+			parentObject.owner.getPanel().repaint();
+			return;
+		}
 		
-		this.parentObject.owner.getPanel().repaint();
+		if(this.childPicker != null){
+			childPicker.delete();
+		}
+		if(mouse.x > 0 && mouse.y > 0 && mouse.x < parentObject.owner.getPanel().getWidth() && mouse.y < parentObject.owner.getPanel().getHeight()){
+			ChildPicker childPicker = new ChildPicker(this, mouse, parentObject.owner);
+			Main.objects.add(childPicker);
+			this.childPicker = childPicker;
+		}
 	}
 	
-	private static boolean canConnect(Node node1, Node node2){
+	public static void castOrConnect(Node node1, Node node2){
+		Node A;
+		Node B;
+		if(node1.type == NodeType.RECIEVING && node2.type == NodeType.SENDING){
+			A = node2;
+			B = node1;
+		}else{
+			A = node1;
+			B = node2;
+		}
+		if(A.dataType == B.dataType || 
+				((A.dataType == Variable.DataType.NUMBER && B.dataType.isNumber()) || 
+				(B.dataType == Variable.DataType.NUMBER && A.dataType.isNumber()) ||
+				(A.dataType == Variable.DataType.FLEX && B.dataType != Variable.DataType.NUMBER) ||
+				(B.dataType == Variable.DataType.FLEX && A.dataType != Variable.DataType.NUMBER)
+				)){
+			connect(A,B);
+		}else if(Cast.isCastable(A.dataType,B.dataType)){
+			Main.objects.add(new Cast(A,B));
+		}
+		node2.parentObject.owner.getPanel().repaint();
+	}
+	
+	public static boolean canConnect(Node node1, Node node2){
 		if(node1.parentObject == node2.parentObject){
 			return false;
 		}

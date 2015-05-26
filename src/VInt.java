@@ -28,11 +28,11 @@ public class VInt extends Variable{
 		
 		this.valueField.setText(Integer.toString(value));
 		
-		this.functions.add(new Get());
-		this.functions.add(new Set());
-		this.functions.add(new Add_To());
-		this.functions.add(new Multiply_By());
-		this.functions.add(new Increment());
+		this.functions.add(new Get(this));
+		this.functions.add(new Set(this));
+		this.functions.add(new Add_To(this));
+		this.functions.add(new Multiply_By(this));
+		this.functions.add(new Increment(this));
 		
 		resetVariableData();
 	}
@@ -65,11 +65,14 @@ public class VInt extends Variable{
 			return getParentVar().varData;
 			
 		}
+		Get(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
 		Get(Point pos, Variable parent) {
 			super(pos, parent);
 		}
-		Get(){
-			super();
+		Get(Variable parent){
+			super(parent);
 		}
 		
 	}
@@ -92,11 +95,14 @@ public class VInt extends Variable{
 			return null;
 			
 		}
+		Set(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
 		Set(Point pos, Variable parent) {
 			super(pos, parent);
 		}
-		Set(){
-			super();
+		Set(Variable parent){
+			super(parent);
 		}
 		
 	}
@@ -117,11 +123,14 @@ public class VInt extends Variable{
 			((VariableData.Integer) getParentVar().varData).value += ((VariableData.Integer) input[0]).value;
 			return null;
 		}
+		Add_To(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
 		Add_To(Point pos, Variable parent) {
 			super(pos, parent);
 		}
-		Add_To(){
-			super();
+		Add_To(Variable parent){
+			super(parent);
 		}
 		
 	}
@@ -142,11 +151,14 @@ public class VInt extends Variable{
 			((VariableData.Integer) getParentVar().varData).value *= ((VariableData.Integer) input[0]).value;
 			return null;
 		}
+		Multiply_By(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
 		Multiply_By(Point pos, Variable parent) {
 			super(pos, parent);
 		}
-		Multiply_By(){
-			super();
+		Multiply_By(Variable parent){
+			super(parent);
 		}
 		
 	}
@@ -167,11 +179,14 @@ public class VInt extends Variable{
 			((VariableData.Integer) getParentVar().varData).value++;
 			return null;
 		}
+		Increment(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
 		Increment(Point pos, Variable parent) {
 			super(pos, parent);
 		}
-		Increment(){
-			super();
+		Increment(Variable parent){
+			super(parent);
 		}
 		
 	}

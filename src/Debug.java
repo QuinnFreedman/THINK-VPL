@@ -56,6 +56,7 @@ public class Debug{
 				Executable o2 = ((Executable) o);
 				o2.resetActiveNode();
 				o2.workingData = new ArrayList<VariableData>();
+				o2.outputData = new ArrayList<VariableData>();
 				System.out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
 				
 			}
@@ -141,6 +142,7 @@ public class Debug{
 			System.out.print(var.getValueAsString());
 		}
 		System.out.println();
+		
 		VariableData[] array = new VariableData[getTop().workingData.size()];
 		array = getTop().workingData.toArray(array);
 		VariableData execute = getTop().execute(array);
@@ -158,6 +160,8 @@ public class Debug{
 	
 	public static boolean moveDownStack2(VariableData execute){
 		waitingForInput = null;
+		
+		getTop().outputData = new ArrayList<VariableData>(Arrays.asList(execute));
 		
 		if(mode != RunMode.RUN){
 			getTop().setSelected(false);
@@ -257,6 +261,7 @@ public class Debug{
 			if(((Repeater) o).isContinue()){
 				o.resetActiveNode();
 				o.workingData = new ArrayList<VariableData>();
+				o.outputData = new ArrayList<VariableData>();
 				children = o.getOutputNodes().get(0).children;
 			}else{
 				children = o.getOutputNodes().get(1).children;

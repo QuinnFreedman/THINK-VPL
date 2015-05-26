@@ -66,7 +66,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener, Gr
 	private static JPopupMenu panelPopup;
 	private static Point clickLocation;
 	public static EntryPoint entryPoint;
-	private static Main THIS;
+	public static Main THIS;
 	@Override
 	public ArrayList<Variable> getVariables(){
 		return variables;
@@ -84,7 +84,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener, Gr
 		return panel;
 	}
 	public static void main(String[] args){
-		new Main();
+		THIS = new Main();
 		colors.put(Variable.DataType.BOOLEAN, new Color(20,210,20));
 		colors.put(Variable.DataType.INTEGER, Color.red);
 		colors.put(Variable.DataType.DOUBLE, new Color(196,0,167));
@@ -144,6 +144,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener, Gr
 				window.setTitle("VisualIDE");
 				window.setSize(800,500);
 				window.setMinimumSize(new Dimension(555,325));
+				//window.setLocationByPlatform(true);
 				window.setLocationRelativeTo(null);
 				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				
@@ -490,7 +491,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener, Gr
 		if(((JComponent) e.getSource()).getParent() == panelPopup){
 			p = clickLocation;
 			if(c == "Add"){
-				objects.add(new Arithmetic.AddDouble(p,THIS));
+				objects.add(new Arithmetic.Add(p,THIS));
 			}else if(c == "Subtract"){
 				objects.add(new Arithmetic.Subtract(p,THIS));
 			}else if(c == "Multiply"){

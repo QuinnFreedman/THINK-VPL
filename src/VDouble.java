@@ -24,10 +24,10 @@ public class VDouble extends Variable{
 		
 		this.valueField.setText(Double.toString(value));
 		
-		this.functions.add(new Get());
-		this.functions.add(new Set());
-		this.functions.add(new Add_To());
-		this.functions.add(new Multiply_By());
+		this.functions.add(new Get(this));
+		this.functions.add(new Set(this));
+		this.functions.add(new Add_To(this));
+		this.functions.add(new Multiply_By(this));
 
 		resetVariableData();
 	}
@@ -58,11 +58,14 @@ public class VDouble extends Variable{
 		public VariableData execute(VariableData[] input){
 			return getParentVar().varData;
 		}
+		Get(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
 		Get(Point pos, Variable parent) {
 			super(pos, parent);
 		}
-		Get(){
-			super();
+		Get(Variable parent){
+			super(parent);
 		}
 		
 	}
@@ -83,11 +86,14 @@ public class VDouble extends Variable{
 			getParentVar().varData = input[0];
 			return null;
 		}
+		Set(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
 		Set(Point pos, Variable parent) {
 			super(pos, parent);
 		}
-		Set(){
-			super();
+		Set(Variable parent){
+			super(parent);
 		}
 		
 	}
@@ -108,11 +114,14 @@ public class VDouble extends Variable{
 			((VariableData.Double) getParentVar().varData).value += ((VariableData.Double) input[0]).value;
 			return null;
 		}
+		Add_To(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
 		Add_To(Point pos, Variable parent) {
 			super(pos, parent);
 		}
-		Add_To(){
-			super();
+		Add_To(Variable parent){
+			super(parent);
 		}
 		
 	}
@@ -133,11 +142,14 @@ public class VDouble extends Variable{
 			((VariableData.Double) getParentVar().varData).value *= ((VariableData.Double) input[0]).value;
 			return null;
 		}
+		Multiply_By(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
 		Multiply_By(Point pos, Variable parent) {
 			super(pos, parent);
 		}
-		Multiply_By(){
-			super();
+		Multiply_By(Variable parent){
+			super(parent);
 		}
 		
 	}

@@ -24,9 +24,9 @@ public class VBoolean extends Variable{
 		
 		this.valueField.setText(Boolean.toString(value));
 		
-		this.functions.add(new Get());
-		this.functions.add(new Set());
-		this.functions.add(new Toggle());
+		this.functions.add(new Get(this));
+		this.functions.add(new Set(this));
+		this.functions.add(new Toggle(this));
 
 		resetVariableData();
 	}
@@ -53,11 +53,14 @@ public class VBoolean extends Variable{
 		public VariableData execute(VariableData[] input){
 			return getParentVar().varData;
 		}
+		Get(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
 		Get(Point pos, Variable parent) {
 			super(pos, parent);
 		}
-		Get(){
-			super();
+		Get(Variable parent){
+			super(parent);
 		}
 		
 	}
@@ -78,11 +81,14 @@ public class VBoolean extends Variable{
 			getParentVar().varData = input[0];
 			return null;
 		}
+		Set(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
 		Set(Point pos, Variable parent) {
 			super(pos, parent);
 		}
-		Set(){
-			super();
+		Set(Variable parent){
+			super(parent);
 		}
 		
 	}
@@ -103,11 +109,14 @@ public class VBoolean extends Variable{
 			((VariableData.Boolean) getParentVar().varData).value = !(((VariableData.Boolean) getParentVar().varData).value);
 			return null;
 		}
+		Toggle(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
 		Toggle(Point pos, Variable parent) {
 			super(pos, parent);
 		}
-		Toggle(){
-			super();
+		Toggle(Variable parent){
+			super(parent);
 		}
 		
 	}

@@ -28,46 +28,43 @@ public class PrimitiveFunction extends Executable{
 	public Variable getParentVar(){
 		return parentVar;
 	}
-	public String getFunctionName(){
-		return this.getClass().getSimpleName().replace('_',' ');
-	}
 	protected PrimitiveFunction getThis(){
 		return this;
 	}
 	PrimitiveFunction(Point pos, Variable parent){
-		super(parent.getOwner());
+		this(pos,parent,parent.getOwner());
+	}
+	PrimitiveFunction(Point pos, Variable parent, GraphEditor owner){
+		super(owner);
 		this.type = parent.dataType;
 		this.parentVar = parent;
 		this.parentVar.addChild(this);
 		this.color = Main.colors.get(parent.dataType);
 		
-		SwingUtilities.invokeLater(new Runnable() {
-	        @Override
-	        public void run() {
-				body.setLayout(new GridBagLayout());
-		        GridBagConstraints gbc = new GridBagConstraints();
-		        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-				label = new JLabel();
-				setText(parentVar.nameField.getText());
-				body.add(label,gbc);
-				
-				if(getInputs() != null){
-					for(Variable.DataType dt : getInputs()){
-						if(dt == Variable.DataType.GENERIC)
-							addInputNode(new Node(Node.NodeType.RECIEVING,getThis(),dt,true));
-						else
-							addInputNode(new Node(Node.NodeType.RECIEVING,getThis(),dt,false));
-					}
-				}
-				if(getOutputs() != null){
-					for(Variable.DataType dt : getOutputs()){
-						boolean b = (dt != Variable.DataType.GENERIC);
-						addOutputNode(new Node(Node.NodeType.SENDING,getThis(),dt,b));
-					}
-				}
-				
-				setBounds(new Rectangle(pos,getSize()));
-	        }});
+		body.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+		label = new JLabel();
+		setText(parentVar.nameField.getText());
+		body.add(label,gbc);
+		
+		if(getInputs() != null){
+			for(Variable.DataType dt : getInputs()){
+				if(dt == Variable.DataType.GENERIC)
+					addInputNode(new Node(Node.NodeType.RECIEVING,getThis(),dt,true));
+				else
+					addInputNode(new Node(Node.NodeType.RECIEVING,getThis(),dt,false));
+			}
+		}
+		if(getOutputs() != null){
+			for(Variable.DataType dt : getOutputs()){
+				boolean b = (dt != Variable.DataType.GENERIC);
+				addOutputNode(new Node(Node.NodeType.SENDING,getThis(),dt,b));
+			}
+		}
+		
+		setBounds(new Rectangle(pos,getSize()));
+	       
 	}
 	
 	public void setText(String s) {
@@ -81,8 +78,9 @@ public class PrimitiveFunction extends Executable{
 		}
 		return s.substring(0, i-2)+"...";
 	}
-	PrimitiveFunction() {
+	PrimitiveFunction(Variable parent) {
 		super();
+		this.parentVar = parent;
 	}
 
 	public void removeFromParent(){
