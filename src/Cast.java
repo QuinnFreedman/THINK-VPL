@@ -14,14 +14,14 @@ public class Cast extends Executable{
 		return this;
 	}
 	Cast(Node sendingNode, Node recievingNode){
-		super();
+		super(sendingNode.parentObject.owner);
 		this.color = Color.BLACK;
 		SwingUtilities.invokeLater(new Runnable() {
 	        @Override
 	        public void run() {
 	        	getThis().sendingNode = sendingNode;
 	        	getThis().recievingNode = recievingNode;
-				Main.panel.add(getThis());
+	        	owner.getPanel().add(getThis());
 				Node inputNode = new Node(Node.NodeType.RECIEVING, getThis(), sendingNode.dataType);
 				Node outputNode = new Node(Node.NodeType.SENDING, getThis(), recievingNode.dataType,true);
 				addInputNode(inputNode);
@@ -30,8 +30,8 @@ public class Cast extends Executable{
 				output = outputNode.dataType;
 				setBounds(new Rectangle(
 						new Point(
-								((Node.getLocationOnPanel(recievingNode).x+(recievingNode.getPreferredSize().width/2))+(Node.getLocationOnPanel(sendingNode).x+(sendingNode.getPreferredSize().width/2)))/2 - getThis().getSize().width/2, 
-								((Node.getLocationOnPanel(recievingNode).y+(recievingNode.getPreferredSize().height/2))+(Node.getLocationOnPanel(sendingNode).y+(sendingNode.getPreferredSize().height/2)))/2 - getThis().getSize().height/2
+								((Node.getLocationOnPanel(recievingNode,owner.getPanel()).x+(recievingNode.getPreferredSize().width/2))+(Node.getLocationOnPanel(sendingNode,owner.getPanel()).x+(sendingNode.getPreferredSize().width/2)))/2 - getThis().getSize().width/2, 
+								((Node.getLocationOnPanel(recievingNode,owner.getPanel()).y+(recievingNode.getPreferredSize().height/2))+(Node.getLocationOnPanel(sendingNode,owner.getPanel()).y+(sendingNode.getPreferredSize().height/2)))/2 - getThis().getSize().height/2
 						),
 						getSize()));
 

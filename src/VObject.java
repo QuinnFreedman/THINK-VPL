@@ -21,11 +21,13 @@ public class VObject extends JPanel implements MouseInputListener{
 	int borderWidth;
 	JPanel body;
 	JLabel headerLabel;
+	public GraphEditor owner;
 	
 	protected static Point getFreePosition(){
 		return new Point(10,10);
 	}
-	VObject(){
+	VObject(GraphEditor owner){
+		this.owner = owner;
 		this.addMouseListener(this);
 		this.setOpaque(false);
 		this.setLayout(new BorderLayout());
@@ -34,8 +36,16 @@ public class VObject extends JPanel implements MouseInputListener{
 		body = new JPanel();
 		body.setOpaque(false);
 		this.add(body,BorderLayout.CENTER);
+		
+		owner.getObjects().add(this);
+		owner.getPanel().add(this);
+		owner.getPanel().repaint();
+		owner.getPanel().revalidate();
 	}
 	
+	public VObject() {
+		//Auto-generated constructor stub
+	}
 	public void delete(){
 		if(Debug.isStepping() && this.getClass() != PrimitiveChildPicker.class)
 			return;
@@ -44,8 +54,8 @@ public class VObject extends JPanel implements MouseInputListener{
 			((PrimitiveFunction) this).removeFromParent();
 		}
 		Main.objects.remove(this);
-		Main.panel.remove(this);
-		Iterator<Curve> itr = Main.curves.iterator();
+		owner.getPanel().remove(this);
+		Iterator<Curve> itr = owner.getCurves().iterator();
 		Curve c = null;
 		while(itr.hasNext()){
 			c = itr.next();
@@ -81,7 +91,7 @@ public class VObject extends JPanel implements MouseInputListener{
 				itrN.remove();
 			}
 		}
-		Main.panel.repaint();
+		owner.getPanel().repaint();
 	}
 	
 	@Override

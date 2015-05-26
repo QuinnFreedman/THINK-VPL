@@ -41,12 +41,13 @@ import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 
-public class Main implements ActionListener, MouseInputListener, KeyListener{
+public class Main implements ActionListener, MouseInputListener, KeyListener, GraphEditor{
 	static ArrayList<VObject> objects = new ArrayList<VObject>();
 	static ArrayList<Curve> curves = new ArrayList<Curve>();
 	static ArrayList<Node> nodes = new ArrayList<Node>();
 	static final int gridWidth = 10;
 	public static ArrayList<Variable> variables = new ArrayList<Variable>();
+	public static ArrayList<VFunction> functions = new ArrayList<VFunction>();
 	static Point mousePos = new Point();
 	static HashMap<Variable.DataType,Color> colors = new HashMap<Variable.DataType,Color>();
 	public static boolean altPressed = false;
@@ -55,15 +56,33 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 	 */
 	static ComponentMover componentMover;
 	public static JFrame window;
-	static JPanel panel;
+	static DisplayPanel panel;
 	static JButton addVar;
+	static JButton addFunc;
 	private static JPanel vars;
+	private static JPanel funcs;
 	private JScrollPane scrollVars;
+	private JScrollPane scrollFuncs;
 	private static JPopupMenu panelPopup;
 	private static Point clickLocation;
 	public static EntryPoint entryPoint;
-	
-	
+	private static Main THIS;
+	@Override
+	public ArrayList<Variable> getVariables(){
+		return variables;
+	}
+	@Override
+	public ArrayList<VObject> getObjects(){
+		return objects;
+	}
+	@Override
+	public ArrayList<Curve> getCurves(){
+		return curves;
+	}
+	@Override
+	public Main.DisplayPanel getPanel(){
+		return panel;
+	}
 	public static void main(String[] args){
 		new Main();
 		colors.put(Variable.DataType.BOOLEAN, new Color(20,210,20));
@@ -116,7 +135,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 	}
 	
 	Main(){
-		Main THIS = this;
+		THIS = this;
 		SwingUtilities.invokeLater(new Runnable() {
 
 	        @Override
@@ -223,9 +242,11 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				JMenu mnHelp = new JMenu("Help");
 				menuBar.add(mnHelp);
 				
-				panel = new DisplayPanel();
+				panel = new DisplayPanel(THIS);
 				
 				JScrollPane scrollPane = new JScrollPane(panel);
+				scrollPane.getVerticalScrollBar().setUnitIncrement(10);
+				scrollPane.getHorizontalScrollBar().setUnitIncrement(10);
 					
 			//SIDEBAR
 				
@@ -257,7 +278,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				varButtonHolder.add(addVar);
 				addVar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						Variable v = new Variable();
+						Variable v = new Variable(THIS);
 						variables.add(0,v);
 						updateVars();
 						variables.get(0).fields.get(0).requestFocusInWindow();
@@ -270,14 +291,38 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				
 				
 				JPanel funcsContainer = new JPanel();
-				funcsContainer.setLayout(new BoxLayout(funcsContainer, BoxLayout.Y_AXIS));
+				
+				funcsContainer.setLayout(new BorderLayout(0, 0));
+				
+				JPanel funcsHeader = new JPanel();
+				funcsContainer.add(funcsHeader, BorderLayout.NORTH);
+				funcsHeader.setLayout(new BorderLayout(0, 0));
 				
 				JLabel lblFuncs = new JLabel("Functions");
-				lblFuncs.setAlignmentX(Component.CENTER_ALIGNMENT);
-				funcsContainer.add(lblFuncs);
-				JPanel funcs = new JPanel();
-				//funcs.setLayout(new BoxLayout(vars,BoxLayout.Y_AXIS));
-				JScrollPane scrollFuncs = new JScrollPane(funcs);
+				lblFuncs.setHorizontalAlignment(SwingConstants.CENTER);
+				funcsHeader.add(lblFuncs);
+				
+				JPanel funcsButtonHolder = new JPanel();
+				funcsHeader.add(funcsButtonHolder, BorderLayout.EAST);
+				
+				funcs = new JPanel();
+				scrollFuncs = new JScrollPane(funcs);
+				BoxLayout layout2 = new BoxLayout(funcs, BoxLayout.Y_AXIS);
+				funcs.setLayout(layout2);
+				
+				addFunc = new JButton("+");
+				addFunc.setPreferredSize(new Dimension(30,addFunc.getPreferredSize().height));
+				funcsButtonHolder.add(addFunc);
+				addFunc.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						VFunction f = new VFunction(THIS);
+						functions.add(0,f);
+						updateFuncs();
+						functions.get(0).fields.get(1).requestFocusInWindow();
+						scrollFuncs.getViewport().setViewPosition(new Point(0,0));
+					}
+				});
+				
 				scrollFuncs.setMinimumSize(minimumSize);
 				funcsContainer.add(scrollFuncs);
 				
@@ -412,20 +457,30 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 				popupBlueprint.setEnabled(false);
 				panelPopup.add(popupBlueprint);*/
 				
-				entryPoint = new EntryPoint();
+				entryPoint = new EntryPoint(THIS);
 				panel.add(entryPoint);
 		
 				Main.panel.requestFocusInWindow();
 	        }
 		});
 	}
-	public static void updateVars(){
+	@Override
+	public void updateVars(){
 		vars.removeAll();
 		for(Variable var : variables){
 			vars.add(var);
 		}
 		vars.repaint();
 		vars.revalidate();
+	}
+	
+	public static void updateFuncs(){
+		funcs.removeAll();
+		for(VFunction f : functions){
+			funcs.add(f);
+		}
+		funcs.repaint();
+		funcs.revalidate();
 	}
 	
 	@Override
@@ -435,83 +490,83 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 		if(((JComponent) e.getSource()).getParent() == panelPopup){
 			p = clickLocation;
 			if(c == "Add"){
-				objects.add(new Arithmetic.AddDouble(p));
+				objects.add(new Arithmetic.AddDouble(p,THIS));
 			}else if(c == "Subtract"){
-				objects.add(new Arithmetic.Subtract(p));
+				objects.add(new Arithmetic.Subtract(p,THIS));
 			}else if(c == "Multiply"){
-				objects.add(new Arithmetic.Multiply(p));
+				objects.add(new Arithmetic.Multiply(p, THIS));
 			}else if(c == "Divide"){
-				objects.add(new Arithmetic.Divide(p));
+				objects.add(new Arithmetic.Divide(p, THIS));
 			}else if(c == "Random"){
-				objects.add(new Arithmetic.Random(p));
+				objects.add(new Arithmetic.Random(p, THIS));
 			}else if(c == "Round"){
-				objects.add(new Arithmetic.Round(p));
+				objects.add(new Arithmetic.Round(p, THIS));
 			}else if(c == "Concatenate"){
-				objects.add(new Arithmetic.Concat(p));
+				objects.add(new Arithmetic.Concat(p, THIS));
 			}else if(c == "Branch"){
-				objects.add(new Logic.Branch(p));
+				objects.add(new Logic.Branch(p, THIS));
 			}else if(c == "While"){
-				objects.add(new Logic.While(p));
+				objects.add(new Logic.While(p, THIS));
 			}else if(c == "Sequence"){
-				objects.add(new Logic.Sequence(p));
+				objects.add(new Logic.Sequence(p, THIS));
 			}else if(c == "Equals"){
-				objects.add(new Logic.Equals(p));
+				objects.add(new Logic.Equals(p, THIS));
 			}else if(c == "Is Less Than"){
-				objects.add(new Logic.LessThan(p));
+				objects.add(new Logic.LessThan(p, THIS));
 			}else if(c == "Is Greater Than"){
-				objects.add(new Logic.GreaterThan(p));
+				objects.add(new Logic.GreaterThan(p, THIS));
 			}else if(c == "Is Less Than Or Equal To"){
-				objects.add(new Logic.LessOrEqual(p));
+				objects.add(new Logic.LessOrEqual(p, THIS));
 			}else if(c == "Is Greater Than Or Equal To"){
-				objects.add(new Logic.GreaterOrEqual(p));
+				objects.add(new Logic.GreaterOrEqual(p, THIS));
 			}else if(c == "And"){
-				objects.add(new Logic.And(p));
+				objects.add(new Logic.And(p, THIS));
 			}else if(c == "Or"){
-				objects.add(new Logic.Or(p));
+				objects.add(new Logic.Or(p, THIS));
 			}else if(c == "Not"){
-				objects.add(new Logic.Not(p));
+				objects.add(new Logic.Not(p, THIS));
 			}else if(c == "Log To Console"){
 				if(Debug.console == null){
 					Debug.console = new Console();
 				}
-				objects.add(Debug.console.new Log(p));
+				objects.add(Debug.console.new Log(p, (GraphEditor) THIS));
 			}else if(c == "Get String From Console"){
 				if(Debug.console == null){
 					Debug.console = new Console();
 				}
-				objects.add(Debug.console.new getStr(p, Variable.DataType.STRING));
+				objects.add(Debug.console.new getStr(p, Variable.DataType.STRING, (GraphEditor) THIS));
 			}else if(c == "Get Number From Console"){
 				if(Debug.console == null){
 					Debug.console = new Console();
 				}
-				objects.add(Debug.console.new getStr(p, Variable.DataType.DOUBLE));
+				objects.add(Debug.console.new getStr(p, Variable.DataType.DOUBLE, (GraphEditor) THIS));
 			}else{
 				System.out.println("null Action:"+c);
 			}
 		}else{
 			p = VObject.getFreePosition();
 			if(c == "New Integer"){
-				Main.variables.add(0, new VInt());updateVars();
+				Main.variables.add(0, new VInt(this));
 				updateVars();
 				scrollVars.getViewport().setViewPosition(new Point(0,0));
 				Main.variables.get(0).nameField.requestFocusInWindow();
 			}else if(c == "New Double"){
-				Main.variables.add(0, new VDouble());
+				Main.variables.add(0, new VDouble(this));
 				updateVars();
 				scrollVars.getViewport().setViewPosition(new Point(0,0));
 				Main.variables.get(0).nameField.requestFocusInWindow();
 			}else if(c == "New Float"){
-				Main.variables.add(0, new VFloat());
+				Main.variables.add(0, new VFloat(this));
 				updateVars();
 				scrollVars.getViewport().setViewPosition(new Point(0,0));
 				Main.variables.get(0).nameField.requestFocusInWindow();
 			}else if(c == "New Boolean"){
-				Main.variables.add(0, new VBoolean());
+				Main.variables.add(0, new VBoolean(this));
 				updateVars();
 				scrollVars.getViewport().setViewPosition(new Point(0,0));
 				Main.variables.get(0).nameField.requestFocusInWindow();
 			}else if(c == "New String"){
-				Main.variables.add(0, new VString());
+				Main.variables.add(0, new VString(this));
 				updateVars();
 				scrollVars.getViewport().setViewPosition(new Point(0,0));
 				Main.variables.get(0).nameField.requestFocusInWindow();
@@ -593,8 +648,11 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 	}
 	static class DisplayPanel extends JPanel{
 		private static final long serialVersionUID = 1L;
-
-		DisplayPanel(){
+		
+		private GraphEditor owner;
+		
+		DisplayPanel(GraphEditor owner){
+			this.owner = owner;
 			this.setFocusTraversalKeysEnabled(false);
 			this.setLayout(null);
 			this.setBackground(new Color(0x5D5D5D));
@@ -643,7 +701,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener{
 			
 			if(mousePos != null && Node.currentlyDragging != null)
 				(new Curve(Node.currentlyDragging,mousePos)).draw(g);
-			for(Curve curve : curves){
+			for(Curve curve : owner.getCurves()){
 				curve.draw(g);
 			}
 		}

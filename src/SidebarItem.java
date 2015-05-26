@@ -21,10 +21,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 public class SidebarItem extends JPanel{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	
+	private GraphEditor owner;
 	private String name;
 	protected Type type;
 	protected JPanel header;
@@ -32,6 +31,10 @@ public class SidebarItem extends JPanel{
 	protected InputPane typeField;
 	protected ArrayList<InputPane> fields = new ArrayList<InputPane>();
 	static protected BufferedImage bufferedImage = null;
+	
+	public GraphEditor getOwner(){
+		return owner;
+	}
 	private SidebarItem getThis(){
 		return this;
 	}
@@ -87,7 +90,8 @@ public class SidebarItem extends JPanel{
 		
 		return symbol;
 	}
-	SidebarItem(){
+	SidebarItem(GraphEditor owner){
+		this.owner = owner;
 	  	setBorder(BorderFactory.createCompoundBorder(new LineBorder(new Color(0x414141)), new EmptyBorder(new Insets(0,0,0,-5))));
     	setOpaque(false);
     	setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -110,6 +114,9 @@ public class SidebarItem extends JPanel{
 							if(getThis().type == Type.VARIABLE){
 								Main.variables.remove(getThis());
 								((Variable) getThis()).clearChildren();
+							}else if(getThis().type == Type.FUNCTION){
+								Main.functions.remove(getThis());
+								((VFunction) getThis()).clearChildren();
 							}
 							Container parent = getThis().getParent();
 							parent.remove(getThis());
@@ -141,7 +148,7 @@ public class SidebarItem extends JPanel{
 		
 		header.add(close);
 		
-		typeField = new TypeField(this);
+		typeField = new TypeField(this,owner);
 		typeField.setColumns(2);
 		header.add(typeField);
 		fields.add(typeField);
@@ -155,8 +162,8 @@ public class SidebarItem extends JPanel{
 		
 		add(header);
 	}
-	SidebarItem(Type t){
-		this();
+	SidebarItem(Type t,GraphEditor owner){
+		this(owner);
 		this.type = t;
 	}
 	
@@ -164,6 +171,10 @@ public class SidebarItem extends JPanel{
 		for(InputPane ip : fields){
 			ip.setEditable(b);
 		}
+	}
+	
+	protected void setChildTexts(String s){
+		
 	}
 	
 	@Override
@@ -210,89 +221,90 @@ public class SidebarItem extends JPanel{
 	}
 	
 	static class TypeField extends InputPane{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
-		TypeField(SidebarItem si){
+		
+		private GraphEditor owner;
+		
+		TypeField(SidebarItem si, GraphEditor owner){
 			super(si);
+			this.owner = owner;
 		}
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_TAB){
 				String text = this.getText().toLowerCase();
 				if(text.equals("i") || text.equals("in") || text.equals("int") || text.equals("integer")){
-					VInt newint = new VInt();
-					Main.variables.set(
-							Main.variables.indexOf(sidebarItemParent),
+					VInt newint = new VInt(owner);
+					owner.getVariables().set(
+							owner.getVariables().indexOf(sidebarItemParent),
 							newint);
-					Main.updateVars();
+					owner.updateVars();
 					newint.nameField.requestFocusInWindow();
 				}else if(text.equals("d") || text.equals("db") || text.equals("do") || text.equals("double")){
-					VDouble newdouble = new VDouble();
-					Main.variables.set(
-							Main.variables.indexOf(sidebarItemParent),
+					VDouble newdouble = new VDouble(owner);
+					owner.getVariables().set(
+							owner.getVariables().indexOf(sidebarItemParent),
 							newdouble);
-					Main.updateVars();
+					owner.updateVars();
 					newdouble.nameField.requestFocusInWindow();
 				}else if(text.equals("f") || text.equals("fl") || text.equals("flo") || text.equals("float")){
-					VFloat newdouble = new VFloat();
-					Main.variables.set(
-							Main.variables.indexOf(sidebarItemParent),
+					VFloat newdouble = new VFloat(owner);
+					owner.getVariables().set(
+							owner.getVariables().indexOf(sidebarItemParent),
 							newdouble);
-					Main.updateVars();
+					owner.updateVars();
 					newdouble.nameField.requestFocusInWindow();
 				}else if(text.equals("b") || text.equals("bo") || text.equals("bool") || text.equals("boolean")){
-					VBoolean newBool = new VBoolean();
-					Main.variables.set(
-							Main.variables.indexOf(sidebarItemParent),
+					VBoolean newBool = new VBoolean(owner);
+					owner.getVariables().set(
+							owner.getVariables().indexOf(sidebarItemParent),
 							newBool);
-					Main.updateVars();
+					owner.updateVars();
 					newBool.nameField.requestFocusInWindow();
 				}else if(text.equals("s") || text.equals("st") || text.equals("str") || text.equals("string")){
-					VString newStr = new VString();
-					Main.variables.set(
-							Main.variables.indexOf(sidebarItemParent),
+					VString newStr = new VString(owner);
+					owner.getVariables().set(
+							owner.getVariables().indexOf(sidebarItemParent),
 							newStr);
-					Main.updateVars();
+					owner.updateVars();
 					newStr.nameField.requestFocusInWindow();
 				}
 				
 			//ARRAYS
 				else if(text.equals("<i") || text.equals("<in") || text.equals("<int") || text.equals("<int>")){
-					VArray newint = new VArray(Variable.DataType.INTEGER);
-					Main.variables.set(
-							Main.variables.indexOf(sidebarItemParent),
+					VArray newint = new VArray(Variable.DataType.INTEGER,owner);
+					owner.getVariables().set(
+							owner.getVariables().indexOf(sidebarItemParent),
 							newint);
-					Main.updateVars();
+					owner.updateVars();
 					newint.nameField.requestFocusInWindow();
 				}else if(text.equals("<d") || text.equals("<db") || text.equals("<do") || text.equals("<db>")){
-					VArray newdouble = new VArray(Variable.DataType.DOUBLE);
-					Main.variables.set(
-							Main.variables.indexOf(sidebarItemParent),
+					VArray newdouble = new VArray(Variable.DataType.DOUBLE,owner);
+					owner.getVariables().set(
+							owner.getVariables().indexOf(sidebarItemParent),
 							newdouble);
-					Main.updateVars();
+					owner.updateVars();
 					newdouble.nameField.requestFocusInWindow();
 				}else if(text.equals("<f") || text.equals("<fl") || text.equals("<fl>") || text.equals("<float>")){
-					VArray newdouble = new VArray(Variable.DataType.FLOAT);
-					Main.variables.set(
-							Main.variables.indexOf(sidebarItemParent),
+					VArray newdouble = new VArray(Variable.DataType.FLOAT,owner);
+					owner.getVariables().set(
+							owner.getVariables().indexOf(sidebarItemParent),
 							newdouble);
-					Main.updateVars();
+					owner.updateVars();
 					newdouble.nameField.requestFocusInWindow();
 				}else if(text.equals("<b") || text.equals("<bo") || text.equals("<bool") || text.equals("<bool>")){
-					VArray newBool = new VArray(Variable.DataType.BOOLEAN);
-					Main.variables.set(
-							Main.variables.indexOf(sidebarItemParent),
+					VArray newBool = new VArray(Variable.DataType.BOOLEAN,owner);
+					owner.getVariables().set(
+							owner.getVariables().indexOf(sidebarItemParent),
 							newBool);
-					Main.updateVars();
+					owner.updateVars();
 					newBool.nameField.requestFocusInWindow();
 				}else if(text.equals("<s") || text.equals("<st") || text.equals("<str") || text.equals("<string")){
-					VArray newStr = new VArray(Variable.DataType.STRING);
-					Main.variables.set(
-							Main.variables.indexOf(sidebarItemParent),
+					VArray newStr = new VArray(Variable.DataType.STRING,owner);
+					owner.getVariables().set(
+							owner.getVariables().indexOf(sidebarItemParent),
 							newStr);
-					Main.updateVars();
+					owner.updateVars();
 					newStr.nameField.requestFocusInWindow();
 				}else{
 					return;
@@ -314,7 +326,7 @@ public class SidebarItem extends JPanel{
 		
 		@Override
 		public void focusGained(FocusEvent arg0) {
-			if(si.getClass() != Variable.class && si instanceof Variable){//if datatype has been set
+			if((si.getClass() != Variable.class && si instanceof Variable) || si instanceof VFunction){//if datatype has been set
 				Boolean b = fixName();
 				if(b)
 					this.ip.selectAll();
@@ -341,7 +353,7 @@ public class SidebarItem extends JPanel{
 						i = 1;
 						break;
 					case FUNCTION:
-						s = "func";
+						s = "function_";
 						i = 1;
 						break;
 					case CLASS:
@@ -357,7 +369,7 @@ public class SidebarItem extends JPanel{
 				list = Main.variables;
 				break;
 			case FUNCTION:
-				list = null;//TODO
+				list = Main.functions;
 				break;
 			case CLASS:
 				list = null;//TODO

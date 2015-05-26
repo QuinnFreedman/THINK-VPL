@@ -14,8 +14,8 @@ public class VInt extends Variable{
 	protected VInt getThisVariable(){
 		return this;
 	}
-	VInt(){
-		super();
+	VInt(GraphEditor owner){
+		super(owner);
 		this.dataType = DataType.INTEGER;
 		this.typeField.setText(getSymbol());
 		this.typeField.setBackground(Main.colors.get(this.dataType));
@@ -28,14 +28,11 @@ public class VInt extends Variable{
 		
 		this.valueField.setText(Integer.toString(value));
 		
-		//this.functions = new ArrayList<Class<? extends PrimitiveFunction>>();
-		//this.functions.add(set.class);
-		//this.functions.add(subtractFrom.class);
 		this.functions.add(new Get());
 		this.functions.add(new Set());
 		this.functions.add(new Add_To());
 		this.functions.add(new Multiply_By());
-		this.functions.add(new Increment());//TODO use classes instead of instances
+		this.functions.add(new Increment());
 		
 		resetVariableData();
 	}

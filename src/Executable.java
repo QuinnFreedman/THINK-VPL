@@ -71,8 +71,8 @@ public class Executable extends VObject{
 	public void incrementActiveNode() {
 		activeNode++;
 	}
-	Executable(){
-		super();
+	Executable(GraphEditor owner){
+		super(owner);
 		inputNodes = new ArrayList<Node>();
 		outputNodes = new ArrayList<Node>();
 		
@@ -83,6 +83,9 @@ public class Executable extends VObject{
 		this.add(outputNodeHolder,BorderLayout.PAGE_END);
 	}
 	
+	Executable() {
+		super();
+	}
 	public VariableData execute(VariableData[] inputs){
 		return null;
 	}

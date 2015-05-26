@@ -45,8 +45,8 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 	private Variable getThis(){
 		return this;
 	}
-	Variable(){
-		super();
+	Variable(GraphEditor owner){
+		super(owner);
 		
 		this.type = Type.VARIABLE;
 		
@@ -94,12 +94,12 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 			public void mouseReleased(MouseEvent e) {
 				if(getThis().dataType != null){
 					drag.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-					Point p = Node.getLocationOnPanel(e);
+					Point p = Node.getLocationOnPanel(e,owner.getPanel());
 					if(getThis().childPicker != null){
 						childPicker.delete();
 					}
-					if(p.x > 0 && p.y > 0 && p.x < Main.panel.getWidth() && p.y < Main.panel.getHeight()){
-						PrimitiveChildPicker childPicker = new PrimitiveChildPicker(getThis(), p);
+					if(p.x > 0 && p.y > 0 && p.x < owner.getPanel().getWidth() && p.y < owner.getPanel().getHeight()){
+						PrimitiveChildPicker childPicker = new PrimitiveChildPicker(getThis(), p, owner);
 						Main.objects.add(childPicker);
 						getThis().childPicker = childPicker;
 					}
@@ -121,6 +121,7 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 	protected void setValue(String s){
 		//Overwritten in subclasses
 	}
+	@Override
 	protected void setChildTexts(String s){
 		for(PrimitiveFunction child : children){
 			child.setText(s);
@@ -155,9 +156,9 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
     }
     static class NameDocListener implements DocumentListener{
 
-    	Variable var;
+    	SidebarItem var;
     	
-    	NameDocListener(Variable var){
+    	NameDocListener(SidebarItem var){
     		this.var = var;
     	}
     

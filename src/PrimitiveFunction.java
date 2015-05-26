@@ -29,13 +29,13 @@ public class PrimitiveFunction extends Executable{
 		return parentVar;
 	}
 	public String getFunctionName(){
-		return this.getClass().getSimpleName();
+		return this.getClass().getSimpleName().replace('_',' ');
 	}
 	protected PrimitiveFunction getThis(){
 		return this;
 	}
 	PrimitiveFunction(Point pos, Variable parent){
-		super();
+		super(parent.getOwner());
 		this.type = parent.dataType;
 		this.parentVar = parent;
 		this.parentVar.addChild(this);
@@ -67,7 +67,6 @@ public class PrimitiveFunction extends Executable{
 				}
 				
 				setBounds(new Rectangle(pos,getSize()));
-				Main.panel.add(getThis());
 	        }});
 	}
 	

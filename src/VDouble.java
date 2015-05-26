@@ -12,8 +12,8 @@ public class VDouble extends Variable{
 	static final String name = "Int";
 	static int idCounter = 0;
 	double value = 0;
-	VDouble(){
-		super();
+	VDouble(GraphEditor owner){
+		super(owner);
 		this.dataType = DataType.DOUBLE;
 		this.typeField.setText(getSymbol());
 		this.typeField.setBackground(Main.colors.get(this.dataType));

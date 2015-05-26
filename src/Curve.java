@@ -65,7 +65,7 @@ public class Curve{
 	private static Point[] getPointsFromNode(Node a, int offset){
 		Point p1;
 		Point p2 = null;
-		p1 = new Point(a.getLocationOnScreen().x-Main.panel.getLocationOnScreen().x, a.getLocationOnScreen().y-Main.panel.getLocationOnScreen().y);
+		p1 = new Point(a.getLocationOnScreen().x-a.parentObject.owner.getPanel().getLocationOnScreen().x, a.getLocationOnScreen().y-a.parentObject.owner.getPanel().getLocationOnScreen().y);
 		switch(a.facing){
 			case NORTH:
 				p1.x += (a.getPreferredSize().width/2);
@@ -94,7 +94,7 @@ public class Curve{
 	}
 	private static Point getPointFromNode(Node a){
 		Point p1;
-		p1 = new Point(a.getLocationOnScreen().x-Main.panel.getLocationOnScreen().x, a.getLocationOnScreen().y-Main.panel.getLocationOnScreen().y);
+		p1 = new Point(a.getLocationOnScreen().x-a.parentObject.owner.getPanel().getLocationOnScreen().x, a.getLocationOnScreen().y-a.parentObject.owner.getPanel().getLocationOnScreen().y);
 		switch(a.facing){
 			case NORTH:
 				p1.x += (a.getPreferredSize().width/2);

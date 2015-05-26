@@ -21,8 +21,8 @@ public class PrimitiveChildPicker extends VObject{
 		private static final long serialVersionUID = 1L;
 		Variable parent;
 		
-		PrimitiveChildPicker(Variable parent, Point position){
-			super();
+		PrimitiveChildPicker(Variable parent, Point position, GraphEditor owner){
+			super(owner);
 			this.parent = parent;
 			this.position = position;
 
@@ -47,9 +47,6 @@ public class PrimitiveChildPicker extends VObject{
 			}
 			
 			this.setBounds(new Rectangle(position,new Dimension(100,this.getPreferredSize().height+5)));
-			
-			Main.panel.add(this);
-			Main.panel.revalidate();
 		}
 		
 		private class MenuItem extends JLabel implements MouseListener{
@@ -72,7 +69,7 @@ public class PrimitiveChildPicker extends VObject{
 					break;
 					
 				}
-				this.name = f.getClass().getSimpleName();
+				this.name = f.getFunctionName();
 				this.childPicker = primitiveChildPicker;
 				this.setBackground(Color.RED);
 				this.setText(symbol+" "+name);
@@ -107,7 +104,7 @@ public class PrimitiveChildPicker extends VObject{
 					System.out.println(f.getClass());
 					Constructor<?> constructor = f.getClass().getDeclaredConstructor(Point.class, Variable.class);
 					pf = (PrimitiveFunction) constructor.newInstance(
-							Node.getLocationOnPanel(this.childPicker), 
+							Node.getLocationOnPanel(this.childPicker, owner.getPanel()), 
 							(Variable) this.childPicker.parent
 						);
 				} catch (InstantiationException e) {
@@ -131,9 +128,6 @@ public class PrimitiveChildPicker extends VObject{
 				}catch(Exception e){
 					//pf = null;//= new VariableFunction(Node.getLocationOnPanel(this.childPicker), ((Variable) this.childPicker.parent).dataType, parentNode, (Variable) this.childPicker.parent,"error");
 				}
-				Main.objects.add(pf);
-				Main.panel.repaint();
-				Main.panel.revalidate();
 				
 				this.childPicker.delete();
 				

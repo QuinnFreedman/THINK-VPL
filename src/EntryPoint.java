@@ -2,17 +2,20 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.RadialGradientPaint;
 import java.awt.geom.Point2D;
 
 import javax.swing.JLabel;
+import javax.swing.border.EmptyBorder;
 
 public class EntryPoint extends Executable{
 	public Node startNode;
-	EntryPoint(){
-		super();
+	EntryPoint(GraphEditor owner){
+		super(owner);
 		this.setOpaque(false);
 		this.setBounds(350, 50, 80, 80);
 		((FlowLayout) this.body.getLayout()).setVgap(30);
@@ -20,6 +23,8 @@ public class EntryPoint extends Executable{
 		remove(outputNodeHolder);
 		JLabel text = new JLabel("Start");
 		text.setForeground(Color.BLACK);
+		text.setFont(text.getFont().deriveFont(Font.PLAIN, text.getFont().getSize()+2));
+		text.setBorder(new EmptyBorder(new Insets(-2,-1,-1,-1)));
 		this.body.add(text);
 		startNode = new StartNode(this);
 		Main.nodes.add(startNode);

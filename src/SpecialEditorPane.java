@@ -30,7 +30,7 @@ public class SpecialEditorPane extends JTextArea implements KeyListener{
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if(e.getKeyCode() == 10){
-			Main.panel.requestFocusInWindow();
+			Main.panel.requestFocusInWindow();//TODO
 		}
 		
 	}

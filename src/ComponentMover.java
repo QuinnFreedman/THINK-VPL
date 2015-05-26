@@ -305,7 +305,12 @@ public class ComponentMover extends MouseAdapter
 
 		destination.setLocation(locationX, locationY);
 		
-		Main.panel.repaint();
+		Main.panel.repaint();//TODO
+		for(VFunction f : Main.functions){
+			if(f.editor != null){
+				f.editor.repaint();
+			}
+		}
 	}
 
 	/*

@@ -59,7 +59,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	}
 	protected static void clearChildren(Node nodeToClear){
 			System.out.println("clear children "+nodeToClear.type.toString()+" "+nodeToClear);
-			Iterator<Curve> itr = Main.curves.iterator();
+			Iterator<Curve> itr = nodeToClear.parentObject.owner.getCurves().iterator();
 			while(itr.hasNext()){
 				Curve c = itr.next();
 				Node node;
@@ -109,7 +109,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		
 		B.parents.add(A);
 		A.children.add(B);
-		Main.curves.add(new Curve(A,B));
+		A.parentObject.owner.getCurves().add(new Curve(A,B));
 		A.onConnect();
 		B.onConnect();
 	}
@@ -225,10 +225,10 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		this.removeMouseMotionListener(this);
 		if(Debug.isStepping())
 			return;
-		Point mouse = getLocationOnPanel(e);
+		Point mouse = getLocationOnPanel(e, this.parentObject.owner.getPanel());
 		Rectangle rect = new Rectangle();
 		for(Node node : Main.nodes){
-			rect = new Rectangle(getLocationOnPanel(node),new Dimension(node.getWidth(),node.getHeight()));
+			rect = new Rectangle(getLocationOnPanel(node,node.parentObject.owner.getPanel()),new Dimension(node.getWidth(),node.getHeight()));
 			if(rect.contains(mouse) && canConnect(this,node)){
 				Node A;
 				Node B;
@@ -254,7 +254,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 			}
 		}
 		
-		Main.panel.repaint();
+		this.parentObject.owner.getPanel().repaint();
 	}
 	
 	private static boolean canConnect(Node node1, Node node2){
@@ -301,8 +301,8 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		Main.mousePos = getLocationOnPanel(e);
-		Main.panel.repaint();
+		Main.mousePos = getLocationOnPanel(e, this.parentObject.owner.getPanel());
+		this.parentObject.owner.getPanel().repaint();
 	}
 
 	@Override
@@ -311,11 +311,11 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		Main.mousePos.x = e.getLocationOnScreen().y-this.getLocationOnScreen().y;
 		Main.panel.repaint();*/
 	}
-	public static Point getLocationOnPanel(Component c){
-		return new Point(c.getLocationOnScreen().x-Main.panel.getLocationOnScreen().x,c.getLocationOnScreen().y-Main.panel.getLocationOnScreen().y);
+	public static Point getLocationOnPanel(Component c, JPanel p){
+		return new Point(c.getLocationOnScreen().x-p.getLocationOnScreen().x,c.getLocationOnScreen().y-p.getLocationOnScreen().y);
 	}
-	public static Point getLocationOnPanel(MouseEvent e){
-		return new Point(e.getLocationOnScreen().x-Main.panel.getLocationOnScreen().x,e.getLocationOnScreen().y-Main.panel.getLocationOnScreen().y);
+	public static Point getLocationOnPanel(MouseEvent e, JPanel p){
+		return new Point(e.getLocationOnScreen().x-p.getLocationOnScreen().x,e.getLocationOnScreen().y-p.getLocationOnScreen().y);
 	}
 	public enum Direction{
 		NORTH,SOUTH,EAST,WEST

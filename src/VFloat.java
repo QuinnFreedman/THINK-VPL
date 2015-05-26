@@ -9,8 +9,8 @@ public class VFloat extends Variable{
 	static final String name = "Int";
 	static int idCounter = 0;
 	float value = 0;
-	VFloat(){
-		super();
+	VFloat(GraphEditor owner){
+		super(owner);
 		this.dataType = DataType.FLOAT;
 		this.typeField.setText(getSymbol());
 		this.typeField.setBackground(Main.colors.get(this.dataType));
