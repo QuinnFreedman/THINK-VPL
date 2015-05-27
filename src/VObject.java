@@ -82,7 +82,7 @@ public class VObject extends JPanel implements MouseInputListener{
 		}
 		
 		
-		Iterator<Node> itrN = Main.nodes.iterator();
+		Iterator<Node> itrN = owner.getNodes().iterator();
 		Node n = null;
 		while(itrN.hasNext()){
 			n = itrN.next();

@@ -27,7 +27,6 @@ public class EntryPoint extends Executable{
 		text.setBorder(new EmptyBorder(new Insets(-2,-1,-1,-1)));
 		this.body.add(text);
 		startNode = new StartNode(this);
-		Main.nodes.add(startNode);
 		this.add(startNode,BorderLayout.AFTER_LAST_LINE);
 		Main.objects.add(this);
 	}

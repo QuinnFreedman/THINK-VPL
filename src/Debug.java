@@ -62,6 +62,20 @@ public class Debug{
 				
 			}
 		}
+		for(VFunction f : Main.functions){
+			for(VObject o : f.editor.getObjects()){
+				if(o instanceof Executable){
+					System.out.println(o);
+					Executable o2 = ((Executable) o);
+					o2.resetActiveNode();
+					o2.workingData = new ArrayList<VariableData>();
+					o2.outputData = new ArrayList<VariableData>();
+					o2.hasExecuted = false;
+					System.out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
+					
+				}
+			}
+		}
 		stepForever();
 	}
 	
@@ -110,22 +124,35 @@ public class Debug{
 			exit();
 			return false;
 		}
+		
 		Executable next = (Executable) parents.get(0).parentObject;
-		getTop().incrementActiveNode();
-		
-		next.workingData.clear();
-		next.resetActiveNode();
-		
-		if(mode != RunMode.RUN){
-			getTop().setSelected(false);
-			getTop().repaint();
-		}
-		
-		stack.add(next);
-		
-		if(mode != RunMode.RUN){
-			next.setSelected(true);
-			next.repaint();
+		if(!(next instanceof FunctionEditor.FunctionIO)){
+			getTop().incrementActiveNode();
+			
+			next.workingData.clear();
+			next.resetActiveNode();
+			
+			if(mode != RunMode.RUN){
+				getTop().setSelected(false);
+				getTop().repaint();
+			}
+			
+			stack.add(next);
+			
+			if(mode != RunMode.RUN){
+				next.setSelected(true);
+				next.repaint();
+			}
+		}else{
+			getTop().workingData.add(
+					next.outputData.get(
+							getTop().getInputNodes().indexOf(
+									getTop().getInputNodes().get(getTop().activeNode).parents.get(0)
+									)
+							+((getTop().getInputNodes().get(0).dataType == Variable.DataType.GENERIC) ? 1 : 0)
+							)
+					);
+			getTop().incrementActiveNode();
 		}
 		
 		return true;
@@ -145,14 +172,15 @@ public class Debug{
 		System.out.println();
 		
 		VariableData execute;
-		if(!(getTop().executeOnce && getTop().hasExecuted)){
+		if(getTop().executeOnce && getTop().hasExecuted){
+			execute = getTop().workingData.get(0);
+		}else{
 			VariableData[] array = new VariableData[getTop().workingData.size()];
 			array = getTop().workingData.toArray(array);
 			execute = getTop().execute(array);
 			getTop().hasExecuted = true;
-		}else{
-			execute = getTop().workingData.get(0);
 		}
+		
 		if(getTop().getClass() == Console.getStr.class){
 			waitingForInput = ((Console.getStr) getTop()).getDataType();
 			System.out.println("isWaitingForInput = "+waitingForInput);
@@ -167,7 +195,8 @@ public class Debug{
 	public static boolean moveDownStack2(VariableData execute){
 		waitingForInput = null;
 		
-		getTop().outputData = new ArrayList<VariableData>(Arrays.asList(execute));
+		if(!(getTop() instanceof FunctionEditor.FunctionIO))
+			getTop().outputData = new ArrayList<VariableData>(Arrays.asList(execute));
 		
 		if(mode != RunMode.RUN){
 			getTop().setSelected(false);
@@ -186,6 +215,7 @@ public class Debug{
 				}
 				next.workingData.clear();
 				next.resetActiveNode();
+				
 				stack.add(next);
 			}else{
 				if(!remember.isEmpty()){
@@ -205,20 +235,19 @@ public class Debug{
 		if(mode != RunMode.RUN){
 			getTop().setSelected(true);
 			getTop().repaint();
-		}else{
-			//step();
 		}
+		
 		return true;
 	}
 
 	private static boolean step(){
 		
-		/*System.out.println();
+		System.out.println();
 		System.out.println("stack:");
 		for(VObject o : stack){
 			System.out.println(o.getClass().getSimpleName());
 		}
-		System.out.println();*/
+		System.out.println();
 		
 		try{
 			
@@ -248,7 +277,8 @@ public class Debug{
 			}
 			
 		}catch(Exception e){
-			console.post("ERROR: an unexpected error occured"+((stack.isEmpty() && stack.get(stack.size()-1).headerLabel != null) ? "" : " when executing \""+stack.get(stack.size()-1).headerLabel.getText()+"\"")+". The program will now exit.");
+			//console.post("ERROR: an unexpected error occured"+((!stack.isEmpty() && stack.get(stack.size()-1).headerLabel != null) ? "" : " when executing \""+stack.get(stack.size()-1).headerLabel.getText()+"\"")+". The program will now exit.");
+			e.printStackTrace(System.err);
 			return false;
 		}
 	}
@@ -281,6 +311,14 @@ public class Debug{
 				children = new ArrayList<Node>();
 				removeFromEnd(remember,o);
 			}
+		}else if(o instanceof UserFunc){
+			FunctionEditor.FunctionIO inputObj = ((UserFunc) o).getParentVar().editor.inputObject;
+			inputObj.outputData = new ArrayList<VariableData>(o.workingData);
+			System.out.println(inputObj.outputData);
+			((UserFunc) o).getParentVar().currentlyExecuting = (UserFunc) o;
+			return inputObj;
+		}else if(o instanceof FunctionEditor.FunctionIO && ((FunctionEditor.FunctionIO) o).mode == FunctionEditor.FunctionIO.Mode.OUTPUT){
+			children = ((FunctionEditor) ((FunctionEditor.FunctionIO) o).owner).parent.currentlyExecuting.getOutputNodes().get(0).children;
 		}else{
 			children = o.getOutputNodes().get(0).children;
 		}

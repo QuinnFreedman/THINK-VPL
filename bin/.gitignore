@@ -34,3 +34,5 @@
 /FunctionEditor$2.class
 /FunctionEditor$AddInputButtonListener.class
 /FunctionEditor$NodeAdderListener.class
+/FunctionEditor$removeableNode.class
+/FunctionEditor$removeableNode$Deleter.class

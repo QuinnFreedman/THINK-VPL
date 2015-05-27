@@ -40,6 +40,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		this.facing = (type == NodeType.SENDING || type == NodeType.INHERITANCE_SENDING) ? Direction.SOUTH : Direction.NORTH;
 		this.type = type;
 		this.parentObject = parentObj;
+		parentObj.owner.addNode(this);
 	}
 	Node(NodeType type,VObject parentObj){
 		this(type,parentObj,false);
@@ -240,7 +241,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		Point mouse = getLocationOnPanel(e, this.parentObject.owner.getPanel());
 		Rectangle rect = new Rectangle();
 		boolean overlap = false;
-		for(Node node : Main.nodes){
+		for(Node node : this.parentObject.owner.getNodes()){
 			rect = new Rectangle(getLocationOnPanel(node,node.parentObject.owner.getPanel()),new Dimension(node.getWidth(),node.getHeight()));
 			if(rect.contains(mouse)){
 				if(canConnect(this,node)){
@@ -353,7 +354,13 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		Main.panel.repaint();*/
 	}
 	public static Point getLocationOnPanel(Component c, JPanel p){
-		return new Point(c.getLocationOnScreen().x-p.getLocationOnScreen().x,c.getLocationOnScreen().y-p.getLocationOnScreen().y);
+		try{
+			return new Point(c.getLocationOnScreen().x-p.getLocationOnScreen().x,c.getLocationOnScreen().y-p.getLocationOnScreen().y);
+		}catch(Exception e){
+			System.out.println(c.getClass().getName()+", "+p.getClass().getName());
+			e.printStackTrace(System.err);
+			return null;
+		}
 	}
 	public static Point getLocationOnPanel(MouseEvent e, JPanel p){
 		return new Point(e.getLocationOnScreen().x-p.getLocationOnScreen().x,e.getLocationOnScreen().y-p.getLocationOnScreen().y);

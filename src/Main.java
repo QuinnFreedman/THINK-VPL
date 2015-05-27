@@ -80,6 +80,14 @@ public class Main implements ActionListener, MouseInputListener, KeyListener, Gr
 		return curves;
 	}
 	@Override
+	public ArrayList<Node> getNodes(){
+		return nodes;
+	}
+	@Override
+	public void addNode(Node n){
+		nodes.add(n);
+	}
+	@Override
 	public Main.DisplayPanel getPanel(){
 		return panel;
 	}

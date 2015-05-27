@@ -41,26 +41,42 @@ public class Executable extends VObject{
 	}
 	protected void setInputNodes(ArrayList<Node> nodes){
 		inputNodes = nodes;
-		Main.nodes.addAll(nodes);
 	}
 	protected ArrayList<Node> getOutputNodes(){
 		return outputNodes;
 	}
 	protected void setOutputNodes(ArrayList<Node> nodes){
 		outputNodes = nodes;
-		Main.nodes.addAll(nodes);
 	}
 	protected void addInputNode(Node node) {
 		inputNodes.add(node);
 		inputNodeHolder.add(node);
 		inputNodeHolder.revalidate();
 		inputNodeHolder.repaint();
-		Main.nodes.add(node);
 	}
 	protected void addOutputNode(Node node) {
 		outputNodes.add(node);
 		outputNodeHolder.add(node);
-		Main.nodes.add(node);
+		inputNodeHolder.revalidate();
+		inputNodeHolder.repaint();
+	}
+
+	public void removeInputNode(Node n) {
+		Node.clearChildren(n);
+		inputNodeHolder.remove(n);
+		owner.getNodes().remove(n);
+		inputNodes.remove(n);
+		inputNodeHolder.revalidate();
+		inputNodeHolder.repaint();
+	}
+
+	public void removeOutputNode(Node n) {
+		Node.clearChildren(n);
+		outputNodeHolder.remove(n);
+		owner.getNodes().remove(n);
+		outputNodes.remove(n);
+		outputNodeHolder.revalidate();
+		outputNodeHolder.repaint();
 	}
 	public void setSelected(boolean b){
 		selected = b;
