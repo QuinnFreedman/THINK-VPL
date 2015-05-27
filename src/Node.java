@@ -208,6 +208,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 			
 		}else if(Main.altPressed){
 			clearChildren(this);
+			this.parentObject.owner.getPanel().repaint();
 		}
 	}
 	@Override
@@ -230,25 +231,32 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	}
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		if(Main.altPressed){
-			return;
-		}
 		currentlyDragging = null;
 		this.removeMouseMotionListener(this);
+		if(Main.altPressed)
+			return;
 		if(Debug.isStepping())
 			return;
 		Point mouse = getLocationOnPanel(e, this.parentObject.owner.getPanel());
 		Rectangle rect = new Rectangle();
+		boolean overlap = false;
 		for(Node node : Main.nodes){
 			rect = new Rectangle(getLocationOnPanel(node,node.parentObject.owner.getPanel()),new Dimension(node.getWidth(),node.getHeight()));
-			if(rect.contains(mouse) && canConnect(this,node)){
+			if(rect.contains(mouse)){
+				if(canConnect(this,node)){
 				
-				castOrConnect(node,this);
+					castOrConnect(node,this);
 				
-				return;
-				
+					return;
+				}
+				overlap = true;
 			}
 		}
+		if(overlap){
+			this.parentObject.owner.getPanel().repaint();
+			return;
+		}
+		
 		Point p = getLocationOnPanel(this,this.parentObject.owner.getPanel());
 		rect = new Rectangle(
 				new Point(p.x-this.getWidth()/2,p.y-this.getHeight()/2),new Dimension(2*this.getWidth(),2*this.getHeight()));

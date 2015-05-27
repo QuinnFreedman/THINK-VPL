@@ -34,6 +34,7 @@ public class Executable extends VObject{
 	public ArrayList<VariableData> workingData;
 	protected boolean selected = false;
 	protected boolean executeOnce = false;
+	protected boolean hasExecuted = false;
 	public ArrayList<VariableData> outputData;
 	protected ArrayList<Node> getInputNodes(){
 		return inputNodes;

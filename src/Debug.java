@@ -57,6 +57,7 @@ public class Debug{
 				o2.resetActiveNode();
 				o2.workingData = new ArrayList<VariableData>();
 				o2.outputData = new ArrayList<VariableData>();
+				o2.hasExecuted = false;
 				System.out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
 				
 			}
@@ -96,7 +97,7 @@ public class Debug{
 		System.out.println("try to go up from "+getTop());
 		System.out.println("activeNode "+getTop().getActiveNode());
 		System.out.println("inputs "+getTop().getInputNodes().size());
-		if(getTop().getActiveNode() >= getTop().getInputNodes().size()){
+		if(getTop().getActiveNode() >= getTop().getInputNodes().size() || (getTop().executeOnce && getTop().hasExecuted)){
 			System.out.println("failed: activeNode > input nodes");
 			return false;
 		}
@@ -143,10 +144,15 @@ public class Debug{
 		}
 		System.out.println();
 		
-		VariableData[] array = new VariableData[getTop().workingData.size()];
-		array = getTop().workingData.toArray(array);
-		VariableData execute = getTop().execute(array);
-		
+		VariableData execute;
+		if(!(getTop().executeOnce && getTop().hasExecuted)){
+			VariableData[] array = new VariableData[getTop().workingData.size()];
+			array = getTop().workingData.toArray(array);
+			execute = getTop().execute(array);
+			getTop().hasExecuted = true;
+		}else{
+			execute = getTop().workingData.get(0);
+		}
 		if(getTop().getClass() == Console.getStr.class){
 			waitingForInput = ((Console.getStr) getTop()).getDataType();
 			System.out.println("isWaitingForInput = "+waitingForInput);

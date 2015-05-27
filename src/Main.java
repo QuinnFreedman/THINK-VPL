@@ -223,6 +223,7 @@ public class Main implements ActionListener, MouseInputListener, KeyListener, Gr
 				
 				JMenuItem mntmNewCharacter = new JMenuItem("new Character");
 				mntmNewCharacter.addActionListener(THIS);
+				mntmNewCharacter.setEnabled(false);
 				mnVariable.add(mntmNewCharacter);
 				
 				JMenu mnRun = new JMenu("Run");
