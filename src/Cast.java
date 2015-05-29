@@ -16,28 +16,25 @@ public class Cast extends Executable{
 	Cast(Node sendingNode, Node recievingNode){
 		super(sendingNode.parentObject.owner);
 		this.color = Color.BLACK;
-		SwingUtilities.invokeLater(new Runnable() {
-	        @Override
-	        public void run() {
-	        	getThis().sendingNode = sendingNode;
-	        	getThis().recievingNode = recievingNode;
-	        	owner.getPanel().add(getThis());
-				Node inputNode = new Node(Node.NodeType.RECIEVING, getThis(), sendingNode.dataType);
-				Node outputNode = new Node(Node.NodeType.SENDING, getThis(), recievingNode.dataType,true);
-				addInputNode(inputNode);
-				addOutputNode(outputNode);
-				input = inputNode.dataType;
-				output = outputNode.dataType;
-				setBounds(new Rectangle(
-						new Point(
-								((Node.getLocationOnPanel(recievingNode,owner.getPanel()).x+(recievingNode.getPreferredSize().width/2))+(Node.getLocationOnPanel(sendingNode,owner.getPanel()).x+(sendingNode.getPreferredSize().width/2)))/2 - getThis().getSize().width/2, 
-								((Node.getLocationOnPanel(recievingNode,owner.getPanel()).y+(recievingNode.getPreferredSize().height/2))+(Node.getLocationOnPanel(sendingNode,owner.getPanel()).y+(sendingNode.getPreferredSize().height/2)))/2 - getThis().getSize().height/2
-						),
-						getSize()));
+		
+    	getThis().sendingNode = sendingNode;
+    	getThis().recievingNode = recievingNode;
+    	owner.getPanel().add(getThis());
+		Node inputNode = new Node(Node.NodeType.RECIEVING, getThis(), sendingNode.dataType);
+		Node outputNode = new Node(Node.NodeType.SENDING, getThis(), recievingNode.dataType,true);
+		addInputNode(inputNode);
+		addOutputNode(outputNode);
+		input = inputNode.dataType;
+		output = outputNode.dataType;
+		setBounds(new Rectangle(
+				new Point(
+						((Node.getLocationOnPanel(recievingNode,owner.getPanel()).x+(recievingNode.getPreferredSize().width/2))+(Node.getLocationOnPanel(sendingNode,owner.getPanel()).x+(sendingNode.getPreferredSize().width/2)))/2 - getThis().getSize().width/2, 
+						((Node.getLocationOnPanel(recievingNode,owner.getPanel()).y+(recievingNode.getPreferredSize().height/2))+(Node.getLocationOnPanel(sendingNode,owner.getPanel()).y+(sendingNode.getPreferredSize().height/2)))/2 - getThis().getSize().height/2
+				),
+				getSize()));
 
-				Node.connect(sendingNode, inputNode);
-				Node.connect(outputNode, recievingNode);
-	        }});
+		Node.connect(sendingNode, inputNode);
+		Node.connect(outputNode, recievingNode);
 	}
 	
 	private static boolean isNumber(Variable.DataType dt){
@@ -94,7 +91,7 @@ public class Cast extends Executable{
 		case CHARACTER:
 			switch(this.recievingNode.dataType){
 			case STRING:
-				return new VariableData.String(Character.toString(((VariableData.Charecter) inputs[0]).value));
+				return new VariableData.String(Character.toString(((VariableData.Character) inputs[0]).value));
 			default:
 				return null;
 			}

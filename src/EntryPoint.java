@@ -17,7 +17,7 @@ public class EntryPoint extends Executable{
 	EntryPoint(GraphEditor owner){
 		super(owner);
 		this.setOpaque(false);
-		this.setBounds(350, 50, 80, 80);
+		this.setBounds(80, 30, 80, 80);
 		((FlowLayout) this.body.getLayout()).setVgap(30);
 		remove(inputNodeHolder);
 		remove(outputNodeHolder);
@@ -28,7 +28,6 @@ public class EntryPoint extends Executable{
 		this.body.add(text);
 		startNode = new StartNode(this);
 		this.add(startNode,BorderLayout.AFTER_LAST_LINE);
-		Main.objects.add(this);
 	}
 	@Override
 	public void paintComponent(Graphics g){

@@ -130,6 +130,10 @@ public class VBoolean extends Variable{
 			this.doc.setDocumentFilter(this);
 		}
 		
+		public BooleanDocumentFilter() {
+			// TODO Auto-generated constructor stub
+		}
+
 		@Override
 		public void insertString(DocumentFilter.FilterBypass fb, int offset, String string,
 			AttributeSet attr) throws BadLocationException {

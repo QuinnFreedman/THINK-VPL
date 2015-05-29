@@ -100,7 +100,6 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 					}
 					if(p.x > 0 && p.y > 0 && p.x < owner.getPanel().getWidth() && p.y < owner.getPanel().getHeight()){
 						PrimitiveChildPicker childPicker = new PrimitiveChildPicker(getThis(), p, owner);
-						Main.objects.add(childPicker);
 						getThis().childPicker = childPicker;
 					}
 				}

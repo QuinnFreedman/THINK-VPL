@@ -500,56 +500,56 @@ public class Main implements ActionListener, MouseInputListener, KeyListener, Gr
 		if(((JComponent) e.getSource()).getParent() == panelPopup){
 			p = clickLocation;
 			if(c == "Add"){
-				objects.add(new Arithmetic.Add(p,THIS));
+				new Arithmetic.Add(p,THIS);
 			}else if(c == "Subtract"){
-				objects.add(new Arithmetic.Subtract(p,THIS));
+				new Arithmetic.Subtract(p,THIS);
 			}else if(c == "Multiply"){
-				objects.add(new Arithmetic.Multiply(p, THIS));
+				new Arithmetic.Multiply(p, THIS);
 			}else if(c == "Divide"){
-				objects.add(new Arithmetic.Divide(p, THIS));
+				new Arithmetic.Divide(p, THIS);
 			}else if(c == "Random"){
-				objects.add(new Arithmetic.Random(p, THIS));
+				new Arithmetic.Random(p, THIS);
 			}else if(c == "Round"){
-				objects.add(new Arithmetic.Round(p, THIS));
+				new Arithmetic.Round(p, THIS);
 			}else if(c == "Concatenate"){
-				objects.add(new Arithmetic.Concat(p, THIS));
+				new Arithmetic.Concat(p, THIS);
 			}else if(c == "Branch"){
-				objects.add(new Logic.Branch(p, THIS));
+				new Logic.Branch(p, THIS);
 			}else if(c == "While"){
-				objects.add(new Logic.While(p, THIS));
+				new Logic.While(p, THIS);
 			}else if(c == "Sequence"){
-				objects.add(new Logic.Sequence(p, THIS));
+				new Logic.Sequence(p, THIS);
 			}else if(c == "Equals"){
-				objects.add(new Logic.Equals(p, THIS));
+				new Logic.Equals(p, THIS);
 			}else if(c == "Is Less Than"){
-				objects.add(new Logic.LessThan(p, THIS));
+				new Logic.LessThan(p, THIS);
 			}else if(c == "Is Greater Than"){
-				objects.add(new Logic.GreaterThan(p, THIS));
+				new Logic.GreaterThan(p, THIS);
 			}else if(c == "Is Less Than Or Equal To"){
-				objects.add(new Logic.LessOrEqual(p, THIS));
+				new Logic.LessOrEqual(p, THIS);
 			}else if(c == "Is Greater Than Or Equal To"){
-				objects.add(new Logic.GreaterOrEqual(p, THIS));
+				new Logic.GreaterOrEqual(p, THIS);
 			}else if(c == "And"){
-				objects.add(new Logic.And(p, THIS));
+				new Logic.And(p, THIS);
 			}else if(c == "Or"){
-				objects.add(new Logic.Or(p, THIS));
+				new Logic.Or(p, THIS);
 			}else if(c == "Not"){
-				objects.add(new Logic.Not(p, THIS));
+				new Logic.Not(p, THIS);
 			}else if(c == "Log To Console"){
 				if(Debug.console == null){
 					Debug.console = new Console();
 				}
-				objects.add(Debug.console.new Log(p, (GraphEditor) THIS));
+				Debug.console.new Log(p, (GraphEditor) THIS);
 			}else if(c == "Get String From Console"){
 				if(Debug.console == null){
 					Debug.console = new Console();
 				}
-				objects.add(Debug.console.new getStr(p, Variable.DataType.STRING, (GraphEditor) THIS));
+				Debug.console.new getStr(p, Variable.DataType.STRING, (GraphEditor) THIS);
 			}else if(c == "Get Number From Console"){
 				if(Debug.console == null){
 					Debug.console = new Console();
 				}
-				objects.add(Debug.console.new getStr(p, Variable.DataType.DOUBLE, (GraphEditor) THIS));
+				Debug.console.new getStr(p, Variable.DataType.DOUBLE, (GraphEditor) THIS);
 			}else{
 				System.out.println("null Action:"+c);
 			}
@@ -670,13 +670,15 @@ public class Main implements ActionListener, MouseInputListener, KeyListener, Gr
 		
 		@Override
 		public Dimension getPreferredSize(){
-			Dimension dimension = new Dimension(1000, 1000);
-			for(VObject o : Main.objects){
+			Dimension dimension = new Dimension(100, 100);
+			for(VObject o : owner.getObjects()){
+				if(o instanceof FunctionEditor.FunctionIO)
+					continue;
 				if(o.getX() + o.getWidth() > dimension.width){
-					dimension.width = o.getX() + o.getWidth() + 10;
+					dimension.width = o.getX() + o.getWidth() + 15;
 				}
 				if(o.getY() + o.getHeight() > dimension.height){
-					dimension.height = o.getY() + o.getHeight() + 10;
+					dimension.height = o.getY() + o.getHeight() + 15;
 				}
 			}
 			return dimension;

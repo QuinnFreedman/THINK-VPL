@@ -192,7 +192,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 					s = data.getValueAsString();
 					if(data.getClass() == VariableData.String.class){
 						s = "\""+s+"\"";
-					}else if(data.getClass() == VariableData.Charecter.class){
+					}else if(data.getClass() == VariableData.Character.class){
 						s = "\'"+s+"\'";
 					}
 				}else{
@@ -271,7 +271,6 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		}
 		if(mouse.x > 0 && mouse.y > 0 && mouse.x < parentObject.owner.getPanel().getWidth() && mouse.y < parentObject.owner.getPanel().getHeight()){
 			ChildPicker childPicker = new ChildPicker(this, mouse, parentObject.owner);
-			Main.objects.add(childPicker);
 			this.childPicker = childPicker;
 		}
 	}
@@ -294,7 +293,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 				)){
 			connect(A,B);
 		}else if(Cast.isCastable(A.dataType,B.dataType)){
-			Main.objects.add(new Cast(A,B));
+			new Cast(A,B);
 		}
 		node2.parentObject.owner.getPanel().repaint();
 	}
@@ -303,8 +302,8 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		if(node1.parentObject == node2.parentObject){
 			return false;
 		}
-		if((node1.dataType == Variable.DataType.FLEX && node2.dataType != Variable.DataType.NUMBER) || 
-				(node2.dataType == Variable.DataType.FLEX  && node1.dataType != Variable.DataType.NUMBER)){
+		if((node1.dataType == Variable.DataType.FLEX && node2.dataType != Variable.DataType.NUMBER && node2.dataType != Variable.DataType.GENERIC) || 
+				(node2.dataType == Variable.DataType.FLEX  && node1.dataType != Variable.DataType.NUMBER && node1.dataType != Variable.DataType.GENERIC)){
 			return true;
 		}
 		Node A;

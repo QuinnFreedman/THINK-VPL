@@ -16,6 +16,7 @@ public class SpecialEditorPane extends JTextArea implements KeyListener{
 	private static final long serialVersionUID = 1L;
 
 	private NoBreakDocumentFilter filter;
+	private VObject parent;
 	
 	public void addIllegalChar(char c){
 		this.filter.illegalChars.add(c);
@@ -27,10 +28,18 @@ public class SpecialEditorPane extends JTextArea implements KeyListener{
 		((AbstractDocument) this.getDocument()).setDocumentFilter(filter);
 	}
 	
+	public SpecialEditorPane(VObject parent) {
+		this.parent = parent;
+	}
+
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == 10){
-			Main.panel.requestFocusInWindow();//TODO
+		if(e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_TAB){
+			if(parent == null){
+				Main.panel.requestFocusInWindow();
+			}else{
+				parent.owner.getPanel().requestFocusInWindow();
+			}
 		}
 		
 	}

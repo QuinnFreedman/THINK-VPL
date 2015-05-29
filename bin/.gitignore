@@ -36,3 +36,6 @@
 /FunctionEditor$NodeAdderListener.class
 /FunctionEditor$removeableNode.class
 /FunctionEditor$removeableNode$Deleter.class
+/Constant.class
+/Constant$Editor.class
+/VariableData$Character.class

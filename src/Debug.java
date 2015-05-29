@@ -126,7 +126,7 @@ public class Debug{
 		}
 		
 		Executable next = (Executable) parents.get(0).parentObject;
-		if(!(next instanceof FunctionEditor.FunctionIO)){
+		if(!(next instanceof FunctionEditor.FunctionIO && ((FunctionEditor.FunctionIO) next).mode == FunctionEditor.FunctionIO.Mode.INPUT)){
 			getTop().incrementActiveNode();
 			
 			next.workingData.clear();
@@ -144,12 +144,15 @@ public class Debug{
 				next.repaint();
 			}
 		}else{
+			System.out.println(next.getOutputNodes().indexOf(
+									parents.get(0)
+									));
 			getTop().workingData.add(
 					next.outputData.get(
-							getTop().getInputNodes().indexOf(
-									getTop().getInputNodes().get(getTop().activeNode).parents.get(0)
+							next.getOutputNodes().indexOf(
+									parents.get(0)
 									)
-							+((getTop().getInputNodes().get(0).dataType == Variable.DataType.GENERIC) ? 1 : 0)
+							-((next.getOutputNodes().get(0).dataType == Variable.DataType.GENERIC) ? 1 : 0)
 							)
 					);
 			getTop().incrementActiveNode();
@@ -195,8 +198,12 @@ public class Debug{
 	public static boolean moveDownStack2(VariableData execute){
 		waitingForInput = null;
 		
-		if(!(getTop() instanceof FunctionEditor.FunctionIO))
+		if(!(getTop() instanceof FunctionEditor.FunctionIO)){
 			getTop().outputData = new ArrayList<VariableData>(Arrays.asList(execute));
+		}else if(((FunctionEditor.FunctionIO) getTop()).mode == FunctionEditor.FunctionIO.Mode.OUTPUT){
+			((FunctionEditor) ((FunctionEditor.FunctionIO) getTop()).owner).parent.currentlyExecuting.outputData = 
+					new ArrayList<VariableData>(Arrays.asList(execute));
+		}
 		
 		if(mode != RunMode.RUN){
 			getTop().setSelected(false);
@@ -226,7 +233,19 @@ public class Debug{
 				}
 			}
 		}else{
-			stack.remove(stack.size()-1);
+			if(getTop() instanceof UserFunc){
+				UserFunc f = (UserFunc) getTop();
+				stack.remove(stack.size()-1);
+				stack.add(f.getParentVar().editor.outputObject);
+				f.getParentVar().editor.outputObject.resetActiveNode();
+				f.getParentVar().editor.outputObject.outputData = new ArrayList<VariableData>();
+				f.getParentVar().editor.outputObject.workingData = new ArrayList<VariableData>();
+				f.getParentVar().editor.inputObject.outputData = new ArrayList<VariableData>(f.workingData);
+				f.getParentVar().editor.parent.currentlyExecuting = f;
+				f.outputData = new ArrayList<VariableData>();
+			}else{
+				stack.remove(stack.size()-1);
+			}
 		}
 		if(execute != null){
 			System.out.println("add to "+getTop().workingData);

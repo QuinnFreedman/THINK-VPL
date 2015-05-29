@@ -140,12 +140,12 @@ class VariableData{
 			return value;
 		}
 	}
-	static class Charecter extends VariableData{
+	static class Character extends VariableData{
 		char value = ' ';
-		public Charecter(char input) {
+		public Character(char input) {
 			this.value = input;
 		}
-		public Charecter(){
+		public Character(){
 			
 		}
 		@Override
