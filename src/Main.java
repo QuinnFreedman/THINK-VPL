@@ -539,17 +539,17 @@ public class Main implements ActionListener, MouseInputListener, KeyListener, Gr
 				if(Debug.console == null){
 					Debug.console = new Console();
 				}
-				Debug.console.new Log(p, (GraphEditor) THIS);
+				new Console.Log(p, (GraphEditor) THIS);
 			}else if(c == "Get String From Console"){
 				if(Debug.console == null){
 					Debug.console = new Console();
 				}
-				Debug.console.new getStr(p, Variable.DataType.STRING, (GraphEditor) THIS);
+				new Console.getStr(p, Variable.DataType.STRING, (GraphEditor) THIS);
 			}else if(c == "Get Number From Console"){
 				if(Debug.console == null){
 					Debug.console = new Console();
 				}
-				Debug.console.new getStr(p, Variable.DataType.DOUBLE, (GraphEditor) THIS);
+				new Console.getStr(p, Variable.DataType.DOUBLE, (GraphEditor) THIS);
 			}else{
 				System.out.println("null Action:"+c);
 			}

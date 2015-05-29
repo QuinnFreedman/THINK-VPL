@@ -92,6 +92,7 @@ public class VObject extends JPanel implements MouseInputListener{
 		}
 		owner.getObjects().remove(this);
 		owner.getPanel().repaint();
+		owner.getPanel().revalidate();
 	}
 	
 	@Override
