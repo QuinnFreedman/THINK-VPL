@@ -92,8 +92,8 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
+				drag.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				if(getThis().dataType != null){
-					drag.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 					Point p = Node.getLocationOnPanel(e,owner.getPanel());
 					if(getThis().childPicker != null){
 						childPicker.delete();

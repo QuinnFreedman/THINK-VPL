@@ -48,7 +48,7 @@ public class Cast extends Executable{
 		if((isNumber(dataType) && isNumber(dataType2)) ||
 				(dataType == Variable.DataType.CHARACTER && dataType2 == Variable.DataType.STRING) ||
 				(dataType == Variable.DataType.BOOLEAN && dataType2 == Variable.DataType.INTEGER) ||
-				(dataType2 == Variable.DataType.STRING)
+				(dataType2 == Variable.DataType.STRING && dataType != Variable.DataType.GENERIC)
 		){
 			return true;
 		}

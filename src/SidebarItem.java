@@ -112,10 +112,10 @@ public class SidebarItem extends JPanel{
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							if(getThis().type == Type.VARIABLE){
-								Main.variables.remove(getThis());
+								getThis().owner.getVariables().remove(getThis());
 								((Variable) getThis()).clearChildren();
 							}else if(getThis().type == Type.FUNCTION){
-								Main.functions.remove(getThis());
+								((Blueprint) getThis().owner).getFunctions().remove(getThis());
 								((VFunction) getThis()).clearChildren();
 							}
 							Container parent = getThis().getParent();
@@ -366,10 +366,10 @@ public class SidebarItem extends JPanel{
 			ArrayList<? extends SidebarItem> list = null;
 			switch(si.type){
 			case VARIABLE:
-				list = Main.variables;
+				list = si.owner.getVariables();
 				break;
 			case FUNCTION:
-				list = Main.functions;
+				list = ((Blueprint) si.owner).getFunctions();
 				break;
 			case CLASS:
 				list = null;//TODO

@@ -31,10 +31,12 @@ public class Debug{
 	
 	private static void startStep(){
 		System.out.println("Start Stepping");
-		Main.addVar.setEnabled(false);
-		for(Variable var : Main.variables){
-			var.setEditable(false);
-			var.resetVariableData();
+		for(Blueprint bp : Main.blueprints){
+			bp.addVar.setEnabled(false);
+			for(Variable var : bp.getVariables()){
+				var.setEditable(false);
+				var.resetVariableData();
+			}
 		}
 		if(console == null){
 			console = new Console();
@@ -42,7 +44,7 @@ public class Debug{
 		console.clear();
 		console.setVisible(true);
 		Main.window.requestFocus();
-		Main.panel.requestFocusInWindow();
+		Main.getOpenClass().getPanel().requestFocusInWindow();
 		isStepping = true;
 		stack = new ArrayList<Executable>(Arrays.asList(Main.entryPoint));
 		remember = new ArrayList<Executable>();
@@ -50,20 +52,8 @@ public class Debug{
 			stack.get(0).setSelected(true);
 			stack.get(0).repaint();
 		}
-		for(VObject o : Main.objects){
-			if(o instanceof Executable){
-				System.out.println(o);
-				Executable o2 = ((Executable) o);
-				o2.resetActiveNode();
-				o2.workingData = new ArrayList<VariableData>();
-				o2.outputData = new ArrayList<VariableData>();
-				o2.hasExecuted = false;
-				System.out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
-				
-			}
-		}
-		for(VFunction f : Main.functions){
-			for(VObject o : f.editor.getObjects()){
+		for(Blueprint bp : Main.blueprints){
+			for(VObject o : bp.getObjects()){
 				if(o instanceof Executable){
 					System.out.println(o);
 					Executable o2 = ((Executable) o);
@@ -73,6 +63,20 @@ public class Debug{
 					o2.hasExecuted = false;
 					System.out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
 					
+				}
+			}
+			for(VFunction f : bp.getFunctions()){
+				for(VObject o : f.editor.getObjects()){
+					if(o instanceof Executable){
+						System.out.println(o);
+						Executable o2 = ((Executable) o);
+						o2.resetActiveNode();
+						o2.workingData = new ArrayList<VariableData>();
+						o2.outputData = new ArrayList<VariableData>();
+						o2.hasExecuted = false;
+						System.out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
+						
+					}
 				}
 			}
 		}
@@ -88,15 +92,17 @@ public class Debug{
 	
 	protected static void exit() {
 		isStepping = false;
-		Main.addVar.setEnabled(true);
-		for(VObject o : Main.objects){
-			if(o instanceof Executable){
-				((Executable) o).setSelected(false);
-				((Executable) o).repaint();
+		for(Blueprint bp : Main.blueprints){
+			bp.addVar.setEnabled(true);
+			for(VObject o : bp.getObjects()){
+				if(o instanceof Executable){
+					((Executable) o).setSelected(false);
+					((Executable) o).repaint();
+				}
 			}
-		}
-		for(Variable var : Main.variables){
-			var.setEditable(true);
+			for(Variable var : bp.getVariables()){
+				var.setEditable(true);
+			}
 		}
 	}
 	
@@ -356,7 +362,7 @@ public class Debug{
 	}
 	public static void f1() {
 		if(!isStepping()){
-    		Main.panel.requestFocusInWindow();
+    		Main.blueprints.get(0).getPanel().requestFocusInWindow();
 			mode = RunMode.RUN;
 			startStep();
     	}else{
@@ -367,7 +373,7 @@ public class Debug{
 	}
 	public static void f2() {
 		if(!isStepping()){
-    		Main.panel.requestFocusInWindow();
+			Main.blueprints.get(0).getPanel().requestFocusInWindow();
 			mode = RunMode.FAST;
 			startStep();
     	}else{
@@ -377,7 +383,7 @@ public class Debug{
 	}
 	public static void f3() {
     	if(!isStepping()){
-    		Main.panel.requestFocusInWindow();
+    		Main.blueprints.get(0).getPanel().requestFocusInWindow();
     		mode = RunMode.SLOW;
 			startStep();
     	}else{

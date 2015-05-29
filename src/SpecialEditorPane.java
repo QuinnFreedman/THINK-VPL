@@ -36,7 +36,7 @@ public class SpecialEditorPane extends JTextArea implements KeyListener{
 	public void keyPressed(KeyEvent e) {
 		if(e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_TAB){
 			if(parent == null){
-				Main.panel.requestFocusInWindow();
+				//Main.panel.requestFocusInWindow();
 			}else{
 				parent.owner.getPanel().requestFocusInWindow();
 			}

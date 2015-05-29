@@ -32,6 +32,7 @@ public class VObject extends JPanel implements MouseInputListener{
 		this.setOpaque(false);
 		this.setLayout(new BorderLayout());
 		
+		System.out.println(Main.componentMover);
 		Main.componentMover.registerComponent(this);
 		body = new JPanel();
 		body.setOpaque(false);
