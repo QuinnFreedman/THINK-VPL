@@ -179,15 +179,15 @@ public class Debug{
 			System.out.print(var.getValueAsString());
 		}
 		System.out.println();
+		System.out.print(getTop().getClass().getName()+" executeOnce = "+getTop().executeOnce+"; hasExecuted = "+getTop().hasExecuted);
 		
 		VariableData execute;
 		if(getTop().executeOnce && getTop().hasExecuted){
-			execute = getTop().workingData.get(0);
+			execute = null;//getTop().outputData;
 		}else{
 			VariableData[] array = new VariableData[getTop().workingData.size()];
 			array = getTop().workingData.toArray(array);
 			execute = getTop().execute(array);
-			getTop().hasExecuted = true;
 		}
 		
 		if(getTop().getClass() == Console.getStr.class){
@@ -204,8 +204,17 @@ public class Debug{
 	public static boolean moveDownStack2(VariableData execute){
 		waitingForInput = null;
 		
+		ArrayList<VariableData> multiExecute = null;
 		if(!(getTop() instanceof FunctionEditor.FunctionIO)){
-			getTop().outputData = new ArrayList<VariableData>(Arrays.asList(execute));
+			if(execute != null){
+				getTop().outputData = new ArrayList<VariableData>(Arrays.asList(execute));
+			}else{
+				if(getTop() instanceof UserFunc){
+					//getTop().outputData = ((UserFunc) getTop()).getParentVar().editor.outputObject.outputData;
+					System.out.println("execute == null, getTop().outputData = "+getTop().outputData);
+					multiExecute = getTop().outputData;
+				}
+			}
 		}else if(((FunctionEditor.FunctionIO) getTop()).mode == FunctionEditor.FunctionIO.Mode.OUTPUT){
 			((FunctionEditor) ((FunctionEditor.FunctionIO) getTop()).owner).parent.currentlyExecuting.outputData = 
 					new ArrayList<VariableData>(Arrays.asList(execute));
@@ -218,8 +227,10 @@ public class Debug{
 		
 		if(stack.size() == 1){
 			Executable next = getNext(getTop());
+			getTop().hasExecuted = true;
 			stack.remove(stack.size()-1);
 			if(next != null){
+				next.hasExecuted = false;
 				if(next instanceof Repeater){
 					remember.add(next);
 					if(next instanceof Logic.Sequence){
@@ -239,7 +250,7 @@ public class Debug{
 				}
 			}
 		}else{
-			if(getTop() instanceof UserFunc){
+			if(getTop() instanceof UserFunc && !(getTop().executeOnce && getTop().hasExecuted)){
 				UserFunc f = (UserFunc) getTop();
 				stack.remove(stack.size()-1);
 				stack.add(f.getParentVar().editor.outputObject);
@@ -256,6 +267,8 @@ public class Debug{
 		if(execute != null){
 			System.out.println("add to "+getTop().workingData);
 			getTop().workingData.add(execute);
+		}else if(multiExecute != null){
+			getTop().workingData = new ArrayList<VariableData>(multiExecute);
 		}
 		if(mode != RunMode.RUN){
 			getTop().setSelected(true);
@@ -336,7 +349,7 @@ public class Debug{
 				children = new ArrayList<Node>();
 				removeFromEnd(remember,o);
 			}
-		}else if(o instanceof UserFunc){
+		}else if(o instanceof UserFunc && !(o.executeOnce && o.hasExecuted)){
 			FunctionEditor.FunctionIO inputObj = ((UserFunc) o).getParentVar().editor.inputObject;
 			inputObj.outputData = new ArrayList<VariableData>(o.workingData);
 			System.out.println(inputObj.outputData);
