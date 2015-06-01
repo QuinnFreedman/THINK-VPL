@@ -19,19 +19,32 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class SidebarItem extends JPanel{
 	private static final long serialVersionUID = 1L;
 	
 	private GraphEditor owner;
-	private String name;
+	protected String name;
 	protected Type type;
+	public boolean isStatic = true;
+	public VInstance parentInstance = null;
 	protected JPanel header;
 	protected InputPane nameField;
 	protected InputPane typeField;
 	protected ArrayList<InputPane> fields = new ArrayList<InputPane>();
 	static protected BufferedImage bufferedImage = null;
 	
+	public void setID(String name){
+		this.name = name;
+	}
+	public String getID(){
+		return name;
+	}
+	public String getFullName(){
+		return ((!isStatic) ? parentInstance.getID()+" > " : "")+name;
+	}
 	public GraphEditor getOwner(){
 		return owner;
 	}
@@ -74,6 +87,8 @@ public class SidebarItem extends JPanel{
 		        
 		    case STRING: symbol += "str";
 		        break;
+		    case OBJECT: symbol += ((VInstance) this).parentBlueprint.getName();
+		    	break;
 			default:
 				break;
 			}
@@ -97,7 +112,7 @@ public class SidebarItem extends JPanel{
     	setLayout(new FlowLayout(FlowLayout.LEFT));
 		
     	
-		header = new JPanel(new FlowLayout());
+		header = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		
 		JLabel close = new JLabel("\u00D7");
 		close.setFont(close.getFont().deriveFont(Font.PLAIN, close.getFont().getSize()+8));
@@ -307,6 +322,16 @@ public class SidebarItem extends JPanel{
 					owner.updateVars();
 					newStr.nameField.requestFocusInWindow();
 				}else{
+					for(Blueprint bp : Main.blueprints){
+						if(text.equalsIgnoreCase(bp.getName())){
+							VInstance newObj = new VInstance(owner, bp);
+							owner.getVariables().set(
+									owner.getVariables().indexOf(sidebarItemParent),
+									newObj);
+							owner.updateVars();
+							newObj.nameField.requestFocusInWindow();
+						}
+					}
 					return;
 				}
 				
@@ -380,7 +405,9 @@ public class SidebarItem extends JPanel{
 					){
 				i++;
 			}
-			ip.setText(s+((i == -1) ? "" : i));
+			s += ((i == -1) ? "" : i);
+			ip.setText(s);
+			ip.sidebarItemParent.setID(s);
 			if(i == -1)
 				return false;
 			else

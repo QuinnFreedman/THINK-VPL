@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+
 class VariableData{
 	
 	public java.lang.String getValueAsString(){
@@ -151,6 +154,20 @@ class VariableData{
 		@Override
 		public java.lang.String getValueAsString(){
 			return java.lang.Character.toString(value);
+		}
+	}
+	static class Instance extends VariableData{
+		VInstance value;
+		public Instance(VInstance i) {
+			this.value = i;
+			
+		}
+		public Instance(){
+			
+		}
+		@Override
+		public java.lang.String getValueAsString(){
+			return value.toString();
 		}
 	}
 }

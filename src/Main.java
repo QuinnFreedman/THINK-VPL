@@ -54,6 +54,7 @@ public class Main implements ActionListener{
 	static Point clickLocation;
 	public static EntryPoint entryPoint;
 	public static Main THIS;
+	public static Blueprint mainBP;
 	
 	static ArrayList<Blueprint> blueprints;
 	
@@ -64,6 +65,7 @@ public class Main implements ActionListener{
 		colors.put(Variable.DataType.DOUBLE, new Color(196,0,167));
 		colors.put(Variable.DataType.FLOAT, new Color(207,0,91));
 		colors.put(Variable.DataType.STRING, new Color(0,132,0));
+		colors.put(Variable.DataType.OBJECT, new Color(69,168,230));
 		colors.put(Variable.DataType.GENERIC, Color.WHITE);
 		colors.put(Variable.DataType.NUMBER, Color.GRAY);
 		colors.put(Variable.DataType.FLEX, Color.GRAY);
@@ -134,7 +136,12 @@ public class Main implements ActionListener{
 				}
 				
 				blueprints = new ArrayList<Blueprint>();
-				blueprints.add(new Blueprint());
+				mainBP = new Blueprint();
+				mainBP.setName("Main");
+				Blueprint bp2 = new Blueprint();
+				bp2.setName("bp2");
+				blueprints.add(mainBP);
+				blueprints.add(bp2);
 				
 			//Menu Bar
 				JMenuBar menuBar = new JMenuBar();
@@ -225,10 +232,9 @@ public class Main implements ActionListener{
 				
 				JTabbedPane tabbedPane = new JTabbedPane();
 				
-				blueprints.add(new Blueprint());
-				tabbedPane.setBorder(null);
-				tabbedPane.addTab("Main", blueprints.get(0).splitPane);
-				tabbedPane.addTab("2", blueprints.get(1).splitPane);
+				for(Blueprint bp : blueprints){
+					tabbedPane.addTab(bp.getName(), bp.splitPane);
+				}
 				
 				JPanel container = new JPanel();
 				container.setLayout(new BorderLayout());

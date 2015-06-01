@@ -164,6 +164,7 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 		@Override
 	    public void removeUpdate(DocumentEvent e) {
 	    	try {
+	    		var.setID(e.getDocument().getText(0, e.getDocument().getLength()));
 				var.setChildTexts(e.getDocument().getText(0, e.getDocument().getLength()));
 			} catch (BadLocationException e1) {
 				e1.printStackTrace();
@@ -173,6 +174,7 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 	    @Override
 	    public void insertUpdate(DocumentEvent e) {
 	    	try {
+	    		var.setID(e.getDocument().getText(0, e.getDocument().getLength()));
 		    	var.setChildTexts(e.getDocument().getText(0, e.getDocument().getLength()));
 			} catch (BadLocationException e1) {
 				e1.printStackTrace();
@@ -182,6 +184,7 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 	    @Override
 	    public void changedUpdate(DocumentEvent e) {
 	    	try {
+	    		var.setID(e.getDocument().getText(0, e.getDocument().getLength()));
 	    		var.setChildTexts(e.getDocument().getText(0, e.getDocument().getLength()));
 			} catch (BadLocationException e1) {
 				e1.printStackTrace();
@@ -190,7 +193,7 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
     	
     }
     public enum DataType{
-    	BOOLEAN,BYTE,SHORT,INTEGER,FLOAT,DOUBLE,LONG,CHARACTER,STRING,GENERIC,NUMBER,FLEX;
+    	BOOLEAN,BYTE,SHORT,INTEGER,FLOAT,DOUBLE,LONG,CHARACTER,STRING,GENERIC,NUMBER,FLEX,OBJECT;
 
 		public boolean isNumber() {
 			if(this == BYTE || this == SHORT || this == INTEGER || this == FLOAT || this == DOUBLE || this == LONG)

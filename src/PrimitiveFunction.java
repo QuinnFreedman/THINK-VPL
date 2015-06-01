@@ -45,7 +45,7 @@ public class PrimitiveFunction extends Executable{
         GridBagConstraints gbc = new GridBagConstraints();
         body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 		label = new JLabel();
-		setText(parentVar.nameField.getText());
+		setText(parentVar.getFullName());
 		body.add(label,gbc);
 		
 		if(getInputs() != null){
