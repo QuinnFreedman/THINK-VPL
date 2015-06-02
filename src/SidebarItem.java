@@ -16,11 +16,14 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 
 public class SidebarItem extends JPanel{
 	private static final long serialVersionUID = 1L;
@@ -343,36 +346,57 @@ public class SidebarItem extends JPanel{
 		
 		SidebarItem si;
 		InputPane ip;
+		JTextComponent tc;
+		Blueprint blueprint;
 		
 		NoDuplicateNames(InputPane ip){
 			this.ip = ip;
+			this.tc = ip;
 			this.si = ip.sidebarItemParent;
+		}
+		
+		NoDuplicateNames(Blueprint bp, JTextField tf){
+			this.tc = tf;
+			this.blueprint = bp;
+		}
+		private Type getType(){
+			if(si != null){
+				return si.type;
+			}else if(blueprint != null){
+				return Type.CLASS;
+			}
+			return null;
 		}
 		
 		@Override
 		public void focusGained(FocusEvent arg0) {
-			if((si.getClass() != Variable.class && si instanceof Variable) || si instanceof VFunction){//if datatype has been set
+			if(getType() == Type.CLASS){
 				Boolean b = fixName();
 				if(b)
-					this.ip.selectAll();
+					this.tc.selectAll();
+			}else{
+				if((si.getClass() != Variable.class && si instanceof Variable) || si instanceof VFunction){//if datatype has been set
+					Boolean b = fixName();
+					if(b)
+						this.ip.selectAll();
+				}
 			}
 		}
 
 		@Override
 		public void focusLost(FocusEvent arg0) {
-			if(si.getClass() != Variable.class && si instanceof Variable){
-				fixName();
-			}
+			fixName();
+			
 		}
 		public boolean fixName(){
-			String s = ip.getText();
+			String s = tc.getText();
 			int i = -1;
-			if(ip.getText().length() == 0){
-				if(si.getClass() == VArray.class){
+			if(tc.getText().length() == 0){
+				if(si != null && si.getClass() == VArray.class){
 					s = "Array";
 					i = 1;
 				}else{
-				switch(si.type){
+					switch(getType()){
 					case VARIABLE:
 						s = ((Variable) si).getSymbol();
 						i = 1;
@@ -382,14 +406,14 @@ public class SidebarItem extends JPanel{
 						i = 1;
 						break;
 					case CLASS:
-						s = "class";
+						s = "Blueprint_";
 						i = 1;
 						break;
 					}
 				}
 			}
 			ArrayList<? extends SidebarItem> list = null;
-			switch(si.type){
+			switch(getType()){
 			case VARIABLE:
 				list = si.owner.getVariables();
 				break;
@@ -397,8 +421,18 @@ public class SidebarItem extends JPanel{
 				list = ((Blueprint) si.owner).getFunctions();
 				break;
 			case CLASS:
-				list = null;//TODO
-				break;
+				ArrayList<Blueprint> list2 = Main.blueprints;
+				while((isConflictBP(s, list2) && i == -1) ||
+						isConflictBP(s+i, list2)
+						){
+					i++;
+				}
+				s += ((i == -1) ? "" : i);
+				tc.setText(s);
+				if(i == -1)
+					return false;
+				else
+					return true;
 			}
 			while((isConflict(s, list) && i == -1) ||
 					isConflict(s+i, list)
@@ -416,6 +450,14 @@ public class SidebarItem extends JPanel{
 		private boolean isConflict(String s, ArrayList<? extends SidebarItem> list){
 			for(SidebarItem listItem : list){
 				if(listItem != si && listItem.nameField.getText().equals(s)){
+					return true;
+				}
+			}
+			return false;
+		}
+		private boolean isConflictBP(String s, ArrayList<Blueprint> list){
+			for(Blueprint bp : list){
+				if(bp != blueprint && bp.getName().equals(s)){
 					return true;
 				}
 			}

@@ -33,6 +33,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputListener;
 import javax.swing.JLabel;
 
@@ -55,6 +57,7 @@ public class Main implements ActionListener{
 	public static EntryPoint entryPoint;
 	public static Main THIS;
 	public static Blueprint mainBP;
+	protected static JTabbedPane tabbedPane;
 	
 	static ArrayList<Blueprint> blueprints;
 	
@@ -138,10 +141,7 @@ public class Main implements ActionListener{
 				blueprints = new ArrayList<Blueprint>();
 				mainBP = new Blueprint();
 				mainBP.setName("Main");
-				Blueprint bp2 = new Blueprint();
-				bp2.setName("bp2");
 				blueprints.add(mainBP);
-				blueprints.add(bp2);
 				
 			//Menu Bar
 				JMenuBar menuBar = new JMenuBar();
@@ -230,11 +230,29 @@ public class Main implements ActionListener{
 				JMenu mnHelp = new JMenu("Help");
 				menuBar.add(mnHelp);
 				
-				JTabbedPane tabbedPane = new JTabbedPane();
+				tabbedPane = new JTabbedPane();
 				
 				for(Blueprint bp : blueprints){
 					tabbedPane.addTab(bp.getName(), bp.splitPane);
 				}
+				
+				JPanel plus = null;
+				
+				tabbedPane.addTab("+", plus);
+				
+				tabbedPane.addChangeListener(new ChangeListener() {
+			        public void stateChanged(ChangeEvent e) {
+			            if(tabbedPane.getSelectedComponent() == plus){
+			            	InstantiableBlueprint ibp = new InstantiableBlueprint();
+			            	blueprints.add(ibp);
+			            	tabbedPane.removeTabAt(tabbedPane.getTabCount()-1);
+			            	tabbedPane.addTab("new_Blueprint", ibp.splitPane);
+			            	tabbedPane.setSelectedIndex(tabbedPane.getTabCount()-1);
+			            	ibp.className.requestFocusInWindow();
+			            	tabbedPane.addTab("+", plus);
+			            }
+			        }
+			    });
 				
 				JPanel container = new JPanel();
 				container.setLayout(new BorderLayout());
@@ -260,7 +278,7 @@ public class Main implements ActionListener{
 	}
 	
 	public static Blueprint getOpenClass(){
-		return blueprints.get(0);
+		return blueprints.get(tabbedPane.getSelectedIndex());
 	}
 	
 	@Override
@@ -302,5 +320,12 @@ public class Main implements ActionListener{
 		}
 		
     }
+	
+	public static String crop(String s, int i){
+		if(s.length() <= i){
+			return s;
+		}
+		return s.substring(0, i-2)+"...";
+	}
 
 }
