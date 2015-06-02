@@ -179,7 +179,7 @@ public class Debug{
 			System.out.print(var.getValueAsString());
 		}
 		System.out.println();
-		System.out.print(getTop().getClass().getName()+" executeOnce = "+getTop().executeOnce+"; hasExecuted = "+getTop().hasExecuted);
+		System.out.println(getTop().getClass().getName()+" executeOnce = "+getTop().executeOnce+"; hasExecuted = "+getTop().hasExecuted);
 		
 		VariableData execute;
 		if(getTop().executeOnce && getTop().hasExecuted){
@@ -216,7 +216,7 @@ public class Debug{
 				}
 			}
 		}else if(((FunctionEditor.FunctionIO) getTop()).mode == FunctionEditor.FunctionIO.Mode.OUTPUT){
-			((FunctionEditor) ((FunctionEditor.FunctionIO) getTop()).owner).parent.currentlyExecuting.outputData = 
+			((FunctionEditor.FunctionIO) getTop()).getOverseer().getCurrentlyExecuting().outputData = 
 					new ArrayList<VariableData>(Arrays.asList(execute));
 		}
 		
@@ -253,12 +253,12 @@ public class Debug{
 			if(getTop() instanceof UserFunc && !(getTop().executeOnce && getTop().hasExecuted)){
 				UserFunc f = (UserFunc) getTop();
 				stack.remove(stack.size()-1);
-				stack.add(f.getParentVar().editor.outputObject);
-				f.getParentVar().editor.outputObject.resetActiveNode();
-				f.getParentVar().editor.outputObject.outputData = new ArrayList<VariableData>();
-				f.getParentVar().editor.outputObject.workingData = new ArrayList<VariableData>();
-				f.getParentVar().editor.inputObject.outputData = new ArrayList<VariableData>(f.workingData);
-				f.getParentVar().editor.parent.currentlyExecuting = f;
+				stack.add(f.getParentVar().getOutputObject());
+				f.getParentVar().getOutputObject().resetActiveNode();
+				f.getParentVar().getOutputObject().outputData = new ArrayList<VariableData>();
+				f.getParentVar().getOutputObject().workingData = new ArrayList<VariableData>();
+				f.getParentVar().getInputObject().outputData = new ArrayList<VariableData>(f.workingData);
+				f.getParentVar().setCurrentlyExecuting(f);
 				f.outputData = new ArrayList<VariableData>();
 			}else{
 				stack.remove(stack.size()-1);
@@ -350,13 +350,13 @@ public class Debug{
 				removeFromEnd(remember,o);
 			}
 		}else if(o instanceof UserFunc && !(o.executeOnce && o.hasExecuted)){
-			FunctionEditor.FunctionIO inputObj = ((UserFunc) o).getParentVar().editor.inputObject;
+			FunctionEditor.FunctionIO inputObj = ((UserFunc) o).getParentVar().getInputObject();
 			inputObj.outputData = new ArrayList<VariableData>(o.workingData);
 			System.out.println(inputObj.outputData);
-			((UserFunc) o).getParentVar().currentlyExecuting = (UserFunc) o;
+			((UserFunc) o).getParentVar().setCurrentlyExecuting((UserFunc) o);
 			return inputObj;
 		}else if(o instanceof FunctionEditor.FunctionIO && ((FunctionEditor.FunctionIO) o).mode == FunctionEditor.FunctionIO.Mode.OUTPUT){
-			children = ((FunctionEditor) ((FunctionEditor.FunctionIO) o).owner).parent.currentlyExecuting.getOutputNodes().get(0).children;
+			children = ((FunctionEditor.FunctionIO) o).getOverseer().getCurrentlyExecuting().getOutputNodes().get(0).children;
 		}else{
 			children = o.getOutputNodes().get(0).children;
 		}

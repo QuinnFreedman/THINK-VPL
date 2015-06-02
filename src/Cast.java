@@ -19,6 +19,8 @@ public class Cast extends Executable{
 		super(sendingNode.parentObject.owner);
 		this.color = Color.BLACK;
 		
+		System.out.println("CAST "+sendingNode.dataType+" > "+recievingNode.dataType);
+		
     	getThis().sendingNode = sendingNode;
     	getThis().recievingNode = recievingNode;
     	owner.getPanel().add(getThis());
@@ -63,158 +65,130 @@ public class Cast extends Executable{
 	};
 	@Override
 	public VariableData execute(VariableData[] inputs){
-		VariableData output = null;
 		if(this.output == Variable.DataType.STRING){
-			output = new VariableData.String(inputs[0].getValueAsString());
+			return new VariableData.String(inputs[0].getValueAsString());
 		}
+		System.out.println("CASTING "+sendingNode.dataType+" > "+recievingNode.dataType);
+		
 		switch(this.sendingNode.dataType){
 		case BOOLEAN:
+			System.out.println("sendingNode.dataType = BOOLEAN");
 			switch(this.recievingNode.dataType){
 			case INTEGER:
-				output = new VariableData.Integer((((VariableData.Boolean) inputs[0]).value) ? 1 : 0);
+				return new VariableData.Integer((((VariableData.Boolean) inputs[0]).value) ? 1 : 0);
 			default:
 				return null;
 			}
 		case BYTE:
 			switch(this.recievingNode.dataType){
 			case DOUBLE:
-				output = new VariableData.Double((double) ((VariableData.Byte) inputs[0]).value);
-				break;
+				return new VariableData.Double((double) ((VariableData.Byte) inputs[0]).value);
 			case FLOAT:
-				output = new VariableData.Float((float) ((VariableData.Byte) inputs[0]).value);
-				break;
+				return new VariableData.Float((float) ((VariableData.Byte) inputs[0]).value);
 			case INTEGER:
-				output = new VariableData.Integer((int) ((VariableData.Byte) inputs[0]).value);
-				break;
+				return new VariableData.Integer((int) ((VariableData.Byte) inputs[0]).value);
 			case LONG:
-				output = new VariableData.Long((long) ((VariableData.Byte) inputs[0]).value);
-				break;
+				return new VariableData.Long((long) ((VariableData.Byte) inputs[0]).value);
 			case SHORT:
-				output = new VariableData.Short((short) ((VariableData.Byte) inputs[0]).value);
-				break;
+				return new VariableData.Short((short) ((VariableData.Byte) inputs[0]).value);
 			default:
-				break;
+				return null;
 			
 			}
 		case CHARACTER:
 			switch(this.recievingNode.dataType){
 			case STRING:
-				output = new VariableData.String(Character.toString(((VariableData.Character) inputs[0]).value));
-				break;
+				return new VariableData.String(Character.toString(((VariableData.Character) inputs[0]).value));
 			default:
-				break;
+				return null;
 			}
 		case DOUBLE:
+			System.out.println("sendingNode.dataType = DOUBLE");
 			switch(this.recievingNode.dataType){
 			case BYTE:
-				output = new VariableData.Byte((byte) ((VariableData.Double) inputs[0]).value);
-				break;
+				return new VariableData.Byte((byte) ((VariableData.Double) inputs[0]).value);
 			case FLOAT:
-				output = new VariableData.Float((float) ((VariableData.Double) inputs[0]).value);
-				break;
+				return new VariableData.Float((float) ((VariableData.Double) inputs[0]).value);
 			case INTEGER:
-				output = new VariableData.Integer((int) ((VariableData.Double) inputs[0]).value);
-				break;
+				return new VariableData.Integer((int) ((VariableData.Double) inputs[0]).value);
 			case LONG:
-				output = new VariableData.Long((long) ((VariableData.Double) inputs[0]).value);
-				break;
+				return new VariableData.Long((long) ((VariableData.Double) inputs[0]).value);
 			case SHORT:
-				output = new VariableData.Short((short) ((VariableData.Double) inputs[0]).value);
-				break;
+				return new VariableData.Short((short) ((VariableData.Double) inputs[0]).value);
 			default:
 				return null;
 			
 			}
 		case FLOAT:
+			System.out.println("sendingNode.dataType = FLOAT");
 			switch(this.recievingNode.dataType){
 			case BYTE:
-				output = new VariableData.Byte((byte) ((VariableData.Float) inputs[0]).value);
-				break;
+				return new VariableData.Byte((byte) ((VariableData.Float) inputs[0]).value);
 			case DOUBLE:
-				output = new VariableData.Double((double) ((VariableData.Float) inputs[0]).value);
-				break;
+				return new VariableData.Double((double) ((VariableData.Float) inputs[0]).value);
 			case INTEGER:
-				output = new VariableData.Integer((int) ((VariableData.Float) inputs[0]).value);
-				break;
+				return new VariableData.Integer((int) ((VariableData.Float) inputs[0]).value);
 			case LONG:
-				output = new VariableData.Long((long) ((VariableData.Float) inputs[0]).value);
-				break;
+				return new VariableData.Long((long) ((VariableData.Float) inputs[0]).value);
 			case SHORT:
-				output = new VariableData.Short((short) ((VariableData.Float) inputs[0]).value);
-				break;
+				return new VariableData.Short((short) ((VariableData.Float) inputs[0]).value);
 			default:
-				break;
+				return null;
 			
 			}
 		case INTEGER:
+			System.out.println("sendingNode.dataType = INT");
 			switch(this.recievingNode.dataType){
 			case BYTE:
-				output = new VariableData.Byte((byte) ((VariableData.Integer) inputs[0]).value);
-				break;
+				return new VariableData.Byte((byte) ((VariableData.Integer) inputs[0]).value);
 			case FLOAT:
-				output = new VariableData.Float((float) ((VariableData.Integer) inputs[0]).value);
-				break;
+				return new VariableData.Float((float) ((VariableData.Integer) inputs[0]).value);
 			case DOUBLE:
-				output = new VariableData.Double((double) ((VariableData.Integer) inputs[0]).value);
-				break;
+				return new VariableData.Double((double) ((VariableData.Integer) inputs[0]).value);
 			case LONG:
-				output = new VariableData.Long((long) ((VariableData.Integer) inputs[0]).value);
-				break;
+				return new VariableData.Long((long) ((VariableData.Integer) inputs[0]).value);
 			case SHORT:
-				output = new VariableData.Short((short) ((VariableData.Integer) inputs[0]).value);
-				break;
+				return new VariableData.Short((short) ((VariableData.Integer) inputs[0]).value);
 			default:
-				break;
+				return null;
 			
 			}
 		case LONG:
 			switch(this.recievingNode.dataType){
 			case BYTE:
-				output = new VariableData.Byte((byte) ((VariableData.Long) inputs[0]).value);
-				break;
+				return new VariableData.Byte((byte) ((VariableData.Long) inputs[0]).value);
 			case FLOAT:
-				output = new VariableData.Float((float) ((VariableData.Long) inputs[0]).value);
-				break;
+				return new VariableData.Float((float) ((VariableData.Long) inputs[0]).value);
 			case DOUBLE:
-				output = new VariableData.Double((double) ((VariableData.Long) inputs[0]).value);
-				break;
+				return new VariableData.Double((double) ((VariableData.Long) inputs[0]).value);
 			case INTEGER:
-				output = new VariableData.Integer((int) ((VariableData.Long) inputs[0]).value);
-				break;
+				return new VariableData.Integer((int) ((VariableData.Long) inputs[0]).value);
 			case SHORT:
-				output = new VariableData.Short((short) ((VariableData.Long) inputs[0]).value);
-				break;
+				return new VariableData.Short((short) ((VariableData.Long) inputs[0]).value);
 			default:
-				break;
+				return null;
 			
 			}
 		case SHORT:
 			switch(this.recievingNode.dataType){
 			case BYTE:
-				output = new VariableData.Byte((byte) ((VariableData.Short) inputs[0]).value);
-				break;
+				return new VariableData.Byte((byte) ((VariableData.Short) inputs[0]).value);	
 			case FLOAT:
-				output = new VariableData.Float((float) ((VariableData.Short) inputs[0]).value);
-				break;
+				return new VariableData.Float((float) ((VariableData.Short) inputs[0]).value);
 			case DOUBLE:
-				output = new VariableData.Double((double) ((VariableData.Short) inputs[0]).value);
-				break;
+				return new VariableData.Double((double) ((VariableData.Short) inputs[0]).value);
 			case INTEGER:
-				output = new VariableData.Integer((int) ((VariableData.Short) inputs[0]).value);
-				break;
+				return new VariableData.Integer((int) ((VariableData.Short) inputs[0]).value);
 			case LONG:
-				output = new VariableData.Long((long) ((VariableData.Short) inputs[0]).value);
-				break;
+				return new VariableData.Long((long) ((VariableData.Short) inputs[0]).value);
 			default:
-				break;
+				return null;
 			
 			}
 		default:
-			break;
+			return null;
 		
 		}
-		
-		return output;
 		
 	}
 	
