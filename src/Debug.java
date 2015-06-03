@@ -216,6 +216,8 @@ public class Debug{
 				}
 			}
 		}else if(((FunctionEditor.FunctionIO) getTop()).mode == FunctionEditor.FunctionIO.Mode.OUTPUT){
+			System.out.println("overseer = "+((FunctionEditor.FunctionIO) getTop()).getOverseer());
+			//TODO possible bug here?>  nullpointerexception
 			((FunctionEditor.FunctionIO) getTop()).getOverseer().getCurrentlyExecuting().outputData = 
 					new ArrayList<VariableData>(Arrays.asList(execute));
 		}

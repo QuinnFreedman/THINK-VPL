@@ -234,10 +234,10 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	public void mouseReleased(MouseEvent e) {
 		currentlyDragging = null;
 		this.removeMouseMotionListener(this);
-		if(Main.altPressed)
+		if(Main.altPressed || Debug.isStepping()){
+			parentObject.owner.getPanel().repaint();
 			return;
-		if(Debug.isStepping())
-			return;
+		}
 		Point mouse = getLocationOnPanel(e, this.parentObject.owner.getPanel());
 		Rectangle rect = new Rectangle();
 		boolean overlap = false;
