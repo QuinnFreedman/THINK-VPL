@@ -61,8 +61,10 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		//override in subclass
 	}
 	protected static void clearChildren(Node nodeToClear){
-			System.out.println("clear children "+nodeToClear.type.toString()+" "+nodeToClear);
+			System.out.println("clear children "+nodeToClear.type.toString()+" "+nodeToClear.getClass().getName()+" : curves: "+nodeToClear.parentObject.owner.getCurves().size());
 			Iterator<Curve> itr = nodeToClear.parentObject.owner.getCurves().iterator();
+			Boolean hasDisconnected = false;
+			ArrayList<Node> haveDisconnected = new ArrayList<Node>();
 			while(itr.hasNext()){
 				Curve c = itr.next();
 				Node node;
@@ -81,11 +83,17 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 					node.children.remove(nodeToClear);
 				}
 				itr.remove();
-				
+				hasDisconnected = true;
+				haveDisconnected.add(node);
 			}
-			nodeToClear.onDisconnect();
 			
-		
+			if(hasDisconnected){
+				nodeToClear.onDisconnect();
+			}
+			
+			for(Node n : haveDisconnected){
+				n.onDisconnect();
+			}
 	}
 	
 	public static ArrayList<ArrayList<Variable.DataType>> complement(ArrayList<Variable.DataType> A, ArrayList<Variable.DataType> B){
