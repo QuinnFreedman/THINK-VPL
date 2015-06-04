@@ -135,8 +135,10 @@ public class Debug{
 		if(!(next instanceof FunctionEditor.FunctionIO && ((FunctionEditor.FunctionIO) next).mode == FunctionEditor.FunctionIO.Mode.INPUT)){
 			getTop().incrementActiveNode();
 			
-			next.workingData.clear();
-			next.resetActiveNode();
+			if(!next.executeOnce && next.hasExecuted){
+				next.workingData.clear();
+				next.resetActiveNode();
+			}
 			
 			if(mode != RunMode.RUN){
 				getTop().setSelected(false);
@@ -173,6 +175,7 @@ public class Debug{
 			exit();
 			return false;
 		}
+	//EXECUTE
 		System.out.println("executing "+getTop().getClass().getName());
 		System.out.print(getTop().getClass().getName()+" workingData = ");
 		for(VariableData var : getTop().workingData){
@@ -204,13 +207,13 @@ public class Debug{
 	public static boolean moveDownStack2(VariableData execute){
 		waitingForInput = null;
 		
+	//SET OUTPUT DATA
 		ArrayList<VariableData> multiExecute = null;
 		if(!(getTop() instanceof FunctionEditor.FunctionIO)){
 			if(execute != null){
 				getTop().outputData = new ArrayList<VariableData>(Arrays.asList(execute));
 			}else{
 				if(getTop() instanceof UserFunc){
-					//getTop().outputData = ((UserFunc) getTop()).getParentVar().editor.outputObject.outputData;
 					System.out.println("execute == null, getTop().outputData = "+getTop().outputData);
 					multiExecute = getTop().outputData;
 				}
@@ -226,10 +229,15 @@ public class Debug{
 			getTop().setSelected(false);
 			getTop().repaint();
 		}
+
+		getTop().hasExecuted = true;
 		
+	//FIND NEXT
 		if(stack.size() == 1){
+			
 			Executable next = getNext(getTop());
-			getTop().hasExecuted = true;
+			System.out.println("next = "+((next == null) ? "null" : next.getClass().getName()));
+			
 			stack.remove(stack.size()-1);
 			if(next != null){
 				next.hasExecuted = false;
@@ -239,8 +247,10 @@ public class Debug{
 						((Logic.Sequence) next).activeOutNode = 0;
 					}
 				}
+				
 				next.workingData.clear();
 				next.resetActiveNode();
+				
 				
 				stack.add(next);
 			}else{
@@ -328,6 +338,7 @@ public class Debug{
 	}
 	
 	private static Executable getNext(Executable o){
+		System.out.println("getNext "+o.getClass().getName());
 		ArrayList<Node> children;
 		if(o instanceof EntryPoint){
 			children = ((EntryPoint) o).startNode.children;
@@ -351,12 +362,14 @@ public class Debug{
 				children = new ArrayList<Node>();
 				removeFromEnd(remember,o);
 			}
-		}else if(o instanceof UserFunc && !(o.executeOnce && o.hasExecuted)){
+		}else if(o instanceof UserFunc){
+			System.out.println("userfunc going to fIO");
 			FunctionEditor.FunctionIO inputObj = ((UserFunc) o).getParentVar().getInputObject();
 			inputObj.outputData = new ArrayList<VariableData>(o.workingData);
 			System.out.println(inputObj.outputData);
 			((UserFunc) o).getParentVar().setCurrentlyExecuting((UserFunc) o);
 			return inputObj;
+			
 		}else if(o instanceof FunctionEditor.FunctionIO && ((FunctionEditor.FunctionIO) o).mode == FunctionEditor.FunctionIO.Mode.OUTPUT){
 			children = ((FunctionEditor.FunctionIO) o).getOverseer().getCurrentlyExecuting().getOutputNodes().get(0).children;
 		}else{

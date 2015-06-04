@@ -33,7 +33,7 @@ public class Executable extends VObject{
 	protected int activeNode;
 	public ArrayList<VariableData> workingData;
 	protected boolean selected = false;
-	protected boolean executeOnce = false;
+	protected boolean executeOnce;
 	protected boolean hasExecuted = false;
 	public ArrayList<VariableData> outputData;
 	protected ArrayList<Node> getInputNodes(){
