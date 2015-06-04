@@ -1,9 +1,25 @@
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.LinearGradientPaint;
+import java.awt.MultipleGradientPaint;
+import java.awt.RenderingHints;
+import java.awt.geom.Point2D;
+import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class Debug{
 	
@@ -13,6 +29,8 @@ public class Debug{
 	private static Variable.DataType waitingForInput = null;
 	public static Console console;
 	private static RunMode mode;
+	
+	private static VObject running;
 	
 	public static enum RunMode{
 		RUN,FAST,SLOW
@@ -85,12 +103,17 @@ public class Debug{
 	
 	public static void stepForever(){
 		if(mode == RunMode.RUN){
-			while(step()){};
+			Thread t = new Thread() {
+				public void run() {
+					while(step()){};
+			}};
+	        t.start();
 			
 		}
 	}
 	
 	protected static void exit() {
+		System.out.println("exiting");
 		isStepping = false;
 		for(Blueprint bp : Main.blueprints){
 			bp.addVar.setEnabled(true);
@@ -103,6 +126,9 @@ public class Debug{
 			for(Variable var : bp.getVariables()){
 				var.setEditable(true);
 			}
+		}
+		if(running != null){
+			running.setVisible(false);
 		}
 	}
 	
@@ -292,6 +318,12 @@ public class Debug{
 
 	private static boolean step(){
 		
+		if(isStepping = false){
+			System.out.println("ABORTED");
+			console.post("ERROR: program aborted by user");
+			return false;
+		}
+		
 		System.out.println();
 		System.out.println("stack:");
 		for(VObject o : stack){
@@ -316,7 +348,7 @@ public class Debug{
 				}
 				
 			}else{
-			
+				
 				b = moveUpStack();
 				
 				if(!b){
@@ -327,7 +359,12 @@ public class Debug{
 			}
 			
 		}catch(Exception e){
-			//console.post("ERROR: an unexpected error occured"+((!stack.isEmpty() && stack.get(stack.size()-1).headerLabel != null) ? "" : " when executing \""+stack.get(stack.size()-1).headerLabel.getText()+"\"")+". The program will now exit.");
+			String s = "ERROR: an unexpected error occured";
+			if(stack != null && !stack.isEmpty() && stack.get(stack.size()-1) != null && stack.get(stack.size()-1).headerLabel != null){
+				s += " when executing \""+stack.get(stack.size()-1).headerLabel.getText()+"\"";
+			}
+			s += ". The program will now exit.";
+			console.post(s);
 			e.printStackTrace(System.err);
 			return false;
 		}
@@ -389,6 +426,44 @@ public class Debug{
 		}
 	}
 	public static void f1() {
+		if(running == null){
+			running = new VObject(Main.mainBP){
+				private static final long serialVersionUID = 1L;
+				
+				@Override
+				public Dimension getSize(){
+					return new Dimension(Math.max(60,this.getPreferredSize().width),
+							30);
+				}
+				
+				@Override
+				public void paintComponent(Graphics g){
+					Graphics2D g2 = (Graphics2D) g;
+					g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+					
+					g2.setColor(new Color(20,20,20,127));
+				    g2.fill(new RoundRectangle2D.Double(0, 0, this.getWidth(), this.getHeight(), 10, 10));
+				    g2.setPaint(Color.black);
+				}
+				
+			{
+				URL url = null;
+				try{
+					url = Main.class.getResource("/images/loading2.gif");
+				}catch (Exception e){
+					e.printStackTrace();
+				}
+				headerLabel = new JLabel("Running...", new ImageIcon(url), JLabel.LEADING);
+				headerLabel.setOpaque(false);
+				//headerLabel.setBorder(BorderFactory.createEmptyBorder(4, 7, 2, 7));
+				body.add(headerLabel);
+				
+				this.setBounds(10, 10, getPreferredSize().width, getPreferredSize().height);
+			}};
+		}else{
+			running.setVisible(true);
+		}
+		
 		if(!isStepping()){
     		Main.blueprints.get(0).getPanel().requestFocusInWindow();
 			mode = RunMode.RUN;
@@ -397,7 +472,6 @@ public class Debug{
     		setRunMode(RunMode.RUN);
     		stepForever();
     	}
-
 	}
 	public static void f2() {
 		if(!isStepping()){

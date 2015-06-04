@@ -74,7 +74,7 @@ public class Main implements ActionListener{
 		colors.put(Variable.DataType.FLEX, Color.GRAY);
 		
 		try {
-			SidebarItem.bufferedImage = ImageIO.read(Main.class.getResource("/drag.png"));
+			SidebarItem.bufferedImage = ImageIO.read(Main.class.getResource("/images/drag.png"));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -83,6 +83,8 @@ public class Main implements ActionListener{
 
             @Override
             public boolean dispatchKeyEvent(KeyEvent ke) {
+           	//Thread t = new Thread() {
+     	        //public void run() {
                 synchronized (Main.class) {
                     switch (ke.getID()) {
                     case KeyEvent.KEY_PRESSED:
@@ -109,9 +111,12 @@ public class Main implements ActionListener{
                         }
                         break;
                     }
-                    return false;
                 }
-            }
+
+     			//}};
+     	        //t.start();
+     	        return false;
+     	        }
         });
 	}
 	
