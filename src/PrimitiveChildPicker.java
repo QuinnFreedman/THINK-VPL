@@ -69,7 +69,7 @@ public class PrimitiveChildPicker extends VObject{
 					break;
 					
 				}
-				this.name = f.getFunctionName();
+				this.name = f.getSimpleName();
 				this.childPicker = primitiveChildPicker;
 				this.setBackground(Color.RED);
 				this.setText(symbol+" "+name);

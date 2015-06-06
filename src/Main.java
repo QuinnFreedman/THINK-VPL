@@ -111,11 +111,11 @@ public class Main implements ActionListener{
                         }
                         break;
                     }
+         	        return false;
                 }
 
      			//}};
      	        //t.start();
-     	        return false;
      	        }
         });
 	}

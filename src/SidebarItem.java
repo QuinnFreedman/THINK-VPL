@@ -46,7 +46,7 @@ public class SidebarItem extends JPanel{
 		return name;
 	}
 	public String getFullName(){
-		return ((!isStatic) ? parentInstance.getID()+" > " : "")+name;
+		return ((!isStatic && parentInstance != null) ? parentInstance.getID()+" > " : "")+name;
 	}
 	public GraphEditor getOwner(){
 		return owner;

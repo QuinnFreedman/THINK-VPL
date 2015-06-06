@@ -84,6 +84,9 @@ public class Debug{
 				}
 			}
 			for(VFunction f : bp.getFunctions()){
+				if(f == null || f.editor == null || f.editor.getObjects() == null){
+					System.out.println("!WARNING: null Pointer");
+				}
 				for(VObject o : f.editor.getObjects()){
 					if(o instanceof Executable){
 						System.out.println(o);
@@ -158,6 +161,23 @@ public class Debug{
 		}
 		
 		Executable next = (Executable) parents.get(0).parentObject;
+		System.out.println("next = "+next);
+		if(getTop() instanceof FunctionEditor.FunctionIO && !((FunctionEditor.FunctionIO) getTop()).getOverseer().isStatic()){
+			System.out.println("next is non-static function :: changing all primitive funcs");
+			FunctionOverseer fo = ((FunctionEditor.FunctionIO) getTop()).getOverseer();
+			for(VObject e : fo.getEditor().getObjects()){
+				if(e instanceof PrimitiveFunction &&
+						((PrimitiveFunction) e).getParentVar().getOwner() == ((VFunction) fo).getOwner()
+					){
+					System.out.println(((PrimitiveFunction) e));
+					System.out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
+					((PrimitiveFunction) e).setParentVar(
+							VFunction.getVariable( ((VFunction) ((VFunction) fo).getCurrentlyExecuting().getParentVar()).parentInstance.childVariables,((PrimitiveFunction) e).getParentVar().getID())
+						);
+					System.out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
+				}
+			}
+		}
 		if(!(next instanceof FunctionEditor.FunctionIO && ((FunctionEditor.FunctionIO) next).mode == FunctionEditor.FunctionIO.Mode.INPUT)){
 			getTop().incrementActiveNode();
 			
@@ -170,6 +190,10 @@ public class Debug{
 				getTop().setSelected(false);
 				getTop().repaint();
 			}
+			
+			if(next instanceof UserFunc){
+				((UserFunc) next).getGrandparent().setCurrentlyExecuting(((UserFunc) next));
+			}//TODO
 			
 			stack.add(next);
 			
@@ -246,7 +270,8 @@ public class Debug{
 			}
 		}else if(((FunctionEditor.FunctionIO) getTop()).mode == FunctionEditor.FunctionIO.Mode.OUTPUT){
 			System.out.println("overseer = "+((FunctionEditor.FunctionIO) getTop()).getOverseer());
-			//TODO possible bug here?>  nullpointerexception
+			System.out.println("currently executing = "+((FunctionEditor.FunctionIO) getTop()).getOverseer().getCurrentlyExecuting());
+			
 			((FunctionEditor.FunctionIO) getTop()).getOverseer().getCurrentlyExecuting().outputData = 
 					new ArrayList<VariableData>(Arrays.asList(execute));
 		}
@@ -263,6 +288,27 @@ public class Debug{
 			
 			Executable next = getNext(getTop());
 			System.out.println("next = "+((next == null) ? "null" : next.getClass().getName()));
+			
+			if(next instanceof UserFunc){
+				((UserFunc) next).getGrandparent().setCurrentlyExecuting(((UserFunc) next));
+			}
+			
+			if(next instanceof FunctionEditor.FunctionIO && !((FunctionEditor.FunctionIO) next).getOverseer().isStatic()){
+				System.out.println("next is non-static function :: changing all primitive funcs");
+				FunctionOverseer fo = ((FunctionEditor.FunctionIO) next).getOverseer();
+				for(VObject e : fo.getEditor().getObjects()){
+					if(e instanceof PrimitiveFunction &&
+							((PrimitiveFunction) e).getParentVar().getOwner() == ((VFunction) fo).getOwner()
+						){
+						System.out.println(((PrimitiveFunction) e));
+						System.out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
+						((PrimitiveFunction) e).setParentVar(
+								VFunction.getVariable( ((VFunction) ((VFunction) fo).getCurrentlyExecuting().getParentVar()).parentInstance.childVariables,((PrimitiveFunction) e).getParentVar().getID())
+							);
+						System.out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
+					}
+				}
+			}
 			
 			stack.remove(stack.size()-1);
 			if(next != null){
@@ -296,7 +342,6 @@ public class Debug{
 				f.getParentVar().getOutputObject().outputData = new ArrayList<VariableData>();
 				f.getParentVar().getOutputObject().workingData = new ArrayList<VariableData>();
 				f.getParentVar().getInputObject().outputData = new ArrayList<VariableData>(f.workingData);
-				f.getParentVar().setCurrentlyExecuting(f);
 				f.outputData = new ArrayList<VariableData>();
 			}else{
 				stack.remove(stack.size()-1);
@@ -318,7 +363,7 @@ public class Debug{
 
 	private static boolean step(){
 		
-		if(isStepping = false){
+		if(!isStepping){
 			System.out.println("ABORTED");
 			console.post("ERROR: program aborted by user");
 			return false;
@@ -403,8 +448,8 @@ public class Debug{
 			System.out.println("userfunc going to fIO");
 			FunctionEditor.FunctionIO inputObj = ((UserFunc) o).getParentVar().getInputObject();
 			inputObj.outputData = new ArrayList<VariableData>(o.workingData);
-			System.out.println(inputObj.outputData);
-			((UserFunc) o).getParentVar().setCurrentlyExecuting((UserFunc) o);
+			System.out.println("inputObj.outputData = "+inputObj.outputData);
+			((UserFunc) o).getGrandparent().setCurrentlyExecuting((UserFunc) o);
 			return inputObj;
 			
 		}else if(o instanceof FunctionEditor.FunctionIO && ((FunctionEditor.FunctionIO) o).mode == FunctionEditor.FunctionIO.Mode.OUTPUT){

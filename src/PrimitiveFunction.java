@@ -22,11 +22,15 @@ public class PrimitiveFunction extends Executable{
 	Variable.DataType type;
 	private JLabel label;
 	private String text = "";
-	private Variable parentVar;
+	protected Variable parentVar;
 	public ArrayList<Variable.DataType> getInputs(){return null;};
 	public ArrayList<Variable.DataType> getOutputs(){return null;};
 	public Variable getParentVar(){
 		return parentVar;
+	}
+	public void setParentVar(Variable v) {
+		parentVar = v;
+		
 	}
 	protected PrimitiveFunction getThis(){
 		return this;
@@ -68,7 +72,7 @@ public class PrimitiveFunction extends Executable{
 	}
 	
 	public void setText(String s) {
-		this.text = crop(s,15)+": "+crop(getFunctionName(),15);
+		this.text = crop(getPathName(),15) + crop(s,15)+" : "+crop(getSimpleName(),15);
 		label.setText(text);
 		this.setSize(this.getSize());
 	}

@@ -180,7 +180,32 @@ public class Executable extends VObject{
 		return new Dimension(Math.max(60,this.getPreferredSize().width),
 				30+inputNodeHolder.getPreferredSize().height+outputNodeHolder.getPreferredSize().height);
 	}
-	public String getFunctionName(){
+	public String getPathName(){
+		String s = "";
+		if(this instanceof PrimitiveFunction && this.owner != ((PrimitiveFunction) this).getParentVar().getOwner()){
+			//System.out.println(this.owner+" != "+((PrimitiveFunction) this).getParentVar().getOwner());
+			if(((PrimitiveFunction) this).getParentVar().getOwner() instanceof Blueprint){
+				s += (((Blueprint) ((PrimitiveFunction) this).getParentVar().getOwner()).getName()+" > ");
+			}else if(((PrimitiveFunction) this).getParentVar().getOwner() instanceof FunctionEditor){
+				s += (((Blueprint) ((FunctionEditor) ((PrimitiveFunction) this).getParentVar().getOwner()).getOverseer()).getName()+" > ");
+			}
+		}else if(this instanceof UserFunc){
+			if(((UserFunc) this).getParentVar() instanceof SidebarItem){
+				if(this.owner != ((VFunction) ((UserFunc) this).getParentVar()).getOwner()){
+					s+= (((Blueprint) ((VFunction) ((UserFunc) this).getParentVar()).getOwner()).getName()+" > ");
+				}
+				if(/*!((VFunction) ((UserFunc) this).getParentVar()).isStatic && */
+						((VFunction) ((UserFunc) this).getParentVar()).parentInstance != null){
+					s += (((VFunction) ((UserFunc) this).getParentVar()).parentInstance.name+" > ");
+				}
+				s += ((VFunction) ((UserFunc) this).getParentVar()).getID();
+			}else{
+				s += "CONSTRUCTOR";
+			}
+		}
+		return s;
+	}
+	public String getSimpleName(){
 		return this.getClass().getSimpleName().replace('_',' ');
 	}
 }
