@@ -36,6 +36,24 @@ public class Executable extends VObject{
 	protected boolean executeOnce;
 	protected boolean hasExecuted = false;
 	public ArrayList<VariableData> outputData;
+	
+	protected Class<? extends Module> parentMod;
+	
+	public ArrayList<Variable.DataType> getInputs(){
+		ArrayList<Variable.DataType> list = new ArrayList<Variable.DataType>();
+		for(Node n : getInputNodes()){
+			list.add(n.dataType);
+		}
+		return list;
+	};
+	public ArrayList<Variable.DataType> getOutputs(){
+		ArrayList<Variable.DataType> list = new ArrayList<Variable.DataType>();
+		for(Node n : getOutputNodes()){
+			list.add(n.dataType);
+		}
+		return list;
+	};
+	
 	protected ArrayList<Node> getInputNodes(){
 		return inputNodes;
 	}
@@ -57,8 +75,8 @@ public class Executable extends VObject{
 	protected void addOutputNode(Node node) {
 		outputNodes.add(node);
 		outputNodeHolder.add(node);
-		inputNodeHolder.revalidate();
-		inputNodeHolder.repaint();
+		outputNodeHolder.revalidate();
+		outputNodeHolder.repaint();
 	}
 
 	public void removeInputNode(Node n) {
@@ -116,6 +134,8 @@ public class Executable extends VObject{
 	
 	Executable(GraphEditor owner){
 		super(owner);
+		this.color = Color.BLACK;
+		
 		inputNodes = new ArrayList<Node>();
 		outputNodes = new ArrayList<Node>();
 		
@@ -202,10 +222,11 @@ public class Executable extends VObject{
 			}else{
 				s += "CONSTRUCTOR";
 			}
+			
 		}
 		return s;
 	}
 	public String getSimpleName(){
-		return this.getClass().getSimpleName().replace('_',' ');
+		return ((parentMod == null) ? "" : parentMod.getName()+" > ") + this.getClass().getSimpleName().replace('_',' ');
 	}
 }

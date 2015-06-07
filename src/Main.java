@@ -60,6 +60,7 @@ public class Main implements ActionListener{
 	protected static JTabbedPane tabbedPane;
 	
 	static ArrayList<Blueprint> blueprints;
+	static ArrayList<Module> modules;
 	
 	public static void main(String[] args){
 		THIS = new Main();
@@ -139,14 +140,17 @@ public class Main implements ActionListener{
 					UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceGraphiteLookAndFeel");
 				} catch (ClassNotFoundException | InstantiationException
 						| IllegalAccessException | UnsupportedLookAndFeelException e1) {
-					// Auto-generated catch block
 					e1.printStackTrace();
 				}
 				
 				blueprints = new ArrayList<Blueprint>();
+				modules = new ArrayList<Module>();
+				
 				mainBP = new Blueprint();
 				mainBP.setName("Main");
 				blueprints.add(mainBP);
+				
+				modules.add(new CanvasModule());
 				
 			//Menu Bar
 				JMenuBar menuBar = new JMenuBar();
@@ -239,6 +243,10 @@ public class Main implements ActionListener{
 				
 				for(Blueprint bp : blueprints){
 					tabbedPane.addTab(bp.getName(), bp.splitPane);
+				}
+				
+				for(Module m : modules){
+					m.setup();
 				}
 				
 				JPanel plus = null;

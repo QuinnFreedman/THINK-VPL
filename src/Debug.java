@@ -62,6 +62,11 @@ public class Debug{
 		console.clear();
 		console.setVisible(true);
 		console.setAlwaysOnTop(true);
+		
+		for(Module m : Main.modules){
+			m.run();
+		}
+		
 		Main.window.requestFocus();
 		Main.getOpenClass().getPanel().requestFocusInWindow();
 		isStepping = true;
