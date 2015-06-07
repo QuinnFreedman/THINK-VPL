@@ -26,6 +26,8 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 	protected ArrayList<PrimitiveFunction> functions = new ArrayList<PrimitiveFunction>();
 	private ArrayList<PrimitiveFunction> children = new ArrayList<PrimitiveFunction>();
 	protected PrimitiveChildPicker childPicker;
+	private Variable originalVar;
+	
 	public void removeChild(PrimitiveFunction pf){
 		children.remove(pf);
 	}
@@ -42,6 +44,15 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 	public void resetVariableData(){
 		this.varData = null;
 	}
+	public Variable getOriginal(){
+		if(parentInstance != null){
+			return originalVar;
+		}
+		return this;
+	}
+	public void setOriginalVar(Variable v){
+		originalVar = v;
+	}
 	private Variable getThis(){
 		return this;
 	}
@@ -49,6 +60,12 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 		super(owner);
 		
 		this.type = Type.VARIABLE;
+		
+		if(owner instanceof InstantiableBlueprint){
+			isStatic = false;
+		}else{
+			isStatic = true;
+		}
 		
 		nameField.getDocument().addDocumentListener(new NameDocListener(this));
 		
@@ -122,6 +139,21 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 	}
 	@Override
 	protected void setChildTexts(String s){
+		if(!this.isStatic){
+			for(Variable v : Main.mainBP.getVariables()){
+				if(v instanceof VInstance){
+					for(Variable v2 : ((VInstance) v).childVariables){
+						if(v2.getOriginal() == this){
+							v2.setID(this.getID());
+							v2.nameField.setText(this.getID());
+							for(PrimitiveFunction child : v2.children){
+								child.setText(s);
+							}
+						}
+					}
+				}
+			}
+		}
 		for(PrimitiveFunction child : children){
 			child.setText(s);
 		}

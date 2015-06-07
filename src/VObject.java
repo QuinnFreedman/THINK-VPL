@@ -53,6 +53,8 @@ public class VObject extends JPanel implements MouseInputListener{
 		
 		if(this instanceof PrimitiveFunction){
 			((PrimitiveFunction) this).removeFromParent();
+		}else if(this instanceof UserFunc){
+			((UserFunc) this).getGrandparent().removeChild(((UserFunc) this));
 		}
 		owner.getPanel().remove(this);
 		Iterator<Curve> itr = owner.getCurves().iterator();

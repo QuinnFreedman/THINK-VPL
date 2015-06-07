@@ -30,7 +30,7 @@ public class Debug{
 	public static Console console;
 	private static RunMode mode;
 	
-	private static VObject running;
+	static Status running;
 	
 	public static enum RunMode{
 		RUN,FAST,SLOW
@@ -61,6 +61,7 @@ public class Debug{
 		}
 		console.clear();
 		console.setVisible(true);
+		console.setAlwaysOnTop(true);
 		Main.window.requestFocus();
 		Main.getOpenClass().getPanel().requestFocusInWindow();
 		isStepping = true;
@@ -133,6 +134,7 @@ public class Debug{
 		if(running != null){
 			running.setVisible(false);
 		}
+		console.setAlwaysOnTop(false);
 	}
 	
 	
@@ -167,7 +169,8 @@ public class Debug{
 			FunctionOverseer fo = ((FunctionEditor.FunctionIO) getTop()).getOverseer();
 			for(VObject e : fo.getEditor().getObjects()){
 				if(e instanceof PrimitiveFunction &&
-						((PrimitiveFunction) e).getParentVar().getOwner() == ((VFunction) fo).getOwner()
+						(((PrimitiveFunction) e).getParentVar().getOwner() == ((VFunction) fo).getOwner() ||
+						(((PrimitiveFunction) e).getParentVar().parentInstance != null && ((PrimitiveFunction) e).getParentVar().parentInstance.parentBlueprint == ((VFunction) fo).getOwner()))
 					){
 					System.out.println(((PrimitiveFunction) e));
 					System.out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
@@ -248,6 +251,7 @@ public class Debug{
 			System.out.println("isWaitingForInput = "+waitingForInput);
 			console.requestFocus();
 			console.input.requestFocusInWindow();
+			running.pause();
 			return false;
 		}else{
 			return moveDownStack2(execute);
@@ -298,7 +302,8 @@ public class Debug{
 				FunctionOverseer fo = ((FunctionEditor.FunctionIO) next).getOverseer();
 				for(VObject e : fo.getEditor().getObjects()){
 					if(e instanceof PrimitiveFunction &&
-							((PrimitiveFunction) e).getParentVar().getOwner() == ((VFunction) fo).getOwner()
+							(((PrimitiveFunction) e).getParentVar().getOwner() == ((VFunction) fo).getOwner() ||
+							(((PrimitiveFunction) e).getParentVar().parentInstance != null && ((PrimitiveFunction) e).getParentVar().parentInstance.parentBlueprint == ((VFunction) fo).getOwner()))
 						){
 						System.out.println(((PrimitiveFunction) e));
 						System.out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
@@ -411,6 +416,7 @@ public class Debug{
 			s += ". The program will now exit.";
 			console.post(s);
 			e.printStackTrace(System.err);
+			exit();
 			return false;
 		}
 	}
@@ -472,39 +478,7 @@ public class Debug{
 	}
 	public static void f1() {
 		if(running == null){
-			running = new VObject(Main.mainBP){
-				private static final long serialVersionUID = 1L;
-				
-				@Override
-				public Dimension getSize(){
-					return new Dimension(Math.max(60,this.getPreferredSize().width),
-							30);
-				}
-				
-				@Override
-				public void paintComponent(Graphics g){
-					Graphics2D g2 = (Graphics2D) g;
-					g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-					
-					g2.setColor(new Color(20,20,20,127));
-				    g2.fill(new RoundRectangle2D.Double(0, 0, this.getWidth(), this.getHeight(), 10, 10));
-				    g2.setPaint(Color.black);
-				}
-				
-			{
-				URL url = null;
-				try{
-					url = Main.class.getResource("/images/loading2.gif");
-				}catch (Exception e){
-					e.printStackTrace();
-				}
-				headerLabel = new JLabel("Running...", new ImageIcon(url), JLabel.LEADING);
-				headerLabel.setOpaque(false);
-				//headerLabel.setBorder(BorderFactory.createEmptyBorder(4, 7, 2, 7));
-				body.add(headerLabel);
-				
-				this.setBounds(10, 10, getPreferredSize().width, getPreferredSize().height);
-			}};
+			running = new Status(Main.mainBP);
 		}else{
 			running.setVisible(true);
 		}
@@ -542,4 +516,58 @@ public class Debug{
 		Collections.reverse(reverseList);
 		list.remove(list.size() - 1 - reverseList.indexOf(o));
 	}
+	public static class Status extends VObject{
+		private static final long serialVersionUID = 1L;
+		private ImageIcon run;
+		private ImageIcon paused;
+		
+		public void pause(){
+			headerLabel.setIcon(paused);
+		}
+		
+		public void unpause(){
+			headerLabel.setIcon(run);
+		}
+		
+		@Override
+		public Dimension getSize(){
+			return new Dimension(Math.max(60,this.getPreferredSize().width),
+					30);
+		}
+		
+		@Override
+		public void paintComponent(Graphics g){
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			
+			g2.setColor(new Color(20,20,20,127));
+		    g2.fill(new RoundRectangle2D.Double(0, 0, this.getWidth(), this.getHeight(), 10, 10));
+		    g2.setPaint(Color.black);
+		}
+		
+		Status(GraphEditor owner){
+			super(owner);
+			URL url = null;
+			try{
+				url = Main.class.getResource("/images/loading2.gif");
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+			run = new ImageIcon(url);
+			
+			try{
+				url = Main.class.getResource("/images/loading_paused.png");
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+			paused = new ImageIcon(url);
+			
+			headerLabel = new JLabel("Running...", run, JLabel.LEADING);
+			headerLabel.setOpaque(false);
+			//headerLabel.setBorder(BorderFactory.createEmptyBorder(4, 7, 2, 7));
+			body.add(headerLabel);
+			
+			this.setBounds(10, 10, getPreferredSize().width, getPreferredSize().height);
+		}
+	};
 }

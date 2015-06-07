@@ -16,13 +16,10 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
 public class SidebarItem extends JPanel{
@@ -36,6 +33,7 @@ public class SidebarItem extends JPanel{
 	protected JPanel header;
 	protected InputPane nameField;
 	protected InputPane typeField;
+	private JLabel close;
 	protected ArrayList<InputPane> fields = new ArrayList<InputPane>();
 	static protected BufferedImage bufferedImage = null;
 	
@@ -108,6 +106,16 @@ public class SidebarItem extends JPanel{
 		
 		return symbol;
 	}
+	
+	public void setParentInstance(VInstance parentInstance){
+		this.parentInstance = parentInstance;
+		this.close.setText((parentInstance == null) ? "\u00D7" : ">");
+		close.setEnabled(parentInstance == null);
+		if(parentInstance != null){
+			this.setBorder(new EmptyBorder(new Insets(0,0,0,-5)));
+		}
+	}
+	
 	SidebarItem(GraphEditor owner){
 		this.owner = owner;
 	  	setBorder(BorderFactory.createCompoundBorder(new LineBorder(new Color(0x414141)), new EmptyBorder(new Insets(0,0,0,-5))));
@@ -117,7 +125,7 @@ public class SidebarItem extends JPanel{
     	
 		header = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		
-		JLabel close = new JLabel("\u00D7");
+		close = new JLabel("\u00D7");
 		close.setFont(close.getFont().deriveFont(Font.PLAIN, close.getFont().getSize()+8));
 		close.setBorder(new EmptyBorder(new Insets(-7,-1,-1,-1)));
 		close.addMouseListener(
@@ -129,12 +137,29 @@ public class SidebarItem extends JPanel{
 
 						@Override
 						public void mouseClicked(MouseEvent e) {
+							if(parentInstance != null){
+								return;
+							}
 							if(getThis().type == Type.VARIABLE){
 								getThis().owner.getVariables().remove(getThis());
 								((Variable) getThis()).clearChildren();
+								if(!getThis().isStatic && getThis().parentInstance == null){
+									for(Variable v : Main.mainBP.getVariables()){
+										if(v instanceof VInstance){
+											((VInstance) v).removeChildVariable((Variable) getThis());
+										}
+									}
+								}
 							}else if(getThis().type == Type.FUNCTION){
 								((Blueprint) getThis().owner).getFunctions().remove(getThis());
 								((VFunction) getThis()).clearChildren();
+								if(!getThis().isStatic && getThis().parentInstance == null){
+									for(Variable v : Main.mainBP.getVariables()){
+										if(v instanceof VInstance){
+											((VInstance) v).removeChildFunction((VFunction) getThis());
+										}
+									}
+								}
 							}
 							Container parent = getThis().getParent();
 							parent.remove(getThis());
@@ -251,79 +276,41 @@ public class SidebarItem extends JPanel{
 		public void keyPressed(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_TAB){
 				String text = this.getText().toLowerCase();
+				Variable newVar = null;
+				
 				if(text.equals("i") || text.equals("in") || text.equals("int") || text.equals("integer")){
-					VInt newint = new VInt(owner);
-					owner.getVariables().set(
-							owner.getVariables().indexOf(sidebarItemParent),
-							newint);
-					owner.updateVars();
-					newint.nameField.requestFocusInWindow();
+					newVar = new VInt(owner);
+					
 				}else if(text.equals("d") || text.equals("db") || text.equals("do") || text.equals("double")){
-					VDouble newdouble = new VDouble(owner);
-					owner.getVariables().set(
-							owner.getVariables().indexOf(sidebarItemParent),
-							newdouble);
-					owner.updateVars();
-					newdouble.nameField.requestFocusInWindow();
+					newVar = new VDouble(owner);
+					
 				}else if(text.equals("f") || text.equals("fl") || text.equals("flo") || text.equals("float")){
-					VFloat newdouble = new VFloat(owner);
-					owner.getVariables().set(
-							owner.getVariables().indexOf(sidebarItemParent),
-							newdouble);
-					owner.updateVars();
-					newdouble.nameField.requestFocusInWindow();
+					newVar = new VFloat(owner);
+					
 				}else if(text.equals("b") || text.equals("bo") || text.equals("bool") || text.equals("boolean")){
-					VBoolean newBool = new VBoolean(owner);
-					owner.getVariables().set(
-							owner.getVariables().indexOf(sidebarItemParent),
-							newBool);
-					owner.updateVars();
-					newBool.nameField.requestFocusInWindow();
+					newVar = new VBoolean(owner);
+					
 				}else if(text.equals("s") || text.equals("st") || text.equals("str") || text.equals("string")){
-					VString newStr = new VString(owner);
-					owner.getVariables().set(
-							owner.getVariables().indexOf(sidebarItemParent),
-							newStr);
-					owner.updateVars();
-					newStr.nameField.requestFocusInWindow();
+					newVar = new VString(owner);
+					
 				}
 				
 			//ARRAYS
 				else if(text.equals("<i") || text.equals("<in") || text.equals("<int") || text.equals("<int>")){
-					VArray newint = new VArray(Variable.DataType.INTEGER,owner);
-					owner.getVariables().set(
-							owner.getVariables().indexOf(sidebarItemParent),
-							newint);
-					owner.updateVars();
-					newint.nameField.requestFocusInWindow();
+					newVar = new VArray(Variable.DataType.INTEGER,owner);
+					
 				}else if(text.equals("<d") || text.equals("<db") || text.equals("<do") || text.equals("<db>")){
-					VArray newdouble = new VArray(Variable.DataType.DOUBLE,owner);
-					owner.getVariables().set(
-							owner.getVariables().indexOf(sidebarItemParent),
-							newdouble);
-					owner.updateVars();
-					newdouble.nameField.requestFocusInWindow();
+					newVar = new VArray(Variable.DataType.DOUBLE,owner);
+					
 				}else if(text.equals("<f") || text.equals("<fl") || text.equals("<fl>") || text.equals("<float>")){
-					VArray newdouble = new VArray(Variable.DataType.FLOAT,owner);
-					owner.getVariables().set(
-							owner.getVariables().indexOf(sidebarItemParent),
-							newdouble);
-					owner.updateVars();
-					newdouble.nameField.requestFocusInWindow();
+					newVar = new VArray(Variable.DataType.FLOAT,owner);
+					
 				}else if(text.equals("<b") || text.equals("<bo") || text.equals("<bool") || text.equals("<bool>")){
-					VArray newBool = new VArray(Variable.DataType.BOOLEAN,owner);
-					owner.getVariables().set(
-							owner.getVariables().indexOf(sidebarItemParent),
-							newBool);
-					owner.updateVars();
-					newBool.nameField.requestFocusInWindow();
+					newVar = new VArray(Variable.DataType.BOOLEAN,owner);
+					
 				}else if(text.equals("<s") || text.equals("<st") || text.equals("<str") || text.equals("<string")){
-					VArray newStr = new VArray(Variable.DataType.STRING,owner);
-					owner.getVariables().set(
-							owner.getVariables().indexOf(sidebarItemParent),
-							newStr);
-					owner.updateVars();
-					newStr.nameField.requestFocusInWindow();
+					newVar = new VArray(Variable.DataType.STRING,owner);
+					
 				}else{
 					for(Blueprint bp : Main.blueprints){
 						if(text.equalsIgnoreCase(bp.getName())){
@@ -333,11 +320,26 @@ public class SidebarItem extends JPanel{
 									newObj);
 							owner.updateVars();
 							newObj.nameField.requestFocusInWindow();
+							return;
 						}
 					}
-					return;
 				}
 				
+				if(newVar != null){
+					owner.getVariables().set(
+							owner.getVariables().indexOf(sidebarItemParent),
+							newVar);
+					owner.updateVars();
+					newVar.nameField.requestFocusInWindow();
+					
+					if(owner instanceof InstantiableBlueprint){
+						for(Variable v2 : Main.mainBP.getVariables()){
+							if(v2 instanceof VInstance && ((VInstance) v2).parentBlueprint == owner){
+								((VInstance) v2).addChildVariable(newVar);
+							}
+						}
+					}
+				}
 			}
 			
 		}
