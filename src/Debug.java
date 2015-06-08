@@ -40,6 +40,10 @@ public class Debug{
 		mode = rm;
 	}
 	
+	public static RunMode getRunMode(){
+		return mode;
+	}
+	
 	public static boolean isStepping() {
 		return isStepping;
 	}

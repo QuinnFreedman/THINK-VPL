@@ -128,7 +128,7 @@ public class Main implements ActionListener{
 	        @Override
 	        public void run() {
 				window = new JFrame();
-				window.setTitle("VisualIDE");
+				window.setTitle("Think - Main");//\u2148
 				window.setSize(800,500);
 				window.setMinimumSize(new Dimension(555,325));
 				//window.setLocationByPlatform(true);
@@ -264,6 +264,7 @@ public class Main implements ActionListener{
 			            	ibp.className.requestFocusInWindow();
 			            	tabbedPane.addTab("+", plus);
 			            }
+			            //window.setTitle(Main.blueprints.get(tabbedPane.getSelectedIndex()).getName());
 			        }
 			    });
 				
