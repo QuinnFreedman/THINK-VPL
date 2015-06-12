@@ -381,4 +381,4 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	public enum NodeStyle{
 		INVISIBLE,VISIBLE
 	}
-}
+}//6125

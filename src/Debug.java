@@ -306,7 +306,7 @@ public class Debug{
 				((UserFunc) next).getGrandparent().setCurrentlyExecuting(((UserFunc) next));
 			}
 			
-			if(next instanceof FunctionEditor.FunctionIO && !((FunctionEditor.FunctionIO) next).getOverseer().isStatic()){
+			else if(next instanceof FunctionEditor.FunctionIO && !((FunctionEditor.FunctionIO) next).getOverseer().isStatic()){
 				System.out.println("next is non-static function :: changing all primitive funcs");
 				FunctionOverseer fo = ((FunctionEditor.FunctionIO) next).getOverseer();
 				for(VObject e : fo.getEditor().getObjects()){
