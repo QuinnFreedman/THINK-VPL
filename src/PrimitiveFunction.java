@@ -72,7 +72,7 @@ public class PrimitiveFunction extends Executable{
 	}
 	
 	public void setText(String s) {
-		this.text = crop(getPathName(),15) + crop(s,15)+" : "+crop(getSimpleName(),15);
+		this.text = (getParentVar().isStatic ? "" : "\u0394 ")+crop(getPathName(),15) + crop(s,15)+" : "+crop(getSimpleName(),15);
 		label.setText(text);
 		this.setSize(this.getSize());
 	}
