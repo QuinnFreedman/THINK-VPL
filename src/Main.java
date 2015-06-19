@@ -104,6 +104,17 @@ public class Main implements ActionListener{
                         	}
                         }else if (ke.getKeyCode() == KeyEvent.VK_TAB){
                         	Debug.tab();
+                        }else if (ke.getKeyCode() == KeyEvent.VK_BACK_QUOTE){
+                        	for(Variable v : mainBP.getVariables()){
+                        		if(!(v instanceof VInstance)){
+                        			System.out.println("\""+v.getID()+"\" : "+v.varData.getValueAsString());
+                        		}else{
+                        			System.out.println("\""+v.getID()+"\" : ");
+                        			for(Variable v2 : ((VInstance) v).childVariables){
+                        				System.out.println("	\""+v2.getID()+"\" : "+v2.varData.getValueAsString());
+                        			}
+                        		}
+                        	}
                         }
                         break;
 

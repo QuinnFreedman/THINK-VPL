@@ -23,22 +23,13 @@ class Arithmetic extends Executable{
 		return null;
 		
 	}
-	@Override
-	public void resetActiveNode() {
-		activeNode = 0;
-	};
 	Arithmetic(Point pos, GraphEditor owner){
-		super(owner);
+		super(pos,owner);
 		this.color = Color.GRAY;
 
-		body.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-		headerLabel = new JLabel();
 		headerLabel.setFont(headerLabel.getFont().deriveFont(Font.PLAIN, headerLabel.getFont().getSize()+20));
 		headerLabel.setBorder(new EmptyBorder(new Insets(-10,-1,-1,-1)));
 		headerLabel.setText(getID());
-		body.add(headerLabel,gbc);
 		
 		addInputNode(new NumberNode(Node.NodeType.RECIEVING, getThis()));
 		addInputNode(new NumberNode(Node.NodeType.RECIEVING, getThis()));
@@ -234,26 +225,17 @@ class Arithmetic extends Executable{
 			return this;
 		}
 		@Override
-		public void resetActiveNode() {
-			activeNode = 0;
-		};
-		@Override
 		public VariableData execute(VariableData[] inputs){
 			
 			return new VariableData.String((inputs[0].getValueAsString().concat(inputs[1].getValueAsString())));
 		}
 		Concat(Point pos, GraphEditor owner) {
-			super(owner);
+			super(pos, owner);
 			this.color = Color.GRAY;
 			
-			body.setLayout(new GridBagLayout());
-	        GridBagConstraints gbc = new GridBagConstraints();
-	        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-			headerLabel = new JLabel();
 			headerLabel.setFont(headerLabel.getFont().deriveFont(Font.PLAIN, headerLabel.getFont().getSize()+20));
 			headerLabel.setBorder(new EmptyBorder(new Insets(-10,-1,-1,-1)));
 			headerLabel.setText("+");
-			body.add(headerLabel,gbc);
 			
 			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.STRING));
 			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.STRING));
@@ -272,26 +254,17 @@ class Arithmetic extends Executable{
 			return this;
 		}
 		@Override
-		public void resetActiveNode() {
-			activeNode = 0;
-		};
-		@Override
 		public VariableData execute(VariableData[] inputs){
 			
 			return new VariableData.Double(Math.random());
 		}
 		Random(Point pos, GraphEditor owner) {
-			super(owner);
+			super(pos,owner);
 			this.color = Color.GRAY;
 
-			body.setLayout(new GridBagLayout());
-	        GridBagConstraints gbc = new GridBagConstraints();
-	        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-			headerLabel = new JLabel();
 			headerLabel.setFont(headerLabel.getFont().deriveFont(Font.PLAIN, headerLabel.getFont().getSize()+20));
 			headerLabel.setBorder(new EmptyBorder(new Insets(-10,-1,-1,-1)));
 			headerLabel.setText("?");
-			body.add(headerLabel,gbc);
 			
 			addOutputNode(new Node(Node.NodeType.SENDING, getThis(), Variable.DataType.DOUBLE, true));
 			 
@@ -309,26 +282,17 @@ class Arithmetic extends Executable{
 			return this;
 		}
 		@Override
-		public void resetActiveNode() {
-			activeNode = 0;
-		};
-		@Override
 		public VariableData execute(VariableData[] inputs){
 			
 			return new VariableData.Double(Math.round(inputs[0].getValueAsDouble()));
 		}
 		Round(Point pos, GraphEditor owner) {
-			super(owner);
+			super(pos, owner);
 			this.color = Color.GRAY;
 			
-			body.setLayout(new GridBagLayout());
-	        GridBagConstraints gbc = new GridBagConstraints();
-	        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-			headerLabel = new JLabel();
 			headerLabel.setFont(headerLabel.getFont().deriveFont(Font.PLAIN, headerLabel.getFont().getSize()+20));
 			headerLabel.setBorder(new EmptyBorder(new Insets(-10,-1,-1,-1)));
 			headerLabel.setText("\u2248");
-			body.add(headerLabel,gbc);
 			
 			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.DOUBLE));
 			addOutputNode(new Node(Node.NodeType.SENDING, getThis(), Variable.DataType.DOUBLE, true));

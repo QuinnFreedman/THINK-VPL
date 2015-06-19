@@ -44,7 +44,7 @@ public class SidebarItem extends JPanel{
 		return name;
 	}
 	public String getFullName(){
-		return ((!isStatic && parentInstance != null) ? parentInstance.getID()+" > " : "")+name;
+		return ((!isStatic && parentInstance != null) ? parentInstance.parentBlueprint.getName()+" > " : "")+name;
 	}
 	public GraphEditor getOwner(){
 		return owner;
@@ -117,6 +117,9 @@ public class SidebarItem extends JPanel{
 	}
 	
 	SidebarItem(GraphEditor owner){
+		if(owner == null)
+			return;
+		
 		this.owner = owner;
 	  	setBorder(BorderFactory.createCompoundBorder(new LineBorder(new Color(0x414141)), new EmptyBorder(new Insets(0,0,0,-5))));
     	setOpaque(false);

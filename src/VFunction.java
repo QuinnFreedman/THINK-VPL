@@ -28,6 +28,7 @@ class VFunction extends SidebarItem implements FunctionOverseer{
 	protected PrimitiveChildPicker childPicker;
 	private boolean executeOnce = false;
 	private VFunction originalFunc = null;
+	private VInstance workingInstance = null;
 	
 	public VFunction getOriginal(){
 		if(parentInstance != null){
@@ -64,6 +65,10 @@ class VFunction extends SidebarItem implements FunctionOverseer{
 	@Override
 	public FunctionEditor.FunctionIO getOutputObject(){
 		return editor.getOutputObject();
+	}
+	@Override
+	public VInstance getWorkingInstance() {
+		return workingInstance ;
 	}
 	private VFunction getThis(){
 		return this;
@@ -137,7 +142,7 @@ class VFunction extends SidebarItem implements FunctionOverseer{
 				drag.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				Point p = Node.getLocationOnPanel(e,owner.getPanel());
 				if(p.x > 0 && p.y > 0 && p.x < owner.getPanel().getWidth() && p.y < owner.getPanel().getHeight()){
-					new UserFunc(p,getThis(),getThis().getOwner());
+					new UserFunc(p,getOriginal(),getThis().getOwner());
 				}
 			}
 			

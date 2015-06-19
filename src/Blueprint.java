@@ -364,7 +364,7 @@ public class Blueprint implements GraphEditor,ActionListener,MouseListener,KeyLi
 			if(Debug.console == null){
 				Debug.console = new Console();
 			}
-			new Console.Log(p, (GraphEditor) this);
+			new Console.Log_To_Console(p, (GraphEditor) this);
 		}else if(c == "Get String From Console"){
 			if(Debug.console == null){
 				Debug.console = new Console();

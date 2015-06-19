@@ -91,10 +91,6 @@ public class VArray extends Variable{
 	static class Get extends PrimitiveFunction{
 		private static final long serialVersionUID = 1L;
 		@Override
-		public void resetActiveNode() {
-			activeNode = 0;
-		};
-		@Override
 		public ArrayList<Variable.DataType> getInputs(){
 			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.INTEGER));
 		}

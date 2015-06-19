@@ -1,5 +1,4 @@
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -34,7 +33,8 @@ public class ChildPicker extends VObject{
 	ChildPicker(Node parentNode, Point position, GraphEditor owner){
 		super(owner);
 		this.parentNode = parentNode;
-		this.position = position;
+		
+		owner.getPanel().setComponentZOrder(this, 0);
 		
 		Node connectingNode = new Node((parentNode.type == Node.NodeType.SENDING) ? Node.NodeType.RECIEVING : Node.NodeType.SENDING,
 				this,
@@ -135,7 +135,27 @@ public class ChildPicker extends VObject{
 		
 		items = new ArrayList<MenuItem>();
 		
-		for(Variable v : owner.getVariables()){
+		for(Blueprint bp : Main.blueprints){
+			for(Variable v : bp.getVariables()){
+				for(PrimitiveFunction f : ((ContainsChildFunctions) v).getFunctions()){
+					considerAdding(f);
+				}
+			}
+			for(VFunction f : bp.getFunctions()){
+				considerAdding(f);
+			}
+		}
+		
+		if(owner instanceof FunctionEditor){
+			for(Variable v : owner.getVariables()){
+				for(PrimitiveFunction f : ((ContainsChildFunctions) v).getFunctions()){
+					considerAdding(f);
+				}
+			}
+			
+		}
+		
+		/*for(Variable v : owner.getVariables()){
 			for(PrimitiveFunction f : ((ContainsChildFunctions) v).getFunctions()){
 				considerAdding(f);
 			}
@@ -193,12 +213,16 @@ public class ChildPicker extends VObject{
 				considerAdding(f);
 			}
 			
-		}
+		}*/
 		
 		for(Module m : Main.modules){
 			for(Executable e : m.functions){
 				considerAdding(e);
 			}
+		}
+		
+		if(this.owner instanceof InstantiableBlueprint){
+			items.add(new MenuItem(ContextualPointer.class,"THIS",this));
 		}
 		
 		if(parentNode.type == Node.NodeType.SENDING && parentNode.dataType.isNumber()){
@@ -223,7 +247,7 @@ public class ChildPicker extends VObject{
 		}
 		
 		if(parentNode.type == Node.NodeType.SENDING){
-			items.add(new MenuItem(Console.Log.class,"Log To Console",this));
+			items.add(new MenuItem(Console.Log_To_Console.class,"Log To Console",this));
 			if(parentNode.dataType != Variable.DataType.GENERIC){
 				items.add(new MenuItem(Logic.Equals.class,"Equals (=)",this));
 			}
@@ -233,6 +257,9 @@ public class ChildPicker extends VObject{
 				items.add(new MenuItem(Logic.Not.class,"Not (!)",this));
 				items.add(new MenuItem(Logic.While.class,"While...",this));
 				items.add(new MenuItem(Logic.Branch.class,"Branch",this));
+			}else if(parentNode.dataType == Variable.DataType.OBJECT){
+				items.add(new MenuItem(VInstance.Get_Name.class,"Get Object Name",this));
+				items.add(new MenuItem(VInstance.Get_JSON.class,"Get Object JSON",this));
 			}
 		}else if(parentNode.type == Node.NodeType.RECIEVING){
 			if(parentNode.dataType != Variable.DataType.GENERIC){
@@ -271,8 +298,15 @@ public class ChildPicker extends VObject{
 			items.add(new MenuItem(Logic.While.class,"While...",this));
 			items.add(new MenuItem(Logic.Sequence.class,"Sequence",this));
 			items.add(new MenuItem(Logic.Wait.class,"Wait",this));
+			for(Blueprint bp : Main.blueprints){
+				if(bp instanceof InstantiableBlueprint){
+					items.add(new MenuItem(((InstantiableBlueprint) bp),this));
+				}
+			}
 		}else if(parentNode.dataType == Variable.DataType.STRING){
 			items.add(new MenuItem(Arithmetic.Concat.class,"Concatinate",this));
+			items.add(new MenuItem(VInstance.Get_Name.class,"Get Object Name",this));
+			items.add(new MenuItem(VInstance.Get_JSON.class,"Get Object JSON",this));
 		}
 		
 		Collections.sort(items, new MenuItemComparator());
@@ -299,14 +333,24 @@ public class ChildPicker extends VObject{
 	private void resetItems(){
 		itemHolder.removeAll();
 		for(MenuItem i : items){
-			if(i.name.toLowerCase().contains(searchKey.toLowerCase()) || searchKey.equals("") /*|| i.name.toLowerCase().contains("Constant ")*/){
+			if(containsSearchTerms(i.name.toLowerCase(),searchKey.toLowerCase())){
 				itemHolder.add(i);
 			}
 		}
 		itemHolder.revalidate();
 		itemHolder.repaint();
 	}
-	
+	private static boolean containsSearchTerms(String text, String key){
+		if(key.equals(""))
+			return true;
+		String[] keys = key.split(" ");
+		for(String s : keys){
+			if(!text.contains(s))
+				return false;
+		}
+		
+		return true;
+	}
 	private static boolean couldConnect(ArrayList<Variable.DataType> a, Variable.DataType b){
 		System.out.print("Could Connect ("+a+", "+b+") = ");
 		if(a.contains(b)){
@@ -359,6 +403,8 @@ public class ChildPicker extends VObject{
 		private Class<? extends Executable> c;
 		private VFunction vf;
 		Variable.DataType dataType;
+		private InstantiableBlueprint bp;
+		
 		MenuItem(Executable f, ChildPicker childPicker){
 			super();
 			this.f = f;
@@ -426,6 +472,19 @@ public class ChildPicker extends VObject{
 			this.addMouseListener(this);
 			this.setCursor (Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		}
+		
+		MenuItem(InstantiableBlueprint function, ChildPicker childPicker){
+			this.bp = function;
+			
+			String s = "New "+function.getName();
+			
+			this.name = s;
+			this.setOpaque(false);
+			this.childPicker = childPicker;
+			this.setText(name);
+			this.addMouseListener(this);
+			this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		}
 
 		@Override
 		public void mouseClicked(MouseEvent arg0) {
@@ -486,7 +545,9 @@ public class ChildPicker extends VObject{
 							);
 					}
 				}else if(vf != null){
-					ex = new UserFunc(pos, vf, owner);
+					ex = new UserFunc(pos, vf.getOriginal(), owner);
+				}else if(bp != null){
+					ex = new VConstructor(pos, bp, owner);
 				}
 				if(parentNode.type == Node.NodeType.SENDING){
 					System.out.println(ex.getInputNodes());

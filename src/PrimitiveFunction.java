@@ -32,14 +32,11 @@ public class PrimitiveFunction extends Executable{
 		parentVar = v;
 		
 	}
-	protected PrimitiveFunction getThis(){
-		return this;
-	}
 	PrimitiveFunction(Point pos, Variable parent){
 		this(pos,parent,parent.getOwner());
 	}
 	PrimitiveFunction(Point pos, Variable parent, GraphEditor owner){
-		super(owner);
+		super(null, owner);
 		this.type = parent.dataType;
 		this.parentVar = parent;
 		this.parentVar.addChild(this);
@@ -52,18 +49,24 @@ public class PrimitiveFunction extends Executable{
 		setText(parentVar.getFullName());
 		body.add(label,gbc);
 		
+		if(getInputs() != null && !getInputs().isEmpty() && (getInputs().get(0) == Variable.DataType.GENERIC))
+			addInputNode(new Node(Node.NodeType.RECIEVING,this,Variable.DataType.GENERIC,true));
+		
+		if(!getParentVar().isStatic){
+			addInputNode(new Node(Node.NodeType.RECIEVING,this,Variable.DataType.OBJECT));
+			defaultActiveNode = 0;
+		}
+		
 		if(getInputs() != null){
 			for(Variable.DataType dt : getInputs()){
-				if(dt == Variable.DataType.GENERIC)
-					addInputNode(new Node(Node.NodeType.RECIEVING,getThis(),dt,true));
-				else
-					addInputNode(new Node(Node.NodeType.RECIEVING,getThis(),dt,false));
+				if(dt != Variable.DataType.GENERIC)
+					addInputNode(new Node(Node.NodeType.RECIEVING,this,dt));
 			}
 		}
 		if(getOutputs() != null){
 			for(Variable.DataType dt : getOutputs()){
 				boolean b = (dt != Variable.DataType.GENERIC);
-				addOutputNode(new Node(Node.NodeType.SENDING,getThis(),dt,b));
+				addOutputNode(new Node(Node.NodeType.SENDING,this,dt,b));
 			}
 		}
 		

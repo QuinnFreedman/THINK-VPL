@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.RadialGradientPaint;
 import java.awt.geom.Point2D;
 
@@ -15,9 +16,9 @@ import javax.swing.border.EmptyBorder;
 public class EntryPoint extends Executable{
 	public Node startNode;
 	EntryPoint(GraphEditor owner){
-		super(owner);
+		super(new Point(80,30), owner);
 		this.setOpaque(false);
-		this.setBounds(80, 30, 80, 80);
+		this.body.setLayout(new FlowLayout());
 		((FlowLayout) this.body.getLayout()).setVgap(30);
 		remove(inputNodeHolder);
 		remove(outputNodeHolder);
@@ -28,6 +29,10 @@ public class EntryPoint extends Executable{
 		this.body.add(text);
 		startNode = new StartNode(this);
 		this.add(startNode,BorderLayout.AFTER_LAST_LINE);
+	}
+	@Override
+	public Dimension getSize(){
+		return new Dimension(80,80);
 	}
 	@Override
 	public void paintComponent(Graphics g){

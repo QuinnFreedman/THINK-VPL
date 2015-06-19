@@ -26,4 +26,6 @@ public interface FunctionOverseer{
 	public boolean isEcexuteOnce();
 	
 	public GraphEditor getEditor();
+	
+	public VInstance getWorkingInstance();
 }

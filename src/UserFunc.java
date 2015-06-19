@@ -12,44 +12,24 @@ import javax.swing.JLabel;
 class UserFunc extends Executable{
 	private static final long serialVersionUID = 1L;
 	Variable.DataType type;
-	private JLabel label;
 	private String text = "";
-	private FunctionOverseer parentFunc;
+	protected FunctionOverseer parentFunc;
 	
 	public FunctionOverseer getParentVar(){
 		return parentFunc;
 	}
-	public FunctionOverseer getGrandparent(){
-		if(parentFunc instanceof VFunction){
-			return ((VFunction) parentFunc).getOriginal();
-		}else{
-			return parentFunc;
-		}
-	}
 	protected UserFunc getThis(){
 		return this;
 	}
-	@Override
-	public void resetActiveNode(){
-		
-		this.activeNode = (this.getInputs().contains(Variable.DataType.GENERIC)) ? 1 : 0;
-	}
 	UserFunc(Point pos, FunctionOverseer parent, GraphEditor owner){
-		super(owner);
+		super(null,owner);
 		this.color = Color.BLACK;
 		this.parentFunc = parent;
-		this.getGrandparent().addChild(this);
+		this.parentFunc.addChild(this);
 		
 		this.executeOnce = parent.isEcexuteOnce();
 		
-		body.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-		label = new JLabel();
-		
 		setText();
-		
-		body.add(label,gbc);
 		
 		setIO();
 		
@@ -74,7 +54,7 @@ class UserFunc extends Executable{
 	
 	public void setText() {
 		this.text = Main.crop(this.getPathName(),20);
-		label.setText(text);
+		headerLabel.setText(text);
 		this.setSize(this.getSize());
 	}
 	

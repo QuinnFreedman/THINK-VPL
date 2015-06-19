@@ -59,6 +59,9 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 	Variable(GraphEditor owner){
 		super(owner);
 		
+		if(owner == null)
+			return;
+		
 		this.type = Type.VARIABLE;
 		
 		if(owner instanceof InstantiableBlueprint){

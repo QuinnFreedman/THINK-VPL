@@ -3,6 +3,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -11,6 +12,8 @@ import javax.swing.JPanel;
 
 public class VInstance extends Variable{
 	private static final long serialVersionUID = 1L;
+	
+	Random rng = new Random();
 	
 	Blueprint parentBlueprint;
 	ArrayList<Variable> childVariables = new ArrayList<Variable>();
@@ -54,6 +57,20 @@ public class VInstance extends Variable{
 		
 		this.functions.add(new Get(this));
 		this.functions.add(new Set(this));
+		//this.functions.add(new Get_Name());
+		//this.functions.add(new Get_JSON());
+	}
+	
+	VInstance(Blueprint bp) {
+		super(null);
+		
+		parentBlueprint = bp;
+		
+		this.dataType = DataType.OBJECT;
+		
+		this.name = parentBlueprint.getName()+"::"+rng.nextInt(Integer.MAX_VALUE);
+		
+		this.varData = new VariableData.Instance(this);
 	}
 	
 	public void addChildVariable(Variable v){
@@ -88,6 +105,11 @@ public class VInstance extends Variable{
 			((VString) v2).value = ""+((VString) v).value;
 			v2.valueField.setText(((VString) v).value);
 			break;
+		case OBJECT:
+			v2 = new VInstance(getOwner(),((VInstance) v).parentBlueprint);
+			//((VInstance) v2).value = ((VInstance) v).value;
+			//v2.valueField.setText(((VInstance) v).value);
+			break;
 		default:
 			break;
 		
@@ -96,7 +118,8 @@ public class VInstance extends Variable{
 		v2.setID(v.getID());
 		v2.nameField.setText(v2.getID());
 		v2.nameField.setEnabled(false);
-		v2.valueField.setEnabled(false);
+		if(v2.valueField != null)
+			v2.valueField.setEnabled(false);
 		v2.isStatic = false;
 		v2.setOriginalVar(v);
 		v2.setParentInstance(this);
@@ -147,6 +170,14 @@ public class VInstance extends Variable{
 		}
 	}
 	
+	public Variable getVariable(String s){
+		for(Variable v : childVariables){
+			if(v.getID().equals(s))
+				return v;
+		}
+		return null;
+	}
+	
 	static class Get extends PrimitiveFunction{
 		private static final long serialVersionUID = 1L;
 		@Override
@@ -165,11 +196,9 @@ public class VInstance extends Variable{
 		}
 		Get(Point pos, Variable parent, GraphEditor owner) {
 			super(pos, parent, owner);
-			System.out.println("new instane - vardata = "+getParentVar().varData);
 		}
 		Get(Point pos, Variable parent) {
 			super(pos, parent);
-			System.out.println("new instane - vardata = "+getParentVar().varData);
 		}
 		Get(Variable parent){
 			super(parent);
@@ -180,6 +209,9 @@ public class VInstance extends Variable{
 	@Override
 	public void resetVariableData(){
 		this.varData = new VariableData.Instance(this);
+		for(Variable v : this.childVariables){
+			v.resetVariableData();
+		}
 	}
 	
 	static class Set extends PrimitiveFunction{
@@ -225,6 +257,67 @@ public class VInstance extends Variable{
 		}
 		Set(Variable parent){
 			super(parent);
+		}
+		
+	}
+	
+	static class Get_Name extends Executable{
+		private static final long serialVersionUID = 1L;
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.OBJECT));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.STRING));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.OUT;};
+		
+		@Override
+		public VariableData execute(VariableData[] input){
+			String s = ((VariableData.Instance) input[0]).value.getID()
+					+":"
+					+((VInstance) ((VariableData.Instance) input[0]).value).parentBlueprint.getName()
+					+"@"
+					+java.lang.System.identityHashCode(((VariableData.Instance) input[0]).value);
+			
+			return new VariableData.String(s);
+		}
+		Get_Name(Point pos, GraphEditor owner) {
+			super(pos, owner);
+			this.defaultActiveNode = 0;
+		}
+		Get_Name(){
+			super();
+		}
+		
+	}
+	
+	static class Get_JSON extends Executable{
+		private static final long serialVersionUID = 1L;
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.OBJECT));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.STRING));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.OUT;};
+		
+		@Override
+		public VariableData execute(VariableData[] input){
+			
+			return new VariableData.String(((VariableData.Instance) input[0]).getJSON());
+		}
+		Get_JSON(Point pos, GraphEditor owner) {
+			super(pos, owner);
+			this.defaultActiveNode = 0;
+		}
+		Get_JSON(){
+			super();
 		}
 		
 	}

@@ -13,10 +13,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 class Logic extends Executable{
-	@Override
-	public void resetActiveNode() {
-		activeNode = 0;
-	};
 
 	private Logic getThis() {
 		return this;
@@ -27,21 +23,14 @@ class Logic extends Executable{
 	}
 	
 	Logic(Point pos, GraphEditor owner){
-		super(owner);
+		super(pos, owner);
 		this.color = Color.DARK_GRAY;
 		
-		body.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-		headerLabel = new JLabel();
 		headerLabel.setFont(headerLabel.getFont().deriveFont(Font.PLAIN, headerLabel.getFont().getSize()+20));
 		headerLabel.setBorder(new EmptyBorder(new Insets(-10,-1,-1,-1)));
 		headerLabel.setText(getID());
-		body.add(headerLabel,gbc);
 		
 		addOutputNode(new Node(Node.NodeType.SENDING, getThis(), Variable.DataType.BOOLEAN, true));
-		 
-		setBounds(new Rectangle(pos,getSize()));
 
 	}
 	
@@ -228,17 +217,8 @@ class Logic extends Executable{
 			return null;
 		}
 		Branch(Point pos, GraphEditor owner) {
-			super(owner);
+			super(pos, owner);
 			this.color = Color.BLACK;
-			
-			body.setLayout(new GridBagLayout());
-	        GridBagConstraints gbc = new GridBagConstraints();
-	        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-			headerLabel = new JLabel();
-			//headerLabel.setFont(headerLabel.getFont().deriveFont(Font.PLAIN, headerLabel.getFont().getSize()+20));
-			//headerLabel.setBorder(new EmptyBorder(new Insets(-10,-1,-1,-1)));
-			headerLabel.setText("Branch");
-			body.add(headerLabel,gbc);
 			
 			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.GENERIC, true));
 			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.BOOLEAN));
@@ -249,8 +229,6 @@ class Logic extends Executable{
 			this.getOutputNodes().get(0).setToolTipText("If true...");
 			this.getOutputNodes().get(1).setToolTipText("If false...");
 			
-			setBounds(new Rectangle(pos,getSize()));
-					
 		}
 		
 	}
@@ -273,15 +251,7 @@ class Logic extends Executable{
 			return null;
 		}
 		While(Point pos, GraphEditor owner) {
-			super(owner);
-			this.color = Color.BLACK;
-			
-			body.setLayout(new GridBagLayout());
-	        GridBagConstraints gbc = new GridBagConstraints();
-	        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-			headerLabel = new JLabel();
-			headerLabel.setText("While");
-			body.add(headerLabel,gbc);
+			super(pos, owner);
 			
 			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.GENERIC, true));
 			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.BOOLEAN));
@@ -291,8 +261,6 @@ class Logic extends Executable{
 			this.getInputNodes().get(1).setToolTipText("Condition");
 			this.getOutputNodes().get(0).setToolTipText("Repeat while true...");
 			this.getOutputNodes().get(1).setToolTipText("When false...");
-			
-			setBounds(new Rectangle(pos,getSize()));
 			
 		}
 		
@@ -317,20 +285,11 @@ class Logic extends Executable{
 			return null;
 		}
 		Sequence(Point pos, GraphEditor owner) {
-			super(owner);
-			this.color = Color.BLACK;
-			
-			body.setLayout(new GridBagLayout());
-	        GridBagConstraints gbc = new GridBagConstraints();
-	        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-			headerLabel = new JLabel();
-			headerLabel.setText("Sequence");
-			body.add(headerLabel,gbc);
+			super(pos, owner);
 			
 			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.GENERIC, true));
 			addOutputNode(new ReplicatingNode(Node.NodeType.SENDING, getThis(), Variable.DataType.GENERIC));
-			 
-			setBounds(new Rectangle(pos,getSize()));
+			
 		}
 		
 		@Override
@@ -386,15 +345,7 @@ class Logic extends Executable{
 			return null;
 		}
 		Wait(Point pos, GraphEditor owner) {
-			super(owner);
-			this.color = Color.BLACK;
-			
-			body.setLayout(new GridBagLayout());
-	        GridBagConstraints gbc = new GridBagConstraints();
-	        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-			headerLabel = new JLabel();
-			headerLabel.setText("Wait");
-			body.add(headerLabel,gbc);
+			super(pos, owner);
 			
 			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.GENERIC, true));
 			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.INTEGER));

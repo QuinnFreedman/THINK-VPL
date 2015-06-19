@@ -1,5 +1,6 @@
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
@@ -7,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.LinearGradientPaint;
 import java.awt.MultipleGradientPaint;
 import java.awt.RenderingHints;
+import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
@@ -53,7 +55,18 @@ public class Debug{
 	
 	private static void startStep(){
 		System.out.println("Start Stepping");
+		
 		for(Blueprint bp : Main.blueprints){
+			
+			int i = 0;
+			while(i < bp.getObjects().size()){
+				VObject o = bp.getObjects().get(i);
+				if(o instanceof ChildPicker || o instanceof PrimitiveChildPicker)
+					o.delete();
+				else
+					i++;
+			}
+			
 			bp.addVar.setEnabled(false);
 			for(Variable var : bp.getVariables()){
 				var.setEditable(false);
@@ -83,13 +96,13 @@ public class Debug{
 		for(Blueprint bp : Main.blueprints){
 			for(VObject o : bp.getObjects()){
 				if(o instanceof Executable){
-					System.out.println(o);
+					//System.out.println(o);
 					Executable o2 = ((Executable) o);
 					o2.resetActiveNode();
 					o2.workingData = new ArrayList<VariableData>();
 					o2.outputData = new ArrayList<VariableData>();
 					o2.hasExecuted = false;
-					System.out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
+					//System.out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
 					
 				}
 			}
@@ -99,13 +112,13 @@ public class Debug{
 				}
 				for(VObject o : f.editor.getObjects()){
 					if(o instanceof Executable){
-						System.out.println(o);
+						//System.out.println(o);
 						Executable o2 = ((Executable) o);
 						o2.resetActiveNode();
 						o2.workingData = new ArrayList<VariableData>();
 						o2.outputData = new ArrayList<VariableData>();
 						o2.hasExecuted = false;
-						System.out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
+						//System.out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
 						
 					}
 				}
@@ -173,7 +186,7 @@ public class Debug{
 		
 		Executable next = (Executable) parents.get(0).parentObject;
 		System.out.println("next = "+next);
-		if(getTop() instanceof FunctionEditor.FunctionIO && !((FunctionEditor.FunctionIO) getTop()).getOverseer().isStatic()){
+		/*if(getTop() instanceof FunctionEditor.FunctionIO && !((FunctionEditor.FunctionIO) getTop()).getOverseer().isStatic()){
 			System.out.println("next is non-static function :: changing all primitive funcs");
 			FunctionOverseer fo = ((FunctionEditor.FunctionIO) getTop()).getOverseer();
 			for(VObject e : fo.getEditor().getObjects()){
@@ -189,7 +202,7 @@ public class Debug{
 					System.out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
 				}
 			}
-		}
+		}*/
 		if(!(next instanceof FunctionEditor.FunctionIO && ((FunctionEditor.FunctionIO) next).mode == FunctionEditor.FunctionIO.Mode.INPUT)){
 			getTop().incrementActiveNode();
 			
@@ -204,8 +217,8 @@ public class Debug{
 			}
 			
 			if(next instanceof UserFunc){
-				((UserFunc) next).getGrandparent().setCurrentlyExecuting(((UserFunc) next));
-			}//TODO
+				((UserFunc) next).getParentVar().setCurrentlyExecuting(((UserFunc) next));
+			}
 			
 			stack.add(next);
 			
@@ -241,14 +254,34 @@ public class Debug{
 		System.out.println("executing "+getTop().getClass().getName());
 		System.out.print(getTop().getClass().getName()+" workingData = ");
 		for(VariableData var : getTop().workingData){
-			System.out.print(var.getValueAsString());
+			System.out.print(var.getValueAsString()+" ");
 		}
 		System.out.println();
 		System.out.println(getTop().getClass().getName()+" executeOnce = "+getTop().executeOnce+"; hasExecuted = "+getTop().hasExecuted);
+		if(getTop() instanceof PrimitiveFunction)
+			System.out.println("parent var = "+((PrimitiveFunction) getTop()).getParentVar());
+		
+		if(getTop() instanceof PrimitiveFunction && !((PrimitiveFunction) getTop()).getParentVar().isStatic){
+			if(getTop().workingData.get(0) instanceof VariableData.Instance){
+				if(((PrimitiveFunction) getTop()).getParentVar().parentInstance == ((VariableData.Instance) getTop().workingData.get(0)).value){
+					//all good
+				}else{
+					((PrimitiveFunction) getTop()).setParentVar(((VInstance) ((VariableData.Instance) getTop().workingData.get(0)).value).getVariable(((PrimitiveFunction) getTop()).getParentVar().getID()));
+				}
+				getTop().workingData.remove(0);
+			}else{
+				try{
+					throw new Exception();
+				}catch(Exception e){
+					Debug.console.post("ERROR: internal error");
+					e.printStackTrace();
+				}
+			}
+		}
 		
 		VariableData execute;
 		if(getTop().executeOnce && getTop().hasExecuted){
-			execute = null;//getTop().outputData;
+			execute = null;
 		}else{
 			VariableData[] array = new VariableData[getTop().workingData.size()];
 			array = getTop().workingData.toArray(array);
@@ -282,8 +315,13 @@ public class Debug{
 				}
 			}
 		}else if(((FunctionEditor.FunctionIO) getTop()).mode == FunctionEditor.FunctionIO.Mode.OUTPUT){
-			System.out.println("overseer = "+((FunctionEditor.FunctionIO) getTop()).getOverseer());
+			FunctionOverseer overseer = ((FunctionEditor.FunctionIO) getTop()).getOverseer();
+			System.out.println("overseer = "+overseer);
 			System.out.println("currently executing = "+((FunctionEditor.FunctionIO) getTop()).getOverseer().getCurrentlyExecuting());
+			
+			if(overseer instanceof InstantiableBlueprint){
+				execute = new VariableData.Instance(((InstantiableBlueprint) overseer).getWorkingInstance());
+			}
 			
 			((FunctionEditor.FunctionIO) getTop()).getOverseer().getCurrentlyExecuting().outputData = 
 					new ArrayList<VariableData>(Arrays.asList(execute));
@@ -303,10 +341,10 @@ public class Debug{
 			System.out.println("next = "+((next == null) ? "null" : next.getClass().getName()));
 			
 			if(next instanceof UserFunc){
-				((UserFunc) next).getGrandparent().setCurrentlyExecuting(((UserFunc) next));
+				((UserFunc) next).getParentVar().setCurrentlyExecuting(((UserFunc) next));
 			}
 			
-			else if(next instanceof FunctionEditor.FunctionIO && !((FunctionEditor.FunctionIO) next).getOverseer().isStatic()){
+			/*else if(next instanceof FunctionEditor.FunctionIO && !((FunctionEditor.FunctionIO) next).getOverseer().isStatic()){
 				System.out.println("next is non-static function :: changing all primitive funcs");
 				FunctionOverseer fo = ((FunctionEditor.FunctionIO) next).getOverseer();
 				for(VObject e : fo.getEditor().getObjects()){
@@ -322,7 +360,7 @@ public class Debug{
 						System.out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
 					}
 				}
-			}
+			}*/
 			
 			stack.remove(stack.size()-1);
 			if(next != null){
@@ -464,7 +502,7 @@ public class Debug{
 			FunctionEditor.FunctionIO inputObj = ((UserFunc) o).getParentVar().getInputObject();
 			inputObj.outputData = new ArrayList<VariableData>(o.workingData);
 			System.out.println("inputObj.outputData = "+inputObj.outputData);
-			((UserFunc) o).getGrandparent().setCurrentlyExecuting((UserFunc) o);
+			((UserFunc) o).getParentVar().setCurrentlyExecuting((UserFunc) o);
 			return inputObj;
 			
 		}else if(o instanceof FunctionEditor.FunctionIO && ((FunctionEditor.FunctionIO) o).mode == FunctionEditor.FunctionIO.Mode.OUTPUT){
@@ -577,6 +615,10 @@ public class Debug{
 			body.add(headerLabel);
 			
 			this.setBounds(10, 10, getPreferredSize().width, getPreferredSize().height);
+			owner.getPanel().setComponentZOrder(this,0);
+			for(MouseListener listener : this.getMouseListeners()){
+				this.removeMouseListener(listener);
+			}
 		}
 	};
 }

@@ -78,7 +78,7 @@ class Console extends JFrame implements KeyListener{
 		if(output != null)
 			output.setText("");
 	}
-	static class Log extends Executable{
+	static class Log_To_Console extends Executable{
 		private static final long serialVersionUID = 1L;
 		@Override
 		public Mode getPrimairyMode(){return Mode.IN;};
@@ -91,15 +91,8 @@ class Console extends JFrame implements KeyListener{
 			return null;
 			
 		}
-		Log(Point pos, GraphEditor owner) {
-			super(owner);
-			this.color = Color.BLACK;
-			body.setLayout(new GridBagLayout());
-	        GridBagConstraints gbc = new GridBagConstraints();
-	        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-			headerLabel = new JLabel();
-			headerLabel.setText("Log To Console");
-			body.add(headerLabel,gbc);
+		Log_To_Console(Point pos, GraphEditor owner) {
+			super(pos, owner);
 
 			addInputNode(new Node(Node.NodeType.RECIEVING,this,Variable.DataType.GENERIC,true));
 			addInputNode(new Node(Node.NodeType.RECIEVING,this,Variable.DataType.STRING));
@@ -120,23 +113,10 @@ class Console extends JFrame implements KeyListener{
 		public Mode getPrimairyMode(){return Mode.OUT;};
 		
 		getStr(Point pos, Variable.DataType dt, GraphEditor owner) {
-			super(owner);
+			super(pos, owner);
 			this.dt = dt;
-			this.color = Color.BLACK;
-			body.setLayout(new GridBagLayout());
-	        GridBagConstraints gbc = new GridBagConstraints();
-	        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-			headerLabel = new JLabel();
-			if(dt.isNumber()){
-				headerLabel.setText("Get Number From Console");
-			}else if(dt == Variable.DataType.STRING){
-				headerLabel.setText("Get String From Console");
-			}
-			body.add(headerLabel,gbc);
 			
 			addOutputNode(new Node(Node.NodeType.SENDING,this,dt));
-			
-			setBounds(new Rectangle(pos,getSize()));
 		}
 		getStr(){
 			super();
@@ -144,6 +124,16 @@ class Console extends JFrame implements KeyListener{
 
 		public Variable.DataType getDataType() {
 			return dt;
+		}
+		
+		@Override
+		public String getSimpleName(){
+			if(dt.isNumber()){
+				return "Get Number From Console";
+			}else if(dt == Variable.DataType.STRING){
+				return "Get String From Console";
+			}
+			return null;
 		}
 		
 	}

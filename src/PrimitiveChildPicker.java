@@ -24,8 +24,9 @@ public class PrimitiveChildPicker extends VObject{
 		PrimitiveChildPicker(Variable parent, Point position, GraphEditor owner){
 			super(owner);
 			this.parent = parent;
-			this.position = position;
-
+			
+			owner.getPanel().setComponentZOrder(this, 0);
+			
 			headerLabel = new JLabel();
 			headerLabel.setOpaque(false);
 			headerLabel.setBorder(BorderFactory.createEmptyBorder(4, 7, 2, 7));

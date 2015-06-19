@@ -167,7 +167,19 @@ class VariableData{
 		}
 		@Override
 		public java.lang.String getValueAsString(){
-			return value.toString();
+			return "<"+value.getID()+">";
+		}
+		
+		public java.lang.String getJSON(){
+			java.lang.String s = "{";
+			
+			for(Variable v : value.childVariables){
+				s += ("\n    \""+v.getID()+"\" : "+((v instanceof VInstance) ? "\n"+((Instance) v.varData).getJSON() : v.varData.getValueAsString()));
+			}
+			
+			s += "\n}";
+			
+			return s;
 		}
 	}
 }

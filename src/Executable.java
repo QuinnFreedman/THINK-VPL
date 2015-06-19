@@ -6,16 +6,21 @@ import java.awt.FlowLayout;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.LinearGradientPaint;
 import java.awt.MultipleGradientPaint;
 import java.awt.Point;
 import java.awt.RadialGradientPaint;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class Executable extends VObject{
@@ -37,7 +42,11 @@ public class Executable extends VObject{
 	protected boolean hasExecuted = false;
 	public ArrayList<VariableData> outputData;
 	
-	protected Class<? extends Module> parentMod;
+	protected int defaultActiveNode = 1;
+	
+	protected Class<? extends Module> getParentMod(){
+		return null;
+	}
 	
 	public ArrayList<Variable.DataType> getInputs(){
 		ArrayList<Variable.DataType> list = new ArrayList<Variable.DataType>();
@@ -100,7 +109,11 @@ public class Executable extends VObject{
 		selected = b;
 	}
 	public void resetActiveNode() {
-		activeNode = 1;
+		if(!this.getInputNodes().isEmpty() && this.getInputNodes().get(0).dataType == Variable.DataType.GENERIC){
+			this.activeNode = 1;
+		}else{
+			this.activeNode = 0;
+		}
 	}
 	public int getActiveNode() {
 		return activeNode;
@@ -110,29 +123,21 @@ public class Executable extends VObject{
 	}
 
 	public ArrayList<Variable.DataType> getTypeInputs(){
-		if(this.inputNodes.isEmpty()){
-			return null;
-		}else{
-			ArrayList<Variable.DataType> inputs = new ArrayList<Variable.DataType>();
-			for(Node n : inputNodes){
-				inputs.add(n.dataType);
-			}
-			return inputs;
-		}
+		return null;
 	}
 	public ArrayList<Variable.DataType> getTypeOutputs(){
-		if(this.outputNodes.isEmpty()){
-			return null;
-		}else{
-			ArrayList<Variable.DataType> outputs = new ArrayList<Variable.DataType>();
-			for(Node n : outputNodes){
-				outputs.add(n.dataType);
-			}
-			return outputs;
-		}
+		return null;
 	}
 	
-	Executable(GraphEditor owner){
+	public ArrayList<String> getInputTooltips(){
+		return null;
+	}
+	
+	public ArrayList<String> getOutputTooltips(){
+		return null;
+	}
+	
+	Executable(Point pos, GraphEditor owner){
 		super(owner);
 		this.color = Color.BLACK;
 		
@@ -144,6 +149,47 @@ public class Executable extends VObject{
 		
 		this.add(inputNodeHolder,BorderLayout.PAGE_START);
 		this.add(outputNodeHolder,BorderLayout.PAGE_END);
+
+		if(!(this instanceof EntryPoint || this instanceof Constant
+				|| this instanceof Cast || this instanceof FunctionEditor.FunctionIO
+				|| this instanceof PrimitiveFunction)){
+			body.setLayout(new GridBagLayout());
+			GridBagConstraints gbc = new GridBagConstraints();
+			body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+			headerLabel = new JLabel();
+			if(!(this instanceof Arithmetic || this instanceof Logic))
+				headerLabel.setText(getSimpleName());
+			body.add(headerLabel,gbc);
+		}
+		if(!(this instanceof PrimitiveFunction)){
+			if(getInputs() != null){
+				for(Variable.DataType dt : getInputs()){
+					if(dt == Variable.DataType.GENERIC)
+						addInputNode(new Node(Node.NodeType.RECIEVING,this,dt,true));
+					else
+						addInputNode(new Node(Node.NodeType.RECIEVING,this,dt,false));
+				}
+			}
+			if(getOutputs() != null){
+				for(Variable.DataType dt : getOutputs()){
+					boolean b = (dt != Variable.DataType.GENERIC);
+					addOutputNode(new Node(Node.NodeType.SENDING,this,dt,b));
+				}
+			}
+		}
+		if(getInputTooltips() != null){
+			for(int i = 0; i < getInputTooltips().size(); i++){
+				getInputNodes().get(i + 1).setToolTipText(getInputTooltips().get(i));
+			}
+		}
+		if(getOutputTooltips() != null){
+			for(int i = 0; i < getInputTooltips().size(); i++){
+				getOutputNodes().get(i + 1).setToolTipText(getOutputTooltips().get(i));
+			}
+		}
+		
+		if(pos != null)
+			setBounds(new Rectangle(pos,getSize()));
 	}
 	
 	Executable() {
@@ -203,9 +249,11 @@ public class Executable extends VObject{
 	public String getPathName(){
 		String s = "";
 		if(this instanceof PrimitiveFunction && this.owner != ((PrimitiveFunction) this).getParentVar().getOwner()){
+			System.out.println("this instanceof PrimitiveFunction");
 			//System.out.println(this.owner+" != "+((PrimitiveFunction) this).getParentVar().getOwner());
 			if(((PrimitiveFunction) this).getParentVar().getOwner() instanceof Blueprint){
 				s += (((Blueprint) ((PrimitiveFunction) this).getParentVar().getOwner()).getName()+" > ");
+				System.out.println(s);
 			}else if(((PrimitiveFunction) this).getParentVar().getOwner() instanceof FunctionEditor){
 				s += (((Blueprint) ((FunctionEditor) ((PrimitiveFunction) this).getParentVar().getOwner()).getOverseer()).getName()+" > ");
 			}
@@ -227,6 +275,6 @@ public class Executable extends VObject{
 		return s;
 	}
 	public String getSimpleName(){
-		return ((parentMod == null) ? "" : parentMod.getName()+" > ") + this.getClass().getSimpleName().replace('_',' ');
+		return ((getParentMod() == null) ? "" : getParentMod().getName()+" > ") + this.getClass().getSimpleName().replace('_',' ');
 	}
 }

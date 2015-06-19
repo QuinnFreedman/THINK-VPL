@@ -14,7 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
 public class VObject extends JPanel implements MouseInputListener{
-	Point position;
 	Boolean isDragged;
 	int width;
 	int height;
@@ -54,7 +53,7 @@ public class VObject extends JPanel implements MouseInputListener{
 		if(this instanceof PrimitiveFunction){
 			((PrimitiveFunction) this).removeFromParent();
 		}else if(this instanceof UserFunc){
-			((UserFunc) this).getGrandparent().removeChild(((UserFunc) this));
+			((UserFunc) this).getParentVar().removeChild(((UserFunc) this));
 		}
 		owner.getPanel().remove(this);
 		Iterator<Curve> itr = owner.getCurves().iterator();

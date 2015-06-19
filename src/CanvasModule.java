@@ -94,50 +94,23 @@ class CanvasModule extends Module{
 		@Override
 		public Mode getPrimairyMode(){return Mode.IN;};
 		
-		public ArrayList<String> getInputTooltips(){
-			return null;
-		}
-		
 		@Override
 		public ArrayList<Variable.DataType> getOutputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC));
 		}
+
+		protected Class<? extends Module> getParentMod(){
+			return CanvasModule.class;
+		}
 		
 		CanvasExecutable(Point pos, GraphEditor owner) {
-			super(owner);
-			this.parentMod = CanvasModule.class;
-			body.setLayout(new GridBagLayout());
-	        GridBagConstraints gbc = new GridBagConstraints();
-	        body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-			headerLabel = new JLabel();
-			headerLabel.setText(getSimpleName());
-			body.add(headerLabel,gbc);
+			super(pos, owner);
 			
-			if(getInputs() != null){
-				for(Variable.DataType dt : getInputs()){
-					if(dt == Variable.DataType.GENERIC)
-						addInputNode(new Node(Node.NodeType.RECIEVING,this,dt,true));
-					else
-						addInputNode(new Node(Node.NodeType.RECIEVING,this,dt,false));
-				}
-			}
-			if(getOutputs() != null){
-				for(Variable.DataType dt : getOutputs()){
-					boolean b = (dt != Variable.DataType.GENERIC);
-					addOutputNode(new Node(Node.NodeType.SENDING,this,dt,b));
-				}
-			}
-			if(getInputTooltips() != null){
-				for(int i = 0; i < getInputTooltips().size(); i++){
-					getInputNodes().get(i + 1).setToolTipText(getInputTooltips().get(i));
-				}
-			}
-			
-			setBounds(new Rectangle(pos,getSize()));
 		}
+		
 		CanvasExecutable(){
-			this.parentMod = CanvasModule.class;
+			
 		}
 	}
 	

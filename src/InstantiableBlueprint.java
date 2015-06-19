@@ -1,8 +1,12 @@
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -16,12 +20,25 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 	
 	private FunctionEditor.FunctionIO inputObject;
 	private FunctionEditor.FunctionIO outputObject;
-	private ArrayList<UserFunc> children;
+	private ArrayList<UserFunc> children = new ArrayList<UserFunc>();
 	private UserFunc currentlyExecuting = null;
 	private ArrayList<Variable.DataType> input = new ArrayList<Variable.DataType>();
 	private ArrayList<Variable.DataType> output = new ArrayList<Variable.DataType>();
+	private VInstance workingInstance;
+	
+	private NodeAdder adder = new NodeAdder(this);
 	
 	JTextField className;
+	
+	public void setWorkingInstance(VInstance vInstance) {
+		this.workingInstance = vInstance;
+		
+	}
+	
+	public VInstance getWorkingInstance() {
+		return workingInstance;
+		
+	}
 	
 	InstantiableBlueprint(){
 		JPanel holder = new JPanel(new BorderLayout(0,0));
@@ -63,18 +80,27 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 		buttonHolder.add(new JLabel("Add input node:"));
 		
 		JButton button = new JButton("Integer");
+		button.addActionListener(adder);
 		buttonHolder.add(button);
 		
 		button = new JButton("Double");
+		button.addActionListener(adder);
 		buttonHolder.add(button);
 		
 		button = new JButton("Float");
+		button.addActionListener(adder);
 		buttonHolder.add(button);
 		
 		button = new JButton("Boolean");
+		button.addActionListener(adder);
 		buttonHolder.add(button);
 		
 		button = new JButton("String");
+		button.addActionListener(adder);
+		buttonHolder.add(button);
+		
+		button = new JButton("Object");
+		button.addActionListener(adder);
 		buttonHolder.add(button);
 		
 		panelHolder.add(buttonHolder, BorderLayout.PAGE_START);
@@ -85,6 +111,10 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 		outputObject.addInputNode(new Node(Node.NodeType.RECIEVING, outputObject, Variable.DataType.GENERIC));
 		
 		panel.addComponentListener(this);
+		
+		this.addInput(Variable.DataType.GENERIC);
+		this.addOutput(Variable.DataType.GENERIC);
+		this.addOutput(Variable.DataType.OBJECT);
 	}
 	
 	
@@ -110,29 +140,29 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 	@Override
 	public void addOutput(Variable.DataType dataType) {
 		output.add(dataType);
-		for(UserFunc f : children){
+		/*for(UserFunc f : children){
 			f.addOutputNode(new Node(Node.NodeType.SENDING,f,dataType, (dataType == Variable.DataType.GENERIC) ? false : true));
 			f.outputNodeHolder.revalidate();
 			f.outputNodeHolder.repaint();
 			f.setBounds(new Rectangle(f.getLocation(),f.getSize()));
 			f.owner.getPanel().revalidate();
 			f.owner.getPanel().repaint();
-		}
+		}*/
 	}
 	
 	@Override
 	public void removeInput(int i){
-		input.remove(i);
+		input.remove(i+1);
 		for(UserFunc f : children){
 			f.removeInputNode(f.getInputNodes().get(i));
 		}
 	}
 	@Override
 	public void removeOutput(int i){
-		output.remove(i);
-		for(UserFunc f : children){
-			f.removeOutputNode(f.getOutputNodes().get(i));
-		}
+		//output.remove(i);
+		//for(UserFunc f : children){
+		//	f.removeOutputNode(f.getOutputNodes().get(i));
+		//}
 	}
 	@Override
 	public ArrayList<Variable.DataType> getInput() {
@@ -204,12 +234,95 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 
 	@Override
 	public boolean isEcexuteOnce() {
-		System.err.println("Error: incomplete 207");
+		//System.err.println("Error: incomplete 207");
 		return true;
 	}
 
 	@Override
 	public GraphEditor getEditor() {
 		return this;
+	}
+	
+	private class NodeAdder implements ActionListener{
+		private InstantiableBlueprint overseer;
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String s = ((JButton) e.getSource()).getText();
+			Variable.DataType dataType;
+			if(s.equals("Integer")){
+				dataType = Variable.DataType.INTEGER;
+			}else if(s.equals("Float")){
+				dataType = Variable.DataType.FLOAT;
+			}else if(s.equals("Double")){
+				dataType = Variable.DataType.DOUBLE;
+			}else if(s.equals("Boolean")){
+				dataType = Variable.DataType.BOOLEAN;
+			}else if(s.equals("String")){
+				dataType = Variable.DataType.STRING;
+			}else if(s.equals("Object")){
+				dataType = Variable.DataType.OBJECT;
+			}else{
+				dataType = null;
+			}
+			inputObject.addOutputNode(new removeableNode(Node.NodeType.SENDING, inputObject, dataType, overseer));
+			inputObject.revalidate();
+			inputObject.repaint();
+		}
+		
+		NodeAdder(InstantiableBlueprint overseer){
+			this.overseer = overseer;
+		}
+			
+	}
+	class removeableNode extends Node{
+		Node THIS = this;
+		private InstantiableBlueprint overseer;
+		
+		public removeableNode(NodeType type, VObject parentObj, Variable.DataType dt, InstantiableBlueprint overseer) {
+			super(type, parentObj, dt, true);
+			this.overseer = overseer;
+			overseer.addInput(dataType);
+			this.addMouseListener(new Deleter());
+			
+		}
+		
+		private class Deleter implements MouseListener{
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(e.getButton() == MouseEvent.BUTTON3){
+					overseer.removeInput(((Executable) THIS.parentObject).getOutputNodes().indexOf(THIS)-1);
+					((Executable) THIS.parentObject).removeOutputNode(THIS);
+					
+				}
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				// Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// Auto-generated method stub
+				
+			}
+		}
+		
 	}
 }

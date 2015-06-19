@@ -160,6 +160,11 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 		addNode.setFocusable(false);
 		addNode.addActionListener(listener);
 		addInputNode.add(addNode);
+		
+		addNode = new JButton("Object");
+		addNode.setFocusable(false);
+		addNode.addActionListener(listener);
+		addInputNode.add(addNode);
 
 		//add output node
 		addOutputNode = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -425,7 +430,7 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 				if(Debug.console == null){
 					Debug.console = new Console();
 				}
-				new Console.Log(p, this);
+				new Console.Log_To_Console(p, this);
 			}else if(c == "Get String From Console"){
 				if(Debug.console == null){
 					Debug.console = new Console();
@@ -485,14 +490,6 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 			
 		}
 		@Override
-		public void resetActiveNode(){
-			if(this.getInputNodes() == null || this.getInputNodes().isEmpty() || 
-					this.getInputNodes().get(0).dataType == Variable.DataType.GENERIC)
-				this.activeNode = 1;
-			else
-				this.activeNode = 0;
-		}
-		@Override
 		public VariableData execute(VariableData[] inputs){
 			if(inputs != null && inputs.length != 0)
 				return inputs[0];
@@ -507,7 +504,7 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 			return null;
 		}
 		FunctionIO(GraphEditor owner, Mode mode){
-			super(owner);
+			super(null, owner);
 			this.mode = mode;
 			Main.componentMover.deregisterComponent(this);
 			if(this.mode == Mode.INPUT){
@@ -673,6 +670,8 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 				dataType = Variable.DataType.BOOLEAN;
 			}else if(s.equals("String")){
 				dataType = Variable.DataType.STRING;
+			}else if(s.equals("Object")){
+				dataType = Variable.DataType.OBJECT;
 			}else{
 				dataType = null;
 			}

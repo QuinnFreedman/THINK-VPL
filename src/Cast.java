@@ -16,7 +16,7 @@ public class Cast extends Executable{
 		return this;
 	}
 	Cast(Node sendingNode, Node recievingNode){
-		super(sendingNode.parentObject.owner);
+		super(null, sendingNode.parentObject.owner);
 		this.color = Color.BLACK;
 		
 		System.out.println("CAST "+sendingNode.dataType+" > "+recievingNode.dataType);
@@ -59,10 +59,6 @@ public class Cast extends Executable{
 		
 		return false;
 	}
-	@Override
-	public void resetActiveNode() {
-		activeNode = 0;
-	};
 	@Override
 	public VariableData execute(VariableData[] inputs){
 		if(this.output == Variable.DataType.STRING){
