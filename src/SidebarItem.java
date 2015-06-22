@@ -26,7 +26,7 @@ public class SidebarItem extends JPanel{
 	private static final long serialVersionUID = 1L;
 	
 	private GraphEditor owner;
-	protected String name;
+	private String name;
 	protected Type type;
 	public boolean isStatic = true;
 	public VInstance parentInstance = null;

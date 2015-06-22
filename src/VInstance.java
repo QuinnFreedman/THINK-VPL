@@ -53,24 +53,15 @@ public class VInstance extends Variable{
 			addChildFunction(f);
 		}
 		
-		System.out.println(this.varData);
+		//this.setID(parentBlueprint.getName()+"::"+rng.nextInt(Integer.MAX_VALUE));
+		
+		this.varData = new VariableData.Instance(this);
+		System.out.println("varData = "+this.varData);
 		
 		this.functions.add(new Get(this));
 		this.functions.add(new Set(this));
 		//this.functions.add(new Get_Name());
 		//this.functions.add(new Get_JSON());
-	}
-	
-	VInstance(Blueprint bp) {
-		super(null);
-		
-		parentBlueprint = bp;
-		
-		this.dataType = DataType.OBJECT;
-		
-		this.name = parentBlueprint.getName()+"::"+rng.nextInt(Integer.MAX_VALUE);
-		
-		this.varData = new VariableData.Instance(this);
 	}
 	
 	public void addChildVariable(Variable v){
@@ -189,9 +180,7 @@ public class VInstance extends Variable{
 		
 		@Override
 		public VariableData execute(VariableData[] input){
-			System.out.println("parentVar = "+getParentVar());
-			System.out.println("returning "+getParentVar().varData);
-			return getParentVar().varData;
+			return getParentVarData();
 			
 		}
 		Get(Point pos, Variable parent, GraphEditor owner) {
@@ -229,7 +218,7 @@ public class VInstance extends Variable{
 		
 		@Override
 		public VariableData execute(VariableData[] input){
-			if(((VInstance) getParentVar()).parentBlueprint != ((VariableData.Instance) input[0]).value.parentBlueprint){
+			if(((VariableData.Instance) parentVarData).parentBlueprint != ((VariableData.Instance) input[0]).parentBlueprint){
 				try {
 					throw new Exception();
 				} catch (Exception e) {
@@ -237,13 +226,21 @@ public class VInstance extends Variable{
 					e.printStackTrace();
 				}
 			}else{
-				getParentVar().varData = input[0];
-				for(int i = 0; i < ((VInstance) getParentVar()).childVariables.size(); i++){
-					Variable v = ((VInstance) getParentVar()).childVariables.get(i);
-					Variable v2 = ((VariableData.Instance) input[0]).value.childVariables.get(i);
-					System.out.println("\""+v.name+"\" : "+v.varData.getValueAsString()+" < "+"\""+v2.name+"\" : "+v2.varData.getValueAsString());
-					v.varData = v2.varData;
+				parentVarData = input[0];
+				for(int i = 0; i < ((VariableData.Instance) getParentVarData()).values.size(); i++){
+					VariableData v = ((VariableData.Instance) getParentVarData()).values.get(i);
+					VariableData v2 = ((VariableData.Instance) input[0]).values.get(i);
+					v = v2;
 				}
+				/*for(int i = 0; i < ((VInstance) getParentVar()).childVariables.size(); i++){
+					VariableData v = ((VariableData.Instance) parentVarData).values.get(i);
+					String n  = ((VariableData.Instance) parentVarData).names.get(i);
+					VariableData v2 = ((VariableData.Instance) input[0]).values.get(i);
+					String n2 = ((VariableData.Instance) input[0]).names.get(i);
+					System.out.println("\""+n+"\" : "+v.getValueAsString()+" < "+"\""+n2+"\" : "+v2.getValueAsString());
+					v = v2;
+					n = n2;
+				}*/
 				
 			}
 			return null;
@@ -261,38 +258,6 @@ public class VInstance extends Variable{
 		
 	}
 	
-	static class Get_Name extends Executable{
-		private static final long serialVersionUID = 1L;
-		@Override
-		public ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.OBJECT));
-		}
-		@Override
-		public ArrayList<Variable.DataType> getOutputs(){
-			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.STRING));
-		}
-		@Override
-		public Mode getPrimairyMode(){return Mode.OUT;};
-		
-		@Override
-		public VariableData execute(VariableData[] input){
-			String s = ((VariableData.Instance) input[0]).value.getID()
-					+":"
-					+((VInstance) ((VariableData.Instance) input[0]).value).parentBlueprint.getName()
-					+"@"
-					+java.lang.System.identityHashCode(((VariableData.Instance) input[0]).value);
-			
-			return new VariableData.String(s);
-		}
-		Get_Name(Point pos, GraphEditor owner) {
-			super(pos, owner);
-			this.defaultActiveNode = 0;
-		}
-		Get_Name(){
-			super();
-		}
-		
-	}
 	
 	static class Get_JSON extends Executable{
 		private static final long serialVersionUID = 1L;

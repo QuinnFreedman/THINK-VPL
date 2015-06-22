@@ -248,14 +248,14 @@ public class Executable extends VObject{
 	}
 	public String getPathName(){
 		String s = "";
-		if(this instanceof PrimitiveFunction && this.owner != ((PrimitiveFunction) this).getParentVar().getOwner()){
+		if(this instanceof PrimitiveFunction && this.owner != ((PrimitiveFunction) this).getParentVariable().getOwner()){
 			System.out.println("this instanceof PrimitiveFunction");
 			//System.out.println(this.owner+" != "+((PrimitiveFunction) this).getParentVar().getOwner());
-			if(((PrimitiveFunction) this).getParentVar().getOwner() instanceof Blueprint){
-				s += (((Blueprint) ((PrimitiveFunction) this).getParentVar().getOwner()).getName()+" > ");
+			if(((PrimitiveFunction) this).getParentVariable().getOwner() instanceof Blueprint){
+				s += (((Blueprint) ((PrimitiveFunction) this).getParentVariable().getOwner()).getName()+" > ");
 				System.out.println(s);
-			}else if(((PrimitiveFunction) this).getParentVar().getOwner() instanceof FunctionEditor){
-				s += (((Blueprint) ((FunctionEditor) ((PrimitiveFunction) this).getParentVar().getOwner()).getOverseer()).getName()+" > ");
+			}else if(((PrimitiveFunction) this).getParentVariable().getOwner() instanceof FunctionEditor){
+				s += (((Blueprint) ((FunctionEditor) ((PrimitiveFunction) this).getParentVariable().getOwner()).getOverseer()).getName()+" > ");
 			}
 		}else if(this instanceof UserFunc){
 			if(((UserFunc) this).getParentVar() instanceof SidebarItem){
@@ -264,7 +264,7 @@ public class Executable extends VObject{
 				}
 				if(/*!((VFunction) ((UserFunc) this).getParentVar()).isStatic && */
 						((VFunction) ((UserFunc) this).getParentVar()).parentInstance != null){
-					s += (((VFunction) ((UserFunc) this).getParentVar()).parentInstance.name+" > ");
+					s += (((VFunction) ((UserFunc) this).getParentVar()).parentInstance.getID()+" > ");
 				}
 				s += ((VFunction) ((UserFunc) this).getParentVar()).getID();
 			}else{

@@ -57,7 +57,7 @@ public class VString extends Variable{
 		
 		@Override
 		public VariableData execute(VariableData[] input){
-			return getParentVar().varData;
+			return getParentVarData();
 			
 		}
 		Get(Point pos, Variable parent, GraphEditor owner) {
@@ -86,7 +86,7 @@ public class VString extends Variable{
 		
 		@Override
 		public VariableData execute(VariableData[] input){
-			getParentVar().varData = input[0];
+			((VariableData.String) parentVarData).value = ((VariableData.String) input[0]).value;
 			return null;
 			
 		}
@@ -115,7 +115,7 @@ public class VString extends Variable{
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
 		public VariableData execute(VariableData[] input){
-			((VariableData.String) getParentVar().varData).value = ((VariableData.String) getParentVar().varData).value.concat(((VariableData.String) input[0]).value);
+			((VariableData.String) parentVarData).value = ((VariableData.String) parentVarData).value.concat(((VariableData.String) input[0]).value);
 			return null;
 		}
 		Append(Point pos, Variable parent, GraphEditor owner) {
@@ -139,7 +139,7 @@ public class VString extends Variable{
 		public Mode getPrimairyMode(){return Mode.OUT;};
 		@Override
 		public VariableData execute(VariableData[] input){
-			int length = ((VariableData.String) getParentVar().varData).value.length();
+			int length = ((VariableData.String) parentVarData).value.length();
 			return new VariableData.Integer(length);
 		}
 		Get_Length(Point pos, Variable parent, GraphEditor owner) {
@@ -167,7 +167,7 @@ public class VString extends Variable{
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
 		public VariableData execute(VariableData[] input){
-			String s = ((VariableData.String) getParentVar().varData).value.replaceAll(((VariableData.String) input[0]).value,((VariableData.String) input[1]).value);
+			String s = ((VariableData.String) parentVarData).value.replaceAll(((VariableData.String) input[0]).value,((VariableData.String) input[1]).value);
 			return new VariableData.String(s);
 		}
 		Replace(Point pos, Variable parent, GraphEditor owner) {
@@ -195,7 +195,7 @@ public class VString extends Variable{
 		public Mode getPrimairyMode(){return Mode.OUT;};
 		@Override
 		public VariableData execute(VariableData[] input){
-			char c = ((VariableData.String) getParentVar().varData).value.charAt(((VariableData.Integer) input[0]).value);
+			char c = ((VariableData.String) parentVarData).value.charAt(((VariableData.Integer) input[0]).value);
 			String s = Character.toString(c);
 			return new VariableData.String(s);
 		}

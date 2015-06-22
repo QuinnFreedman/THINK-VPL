@@ -56,7 +56,7 @@ public class VFloat extends Variable{
 		public Mode getPrimairyMode(){return Mode.OUT;};
 		@Override
 		public VariableData execute(VariableData[] input){
-			return getParentVar().varData;
+			return parentVarData;
 		}
 		Get(Point pos, Variable parent, GraphEditor owner) {
 			super(pos, parent, owner);
@@ -83,7 +83,7 @@ public class VFloat extends Variable{
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
 		public VariableData execute(VariableData[] input){
-			getParentVar().varData = input[0];
+			((VariableData.Float) parentVarData).value = ((VariableData.Float) input[0]).value;
 			return null;
 		}
 		Set(Point pos, Variable parent, GraphEditor owner) {
@@ -111,7 +111,7 @@ public class VFloat extends Variable{
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
 		public VariableData execute(VariableData[] input){
-			((VariableData.Float) getParentVar().varData).value += ((VariableData.Float) input[0]).value;
+			((VariableData.Float) parentVarData).value += ((VariableData.Float) input[0]).value;
 			return null;
 		}
 		Add_To(Point pos, Variable parent, GraphEditor owner) {
@@ -139,7 +139,7 @@ public class VFloat extends Variable{
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
 		public VariableData execute(VariableData[] input){
-			((VariableData.Float) getParentVar().varData).value *= ((VariableData.Float) input[0]).value;
+			((VariableData.Float) parentVarData).value *= ((VariableData.Float) input[0]).value;
 			return null;
 		}
 		Multiply_By(Point pos, Variable parent, GraphEditor owner) {

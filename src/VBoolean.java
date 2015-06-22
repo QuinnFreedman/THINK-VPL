@@ -51,7 +51,7 @@ public class VBoolean extends Variable{
 		public Mode getPrimairyMode(){return Mode.OUT;};
 		@Override
 		public VariableData execute(VariableData[] input){
-			return getParentVar().varData;
+			return getParentVarData();
 		}
 		Get(Point pos, Variable parent, GraphEditor owner) {
 			super(pos, parent, owner);
@@ -78,7 +78,7 @@ public class VBoolean extends Variable{
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
 		public VariableData execute(VariableData[] input){
-			getParentVar().varData = input[0];
+			((VariableData.Boolean) parentVarData).value = ((VariableData.Boolean) input[0]).value;
 			return null;
 		}
 		Set(Point pos, Variable parent, GraphEditor owner) {
@@ -106,7 +106,7 @@ public class VBoolean extends Variable{
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
 		public VariableData execute(VariableData[] input){
-			((VariableData.Boolean) getParentVar().varData).value = !(((VariableData.Boolean) getParentVar().varData).value);
+			((VariableData.Boolean) parentVarData).value = !(((VariableData.Boolean) parentVarData).value);
 			return null;
 		}
 		Toggle(Point pos, Variable parent, GraphEditor owner) {

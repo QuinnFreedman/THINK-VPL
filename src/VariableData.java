@@ -25,6 +25,9 @@ class VariableData{
 		}
 		@Override
 		public java.lang.String getValueAsString(){
+			if(value == java.lang.Integer.MAX_VALUE)
+				return java.lang.Integer.toString(value)+" (INT MAX VALUE)";
+			
 			return java.lang.Integer.toString(value);
 		}
 		@Override
@@ -157,24 +160,44 @@ class VariableData{
 		}
 	}
 	static class Instance extends VariableData{
-		VInstance value;
+		ArrayList<VariableData> values;
+		ArrayList<java.lang.String> names;
+		private java.lang.String name;
+		public InstantiableBlueprint parentBlueprint;
+		
 		public Instance(VInstance i) {
-			this.value = i;
-			
+			values = new ArrayList<VariableData>();
+			names = new ArrayList<java.lang.String>();
+			for(Variable v : i.childVariables){
+				values.add(v.varData);
+				names.add(v.getID());
+			}
+			this.name = "DEBUG"+Math.random();
+			this.parentBlueprint = (InstantiableBlueprint) i.parentBlueprint;
 		}
 		public Instance(){
 			
 		}
 		@Override
 		public java.lang.String getValueAsString(){
-			return "<"+value.getID()+">";
+			return "<"+name+">";
+		}
+		
+		public VariableData getVariableDataByName(java.lang.String string){
+			for(int i = 0; i < values.size(); i++){
+				if(names.get(i).equals(string))
+					return values.get(i);
+			}
+			return null;
 		}
 		
 		public java.lang.String getJSON(){
 			java.lang.String s = "{";
 			
-			for(Variable v : value.childVariables){
-				s += ("\n    \""+v.getID()+"\" : "+((v instanceof VInstance) ? "\n"+((Instance) v.varData).getJSON() : v.varData.getValueAsString()));
+			for(int i = 0; i < values.size(); i++){
+				java.lang.String n =  names.get(i);
+				VariableData v = values.get(i);
+				s += ("\n    \""+n+"\" : "+((v instanceof Instance) ? "\n"+((Instance) v).getJSON() : v.getValueAsString()));
 			}
 			
 			s += "\n}";

@@ -115,6 +115,11 @@ public class Main implements ActionListener{
                         			}
                         		}
                         	}
+                        	for(Variable v : mainBP.getVariables()){
+                        		for(PrimitiveFunction pf : v.getChildren()){
+                        			System.out.println(v.varData.getValueAsString()+" "+pf.getParentVarData().getValueAsString()+" "+(v.varData == pf.getParentVarData()));
+                        		}
+                        	}
                         }
                         break;
 

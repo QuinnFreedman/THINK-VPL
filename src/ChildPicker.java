@@ -258,7 +258,6 @@ public class ChildPicker extends VObject{
 				items.add(new MenuItem(Logic.While.class,"While...",this));
 				items.add(new MenuItem(Logic.Branch.class,"Branch",this));
 			}else if(parentNode.dataType == Variable.DataType.OBJECT){
-				items.add(new MenuItem(VInstance.Get_Name.class,"Get Object Name",this));
 				items.add(new MenuItem(VInstance.Get_JSON.class,"Get Object JSON",this));
 			}
 		}else if(parentNode.type == Node.NodeType.RECIEVING){
@@ -305,7 +304,6 @@ public class ChildPicker extends VObject{
 			}
 		}else if(parentNode.dataType == Variable.DataType.STRING){
 			items.add(new MenuItem(Arithmetic.Concat.class,"Concatinate",this));
-			items.add(new MenuItem(VInstance.Get_Name.class,"Get Object Name",this));
 			items.add(new MenuItem(VInstance.Get_JSON.class,"Get Object JSON",this));
 		}
 		
@@ -412,12 +410,12 @@ public class ChildPicker extends VObject{
 			this.name = "";
 			if(f instanceof PrimitiveFunction){
 				this.name += (f.getSimpleName()+" (");
-				if(((PrimitiveFunction) f).getParentVar().getOwner() != childPicker.owner){
-					if(((PrimitiveFunction) f).getParentVar().getOwner() instanceof Blueprint){
-						this.name += ((Blueprint) (((PrimitiveFunction) f).getParentVar().getOwner())).getName()+" > ";
+				if(((PrimitiveFunction) f).getParentVariable().getOwner() != childPicker.owner){
+					if(((PrimitiveFunction) f).getParentVariable().getOwner() instanceof Blueprint){
+						this.name += ((Blueprint) (((PrimitiveFunction) f).getParentVariable().getOwner())).getName()+" > ";
 					}
 				}
-				this.name += ((((PrimitiveFunction) f).getParentVar().getFullName())+")");
+				this.name += ((((PrimitiveFunction) f).getParentVariable().getFullName())+")");
 			}else{
 				this.name = "";
 				if(f.owner != childPicker.owner){
@@ -520,7 +518,7 @@ public class ChildPicker extends VObject{
 					Constructor<?> constructor = f.getClass().getDeclaredConstructor(Point.class, Variable.class, GraphEditor.class);
 					ex = (PrimitiveFunction) constructor.newInstance(
 							pos, 
-							((PrimitiveFunction) f).getParentVar(),
+							((PrimitiveFunction) f).getParentVariable(),
 							owner
 						);
 				}else if(f != null){

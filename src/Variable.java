@@ -242,4 +242,7 @@ public class Variable extends SidebarItem implements DocumentListener, ContainsC
 	public ArrayList<PrimitiveFunction> getFunctions() {
 		return functions;
 	}
+	public ArrayList<PrimitiveFunction> getChildren() {
+		return children;
+	}
 }

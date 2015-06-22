@@ -52,7 +52,16 @@ public class Debug{
 	public static Variable.DataType waitingForInput() {
 		return waitingForInput;
 	}
-	
+	private static void reset(Variable var){
+		var.setEditable(false);
+		var.resetVariableData();
+		System.out.println(var.getID()+" "+var.varData.getValueAsString());
+		for(PrimitiveFunction child : var.getChildren()){//TODO: should be unnecessary??
+			child.setParentVarData(var.varData);
+			System.out.println("	"+child.getSimpleName()+" "+child.getParentVarData().getValueAsString());
+			
+		}
+	}
 	private static void startStep(){
 		System.out.println("Start Stepping");
 		
@@ -69,8 +78,13 @@ public class Debug{
 			
 			bp.addVar.setEnabled(false);
 			for(Variable var : bp.getVariables()){
-				var.setEditable(false);
-				var.resetVariableData();
+				reset(var);
+				ArrayList<VFunction> funcs =  bp.getFunctions();
+				for(VFunction func : funcs){
+					for(Variable v : func.getEditor().getVariables()){
+						reset(v);
+					}
+				}
 			}
 		}
 		if(console == null){
@@ -258,16 +272,19 @@ public class Debug{
 		}
 		System.out.println();
 		System.out.println(getTop().getClass().getName()+" executeOnce = "+getTop().executeOnce+"; hasExecuted = "+getTop().hasExecuted);
-		if(getTop() instanceof PrimitiveFunction)
-			System.out.println("parent var = "+((PrimitiveFunction) getTop()).getParentVar());
+		//if(getTop() instanceof PrimitiveFunction)
+		//	System.out.println("parent var = "+((PrimitiveFunction) getTop()).getParentVar());
 		
-		if(getTop() instanceof PrimitiveFunction && !((PrimitiveFunction) getTop()).getParentVar().isStatic){
+		
+		if(getTop() instanceof PrimitiveFunction && !((PrimitiveFunction) getTop()).isStatic()){
 			if(getTop().workingData.get(0) instanceof VariableData.Instance){
-				if(((PrimitiveFunction) getTop()).getParentVar().parentInstance == ((VariableData.Instance) getTop().workingData.get(0)).value){
-					//all good
-				}else{
-					((PrimitiveFunction) getTop()).setParentVar(((VInstance) ((VariableData.Instance) getTop().workingData.get(0)).value).getVariable(((PrimitiveFunction) getTop()).getParentVar().getID()));
-				}
+				//if(((PrimitiveFunction) getTop()).getParentVariable().parentInstance == ((VariableData.Instance) getTop().workingData.get(0)).value){
+				//	//all good
+				//}else{
+				((PrimitiveFunction) getTop()).setParentVarData(
+						((VariableData.Instance) getTop().workingData.get(0)).getVariableDataByName( ((PrimitiveFunction) getTop()).getParentVariable().getID() )
+						);
+				//}
 				getTop().workingData.remove(0);
 			}else{
 				try{
@@ -278,6 +295,8 @@ public class Debug{
 				}
 			}
 		}
+		
+//TODO
 		
 		VariableData execute;
 		if(getTop().executeOnce && getTop().hasExecuted){

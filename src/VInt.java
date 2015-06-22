@@ -63,7 +63,7 @@ public class VInt extends Variable{
 		
 		@Override
 		public VariableData execute(VariableData[] input){
-			return getParentVar().varData;
+			return getParentVarData();
 			
 		}
 		Get(Point pos, Variable parent, GraphEditor owner) {
@@ -92,7 +92,7 @@ public class VInt extends Variable{
 		
 		@Override
 		public VariableData execute(VariableData[] input){
-			getParentVar().varData = input[0];
+			((VariableData.Integer) parentVarData).value = ((VariableData.Integer) input[0]).value;
 			return null;
 			
 		}
@@ -121,7 +121,7 @@ public class VInt extends Variable{
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
 		public VariableData execute(VariableData[] input){
-			((VariableData.Integer) getParentVar().varData).value += ((VariableData.Integer) input[0]).value;
+			((VariableData.Integer) parentVarData).value += ((VariableData.Integer) input[0]).value;
 			return null;
 		}
 		Add_To(Point pos, Variable parent, GraphEditor owner) {
@@ -149,7 +149,7 @@ public class VInt extends Variable{
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
 		public VariableData execute(VariableData[] input){
-			((VariableData.Integer) getParentVar().varData).value *= ((VariableData.Integer) input[0]).value;
+			((VariableData.Integer) parentVarData).value *= ((VariableData.Integer) input[0]).value;
 			return null;
 		}
 		Multiply_By(Point pos, Variable parent, GraphEditor owner) {
@@ -177,7 +177,7 @@ public class VInt extends Variable{
 		public Mode getPrimairyMode(){return Mode.IN;};
 		@Override
 		public VariableData execute(VariableData[] input){
-			((VariableData.Integer) getParentVar().varData).value++;
+			((VariableData.Integer) parentVarData).value++;
 			return null;
 		}
 		Increment(Point pos, Variable parent, GraphEditor owner) {
