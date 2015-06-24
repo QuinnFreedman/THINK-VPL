@@ -86,7 +86,7 @@ class Console extends JFrame implements KeyListener{
 		SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-        	System.out.println("POST: "+s);
+        	Out.println("POST: "+s);
         	output.append(s+"\n\n");
         	
         }});

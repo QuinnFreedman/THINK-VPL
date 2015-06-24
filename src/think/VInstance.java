@@ -75,7 +75,7 @@ public class VInstance extends Variable{
 		}
 		
 		this.varData = new VariableData.Instance(this);
-		System.out.println("varData = "+this.varData);
+		Out.println("varData = "+this.varData);
 		
 		this.functions.add(new Get(this));
 		this.functions.add(new Set(this));
@@ -242,7 +242,7 @@ public class VInstance extends Variable{
 					throw new Exception();
 				} catch (Exception e) {
 					Debug.console.post("ERROR: type missmatch at "+(this.getParentVariable() == null ? "Anonymous" : getParentVariable().getID())+" > \"Set\"");
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				}
 			}else{
 				parentVarData = input[0];

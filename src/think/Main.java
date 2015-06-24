@@ -38,7 +38,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -94,7 +93,7 @@ public class Main implements ActionListener{
 		try {
 			SidebarItem.bufferedImage = ImageIO.read(Main.class.getResource("/images/drag.png"));
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			Out.printStackTrace(e1);
 		}
 		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
@@ -123,17 +122,17 @@ public class Main implements ActionListener{
                         }else if (ke.getKeyCode() == KeyEvent.VK_BACK_QUOTE){
                         	for(Variable v : mainBP.getVariables()){
                         		if(!(v instanceof VInstance)){
-                        			System.out.println("\""+v.getID()+"\" : "+v.varData.getValueAsString());
+                        			Out.println("\""+v.getID()+"\" : "+v.varData.getValueAsString());
                         		}else{
-                        			System.out.println("\""+v.getID()+"\" : ");
+                        			Out.println("\""+v.getID()+"\" : ");
                         			for(Variable v2 : ((VInstance) v).childVariables){
-                        				System.out.println("	\""+v2.getID()+"\" : "+v2.varData.getValueAsString());
+                        				Out.println("	\""+v2.getID()+"\" : "+v2.varData.getValueAsString());
                         			}
                         		}
                         	}
                         	for(Variable v : mainBP.getVariables()){
                         		for(PrimitiveFunction pf : v.getChildren()){
-                        			System.out.println(v.varData.getValueAsString()+" "+pf.getParentVarData().getValueAsString()+" "+(v.varData == pf.getParentVarData()));
+                        			Out.println(v.varData.getValueAsString()+" "+pf.getParentVarData().getValueAsString()+" "+(v.varData == pf.getParentVarData()));
                         		}
                         	}
                         }
@@ -151,15 +150,19 @@ public class Main implements ActionListener{
         });
 	}
 	private ArrayList<Module> getAllJars(String s){
+		new File(MODULE_DIR).mkdirs();
+		
 		File folder = new File(s);
-		System.out.println("Looking for files in "+s);
+		Out.println("Looking for files in "+s);
 		File[] listOfFiles = folder.listFiles();
 		
 		ArrayList<Module> modules = new ArrayList<Module>();
+		if(listOfFiles == null)
+			return null;
 		
 		for(int i = 0; i < listOfFiles.length; i++) {
 			if(listOfFiles[i].isFile()){
-				System.out.println("opening file " + listOfFiles[i].getName());
+				Out.println("opening file " + listOfFiles[i].getName());
 				modules.add(loadJar(listOfFiles[i].getName()));
 			}else if(listOfFiles[i].isDirectory()) {
 				modules.addAll(getAllJars(listOfFiles[i].getName()));
@@ -179,10 +182,10 @@ public class Main implements ActionListener{
 			        className = className.substring(0, className.length() - ".class".length());
 			        String[] classNameParts = className.replace('$', ':').split(":");
 			        if(classNameParts.length == 1){
-			        	System.out.println("trying to load classes from "+jar);
+			        	Out.println("trying to load classes from "+jar);
 			        	addLibrary(MODULE_DIR+"/"+jar);
 			        	Class classToLoad = Class.forName(className);
-			        	System.out.println("loaded "+classToLoad);
+			        	Out.println("loaded "+classToLoad);
 			        	if(classToLoad.getSuperclass() == Module.class){
 			        		return (Module) classToLoad.newInstance();
 			        	}
@@ -191,7 +194,7 @@ public class Main implements ActionListener{
 			}
 			zip.close();
 		}catch (Exception e){
-			e.printStackTrace();
+			Out.printStackTrace(e);
 		}
 		String message = "Error loading moddule from "+MODULE_DIR+"/"+jar;
 		JOptionPane.showMessageDialog(new JFrame(), message, "Dialog",
@@ -227,7 +230,7 @@ public class Main implements ActionListener{
 					UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceGraphiteLookAndFeel");
 				} catch (ClassNotFoundException | InstantiationException
 						| IllegalAccessException | UnsupportedLookAndFeelException e1) {
-					e1.printStackTrace();
+					Out.printStackTrace(e1);
 				}
 				
 				blueprints = new ArrayList<Blueprint>();
@@ -238,9 +241,11 @@ public class Main implements ActionListener{
 				blueprints.add(mainBP);
 				
 				ArrayList<Module> loadedModules = getAllJars(MODULE_DIR);
-				loadedModules.removeAll(Collections.singleton(null));
+				if(loadedModules != null){
+					loadedModules.removeAll(Collections.singleton(null));
 				
-				modules.addAll(loadedModules);
+					modules.addAll(loadedModules);
+				}
 				
 			//Menu Bar
 				JMenuBar menuBar = new JMenuBar();
@@ -443,10 +448,10 @@ public class Main implements ActionListener{
 			try {
 				java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				Out.printStackTrace(e1);
 			}
 		}else{
-			System.out.println("null Action:"+c);
+			Out.println("null Action:"+c);
 		}
 		
     }

@@ -190,7 +190,7 @@ public class Variable extends SidebarItem implements DocumentListener{
     	try {
 			setValue(e.getDocument().getText(0, e.getDocument().getLength()));
 		} catch (BadLocationException e1) {
-			e1.printStackTrace();
+			Out.printStackTrace(e1);
 		}
     }
 
@@ -199,7 +199,7 @@ public class Variable extends SidebarItem implements DocumentListener{
     	try {
 			setValue(e.getDocument().getText(0, e.getDocument().getLength()));
 		} catch (BadLocationException e1) {
-			e1.printStackTrace();
+			Out.printStackTrace(e1);
 		}
     }
 
@@ -208,7 +208,7 @@ public class Variable extends SidebarItem implements DocumentListener{
     	try {
 			setValue(e.getDocument().getText(0, e.getDocument().getLength()));
 		} catch (BadLocationException e1) {
-			e1.printStackTrace();
+			Out.printStackTrace(e1);
 		}
     }
     static class NameDocListener implements DocumentListener{
@@ -225,7 +225,7 @@ public class Variable extends SidebarItem implements DocumentListener{
 	    		var.setID(e.getDocument().getText(0, e.getDocument().getLength()));
 				var.setChildTexts(e.getDocument().getText(0, e.getDocument().getLength()));
 			} catch (BadLocationException e1) {
-				e1.printStackTrace();
+				Out.printStackTrace(e1);
 			}
 	    }
 
@@ -235,7 +235,7 @@ public class Variable extends SidebarItem implements DocumentListener{
 	    		var.setID(e.getDocument().getText(0, e.getDocument().getLength()));
 		    	var.setChildTexts(e.getDocument().getText(0, e.getDocument().getLength()));
 			} catch (BadLocationException e1) {
-				e1.printStackTrace();
+				Out.printStackTrace(e1);
 			}
 	    }
 
@@ -245,7 +245,7 @@ public class Variable extends SidebarItem implements DocumentListener{
 	    		var.setID(e.getDocument().getText(0, e.getDocument().getLength()));
 	    		var.setChildTexts(e.getDocument().getText(0, e.getDocument().getLength()));
 			} catch (BadLocationException e1) {
-				e1.printStackTrace();
+				Out.printStackTrace(e1);
 			}
 	    }
     	

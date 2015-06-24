@@ -41,7 +41,7 @@ public class VInt extends Variable{
 	}
 	VInt(GraphEditor owner){
 		super(owner);
-		System.out.println("new int "+type);
+		Out.println("new int "+type);
 		this.dataType = DataType.INTEGER;
 		this.typeField.setText(getSymbol());
 		this.typeField.setBackground(Main.colors.get(this.dataType));

@@ -333,8 +333,8 @@ class Logic extends Executable{
 					}
 				}
 				if(allConnected){
-					System.out.println(parentObject.getPreferredSize().width);
-					System.out.println(((Executable) parentObject).outputNodeHolder.getPreferredSize().width);
+					Out.println(parentObject.getPreferredSize().width);
+					Out.println(((Executable) parentObject).outputNodeHolder.getPreferredSize().width);
 					
 					((Executable) parentObject).addOutputNode(new ReplicatingNode(Node.NodeType.SENDING, ((Executable) parentObject), Variable.DataType.GENERIC));
 
@@ -361,7 +361,7 @@ class Logic extends Executable{
 				try {
 					Thread.sleep((long)((VariableData.Integer) inputs[0]).value);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				}
 			}
 			return null;

@@ -70,15 +70,15 @@ public class Debug{
 	private static void reset(Variable var){
 		var.setEditable(false);
 		var.resetVariableData();
-		System.out.println(var.getID()+" "+var.varData.getValueAsString());
+		Out.println(var.getID()+" "+var.varData.getValueAsString());
 		for(PrimitiveFunction child : var.getChildren()){//TODO: should be unnecessary??
 			child.setParentVarData(var.varData);
-			System.out.println("	"+child.getSimpleName()+" "+child.getParentVarData().getValueAsString());
+			Out.println("	"+child.getSimpleName()+" "+child.getParentVarData().getValueAsString());
 			
 		}
 	}
 	private static void startStep(){
-		System.out.println("Start Stepping");
+		Out.println("Start Stepping");
 		
 		for(Blueprint bp : Main.blueprints){
 			
@@ -125,29 +125,29 @@ public class Debug{
 		for(Blueprint bp : Main.blueprints){
 			for(VObject o : bp.getObjects()){
 				if(o instanceof Executable){
-					//System.out.println(o);
+					//Out.println(o);
 					Executable o2 = ((Executable) o);
 					o2.resetActiveNode();
 					o2.workingData = new ArrayList<VariableData>();
 					o2.outputData = new ArrayList<VariableData>();
 					o2.hasExecuted = false;
-					//System.out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
+					//Out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
 					
 				}
 			}
 			for(VFunction f : bp.getFunctions()){
 				if(f == null || f.editor == null || f.editor.getObjects() == null){
-					System.out.println("!WARNING: null Pointer");
+					Out.println("!WARNING: null Pointer");
 				}
 				for(VObject o : f.editor.getObjects()){
 					if(o instanceof Executable){
-						//System.out.println(o);
+						//Out.println(o);
 						Executable o2 = ((Executable) o);
 						o2.resetActiveNode();
 						o2.workingData = new ArrayList<VariableData>();
 						o2.outputData = new ArrayList<VariableData>();
 						o2.hasExecuted = false;
-						//System.out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
+						//Out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
 						
 					}
 				}
@@ -168,7 +168,7 @@ public class Debug{
 	}
 	
 	protected static void exit() {
-		System.out.println("exiting");
+		Out.println("exiting");
 		isStepping = false;
 		for(Blueprint bp : Main.blueprints){
 			bp.addVar.setEnabled(true);
@@ -196,39 +196,39 @@ public class Debug{
 		}else if(getTop().getInputNodes().isEmpty()){
 			return false;
 		}
-		System.out.println("try to go up from "+getTop());
-		System.out.println("activeNode "+getTop().getActiveNode());
-		System.out.println("inputs "+getTop().getInputNodes().size());
+		Out.println("try to go up from "+getTop());
+		Out.println("activeNode "+getTop().getActiveNode());
+		Out.println("inputs "+getTop().getInputNodes().size());
 		if(getTop().getActiveNode() >= getTop().getInputNodes().size() || (getTop().executeOnce && getTop().hasExecuted)){
-			System.out.println("failed: activeNode > input nodes");
+			Out.println("failed: activeNode > input nodes");
 			return false;
 		}
 		
 		ArrayList<Node> parents = getTop().getInputNodes().get(getTop().getActiveNode()).parents;
-		System.out.println("parents "+parents);
+		Out.println("parents "+parents);
 		
 		if(parents.isEmpty()){
-			System.out.println("falied: parents is empty; exiting...");
+			Out.println("falied: parents is empty; exiting...");
 			exit();
 			return false;
 		}
 		
 		Executable next = (Executable) parents.get(0).parentObject;
-		System.out.println("next = "+next);
+		Out.println("next = "+next);
 		/*if(getTop() instanceof FunctionEditor.FunctionIO && !((FunctionEditor.FunctionIO) getTop()).getOverseer().isStatic()){
-			System.out.println("next is non-static function :: changing all primitive funcs");
+			Out.println("next is non-static function :: changing all primitive funcs");
 			FunctionOverseer fo = ((FunctionEditor.FunctionIO) getTop()).getOverseer();
 			for(VObject e : fo.getEditor().getObjects()){
 				if(e instanceof PrimitiveFunction &&
 						(((PrimitiveFunction) e).getParentVar().getOwner() == ((VFunction) fo).getOwner() ||
 						(((PrimitiveFunction) e).getParentVar().parentInstance != null && ((PrimitiveFunction) e).getParentVar().parentInstance.parentBlueprint == ((VFunction) fo).getOwner()))
 					){
-					System.out.println(((PrimitiveFunction) e));
-					System.out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
+					Out.println(((PrimitiveFunction) e));
+					Out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
 					((PrimitiveFunction) e).setParentVar(
 							VFunction.getVariable( ((VFunction) ((VFunction) fo).getCurrentlyExecuting().getParentVar()).parentInstance.childVariables,((PrimitiveFunction) e).getParentVar().getID())
 						);
-					System.out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
+					Out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
 				}
 			}
 		}*/
@@ -256,7 +256,7 @@ public class Debug{
 				next.repaint();
 			}
 		}else{
-			System.out.println(next.getOutputNodes().indexOf(
+			Out.println(next.getOutputNodes().indexOf(
 									parents.get(0)
 									));
 			getTop().workingData.add(
@@ -275,18 +275,18 @@ public class Debug{
 	
 	private static boolean moveDownStack(){
 		if(stack.isEmpty()){
-			System.out.println("stack is empty; exiting...");
+			Out.println("stack is empty; exiting...");
 			exit();
 			return false;
 		}
 	//EXECUTE
-		System.out.println("executing "+getTop().getClass().getName());
-		System.out.print(getTop().getClass().getName()+" workingData = ");
+		Out.println("executing "+getTop().getClass().getName());
+		Out.print(getTop().getClass().getName()+" workingData = ");
 		for(VariableData var : getTop().workingData){
-			System.out.print(var.getValueAsString()+" ");
+			Out.print(var.getValueAsString()+" ");
 		}
-		System.out.println();
-		System.out.println(getTop().getClass().getName()+" executeOnce = "+getTop().executeOnce+"; hasExecuted = "+getTop().hasExecuted);
+		Out.println();
+		Out.println(getTop().getClass().getName()+" executeOnce = "+getTop().executeOnce+"; hasExecuted = "+getTop().hasExecuted);
 		
 		if(getTop() instanceof PrimitiveFunction && !((PrimitiveFunction) getTop()).isStatic()){
 			if(getTop().workingData.get(0) instanceof VariableData.Instance){
@@ -299,7 +299,7 @@ public class Debug{
 					throw new Exception();
 				}catch(Exception e){
 					Debug.console.post("ERROR: internal error");
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				}
 			}
 		}
@@ -315,7 +315,7 @@ public class Debug{
 		
 		if(getTop().getClass() == Console.getStr.class){
 			waitingForInput = ((Console.getStr) getTop()).getDataType();
-			System.out.println("isWaitingForInput = "+waitingForInput);
+			Out.println("isWaitingForInput = "+waitingForInput);
 			console.requestFocus();
 			console.input.requestFocusInWindow();
 			if(running != null)
@@ -336,14 +336,14 @@ public class Debug{
 				getTop().outputData = new ArrayList<VariableData>(Arrays.asList(execute));
 			}else{
 				if(getTop() instanceof UserFunc){
-					System.out.println("execute == null, getTop().outputData = "+getTop().outputData);
+					Out.println("execute == null, getTop().outputData = "+getTop().outputData);
 					multiExecute = getTop().outputData;
 				}
 			}
 		}else if(((FunctionEditor.FunctionIO) getTop()).mode == FunctionEditor.FunctionIO.Mode.OUTPUT){
 			FunctionOverseer overseer = ((FunctionEditor.FunctionIO) getTop()).getOverseer();
-			System.out.println("overseer = "+overseer);
-			System.out.println("currently executing = "+((FunctionEditor.FunctionIO) getTop()).getOverseer().getCurrentlyExecuting());
+			Out.println("overseer = "+overseer);
+			Out.println("currently executing = "+((FunctionEditor.FunctionIO) getTop()).getOverseer().getCurrentlyExecuting());
 			
 			if(overseer instanceof InstantiableBlueprint){
 				execute = ((InstantiableBlueprint) overseer).getWorkingInstance();//TODO clone or point?
@@ -366,26 +366,26 @@ public class Debug{
 		if(stack.size() == 1){
 			
 			Executable next = getNext(getTop());
-			System.out.println("next = "+((next == null) ? "null" : next.getClass().getName()));
+			Out.println("next = "+((next == null) ? "null" : next.getClass().getName()));
 			
 			if(next instanceof UserFunc){
 				((UserFunc) next).getParentVar().setCurrentlyExecuting(((UserFunc) next));
 			}
 			
 			/*else if(next instanceof FunctionEditor.FunctionIO && !((FunctionEditor.FunctionIO) next).getOverseer().isStatic()){
-				System.out.println("next is non-static function :: changing all primitive funcs");
+				Out.println("next is non-static function :: changing all primitive funcs");
 				FunctionOverseer fo = ((FunctionEditor.FunctionIO) next).getOverseer();
 				for(VObject e : fo.getEditor().getObjects()){
 					if(e instanceof PrimitiveFunction &&
 							(((PrimitiveFunction) e).getParentVar().getOwner() == ((VFunction) fo).getOwner() ||
 							(((PrimitiveFunction) e).getParentVar().parentInstance != null && ((PrimitiveFunction) e).getParentVar().parentInstance.parentBlueprint == ((VFunction) fo).getOwner()))
 						){
-						System.out.println(((PrimitiveFunction) e));
-						System.out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
+						Out.println(((PrimitiveFunction) e));
+						Out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
 						((PrimitiveFunction) e).setParentVar(
 								VFunction.getVariable( ((VFunction) ((VFunction) fo).getCurrentlyExecuting().getParentVar()).parentInstance.childVariables,((PrimitiveFunction) e).getParentVar().getID())
 							);
-						System.out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
+						Out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
 					}
 				}
 			}*/
@@ -429,7 +429,7 @@ public class Debug{
 		}
 		
 		if(execute != null){ 
-			System.out.println("add to "+getTop().workingData);
+			Out.println("add to "+getTop().workingData);
 			getTop().workingData.add(execute);
 		}else if(multiExecute != null){
 			getTop().workingData = new ArrayList<VariableData>(multiExecute);
@@ -446,17 +446,17 @@ public class Debug{
 	private static boolean step(){
 		
 		if(!isStepping){
-			System.out.println("ABORTED");
+			Out.println("ABORTED");
 			console.post("ERROR: program aborted by user");
 			return false;
 		}
 		
-		System.out.println();
-		System.out.println("stack:");
+		Out.println();
+		Out.println("stack:");
 		for(VObject o : stack){
-			System.out.println(o.getClass().getSimpleName());
+			Out.println(o.getClass().getSimpleName());
 		}
-		System.out.println();
+		Out.println();
 		
 		try{
 			
@@ -492,7 +492,7 @@ public class Debug{
 			}
 			s += ". The program will now exit.";
 			console.post(s);
-			e.printStackTrace();
+			Out.printStackTrace(e);
 			exit();
 			return false;
 		}
@@ -505,7 +505,7 @@ public class Debug{
 	}
 	
 	private static Executable getNext(Executable o){
-		System.out.println("getNext "+o.getClass().getName());
+		Out.println("getNext "+o.getClass().getName());
 		ArrayList<Node> children;
 		if(o instanceof EntryPoint){
 			children = ((EntryPoint) o).startNode.children;
@@ -530,10 +530,10 @@ public class Debug{
 				removeFromEnd(remember,o);
 			}
 		}else if(o instanceof UserFunc){
-			System.out.println("userfunc going to fIO");
+			Out.println("userfunc going to fIO");
 			FunctionEditor.FunctionIO inputObj = ((UserFunc) o).getParentVar().getInputObject();
 			inputObj.outputData = new ArrayList<VariableData>(o.workingData);
-			System.out.println("inputObj.outputData = "+inputObj.outputData);
+			Out.println("inputObj.outputData = "+inputObj.outputData);
 			((UserFunc) o).getParentVar().setCurrentlyExecuting((UserFunc) o);
 			return inputObj;
 			
@@ -632,14 +632,14 @@ public class Debug{
 			try{
 				url = Main.class.getResource("/images/loading2.gif");
 			}catch (Exception e){
-				e.printStackTrace();
+				Out.printStackTrace(e);
 			}
 			run = new ImageIcon(url);
 			
 			try{
 				url = Main.class.getResource("/images/loading_paused.png");
 			}catch (Exception e){
-				e.printStackTrace();
+				Out.printStackTrace(e);
 			}
 			paused = new ImageIcon(url);
 			

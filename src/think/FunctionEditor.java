@@ -133,7 +133,7 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 		} catch (ClassNotFoundException | InstantiationException
 				| IllegalAccessException | UnsupportedLookAndFeelException e1) {
 			// Auto-generated catch block
-			e1.printStackTrace();
+			Out.printStackTrace(e1);
 		}*/
 		
 		panelHolder = new JPanel();
@@ -466,7 +466,7 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 				}
 				new Console.getStr(p, Variable.DataType.DOUBLE, this);
 			}else{
-				System.out.println("null Action:"+c);
+				Out.println("null Action:"+c);
 			}
 		}
 	}
@@ -637,7 +637,7 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 						}
 						if(outputObject.getInputNodes().size() <= 1){
 							parent.setExecuteOnce(false);
-							System.out.println("setExecuteOnce (false)");
+							Out.println("setExecuteOnce (false)");
 						}
 					}
 					
@@ -716,7 +716,7 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 				}
 				if(outputObject.getInputNodes().size() > 1){
 					parent.setExecuteOnce(true);
-					System.out.println("setExecuteOnce (true)");
+					Out.println("setExecuteOnce (true)");
 				}
 			}
 			
@@ -732,9 +732,9 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 					f.editor.getPanel().repaint();
 				}
 				else if(f == null){
-					System.out.println("!WARNING: f is null");
+					Out.println("!WARNING: f is null");
 				}else if (f.editor == null){
-					System.out.println("!WARNING: f.editor is null");
+					Out.println("!WARNING: f.editor is null");
 				}
 			}
 		}

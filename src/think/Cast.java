@@ -40,7 +40,7 @@ public class Cast extends Executable{
 		super(null, sendingNode.parentObject.owner);
 		this.color = Color.BLACK;
 		
-		System.out.println("CAST "+sendingNode.dataType+" > "+recievingNode.dataType);
+		Out.println("CAST "+sendingNode.dataType+" > "+recievingNode.dataType);
 		
     	getThis().sendingNode = sendingNode;
     	getThis().recievingNode = recievingNode;
@@ -85,11 +85,11 @@ public class Cast extends Executable{
 		if(this.output == Variable.DataType.STRING){
 			return new VariableData.String(inputs[0].getValueAsString());
 		}
-		System.out.println("CASTING "+sendingNode.dataType+" > "+recievingNode.dataType);
+		Out.println("CASTING "+sendingNode.dataType+" > "+recievingNode.dataType);
 		
 		switch(this.sendingNode.dataType){
 		case BOOLEAN:
-			System.out.println("sendingNode.dataType = BOOLEAN");
+			Out.println("sendingNode.dataType = BOOLEAN");
 			switch(this.recievingNode.dataType){
 			case INTEGER:
 				return new VariableData.Integer((((VariableData.Boolean) inputs[0]).value) ? 1 : 0);
@@ -120,7 +120,7 @@ public class Cast extends Executable{
 				return null;
 			}
 		case DOUBLE:
-			System.out.println("sendingNode.dataType = DOUBLE");
+			Out.println("sendingNode.dataType = DOUBLE");
 			switch(this.recievingNode.dataType){
 			case BYTE:
 				return new VariableData.Byte((byte) ((VariableData.Double) inputs[0]).value);
@@ -137,7 +137,7 @@ public class Cast extends Executable{
 			
 			}
 		case FLOAT:
-			System.out.println("sendingNode.dataType = FLOAT");
+			Out.println("sendingNode.dataType = FLOAT");
 			switch(this.recievingNode.dataType){
 			case BYTE:
 				return new VariableData.Byte((byte) ((VariableData.Float) inputs[0]).value);
@@ -154,7 +154,7 @@ public class Cast extends Executable{
 			
 			}
 		case INTEGER:
-			System.out.println("sendingNode.dataType = INT");
+			Out.println("sendingNode.dataType = INT");
 			switch(this.recievingNode.dataType){
 			case BYTE:
 				return new VariableData.Byte((byte) ((VariableData.Integer) inputs[0]).value);

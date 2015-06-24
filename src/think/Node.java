@@ -86,7 +86,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		//override in subclass
 	}
 	protected static void clearChildren(Node nodeToClear){
-		//System.out.println("clear children "+nodeToClear.type.toString()+" "+nodeToClear.getClass().getName()+" : curves: "+nodeToClear.parentObject.owner.getCurves().size());
+		//Out.println("clear children "+nodeToClear.type.toString()+" "+nodeToClear.getClass().getName()+" : curves: "+nodeToClear.parentObject.owner.getCurves().size());
 		Iterator<Curve> itr = nodeToClear.parentObject.owner.getCurves().iterator();
 		Boolean hasDisconnected = false;
 		ArrayList<Node> haveDisconnected = new ArrayList<Node>();
@@ -125,10 +125,10 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		ArrayList<Variable.DataType> sourceList = new ArrayList<Variable.DataType>(A);
 		ArrayList<Variable.DataType> destinationList = new ArrayList<Variable.DataType>(B);
 		
-		System.out.println("A : "+A);
-		System.out.println("B : "+B);
-		System.out.println("sourceList : "+sourceList);
-		System.out.println("destinationList : "+destinationList);
+		Out.println("A : "+A);
+		Out.println("B : "+B);
+		Out.println("sourceList : "+sourceList);
+		Out.println("destinationList : "+destinationList);
 		
 		sourceList.removeAll(B);
 		destinationList.removeAll(A);
@@ -389,8 +389,8 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		try{
 			return new Point(c.getLocationOnScreen().x-p.getLocationOnScreen().x,c.getLocationOnScreen().y-p.getLocationOnScreen().y);
 		}catch(Exception e){
-			System.out.println(c.getClass().getName()+", "+p.getClass().getName());
-			e.printStackTrace();
+			Out.println(c.getClass().getName()+", "+p.getClass().getName());
+			Out.printStackTrace(e);
 			return null;
 		}
 	}

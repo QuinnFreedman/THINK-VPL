@@ -69,7 +69,7 @@ public class VariableData{
 				try{
 					throw new InputMismatchException();
 				}catch(InputMismatchException e){
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				}
 			}
 		}
@@ -100,7 +100,7 @@ public class VariableData{
 				try{
 					throw new InputMismatchException();
 				}catch(InputMismatchException e){
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				}
 			}
 		}
@@ -128,7 +128,7 @@ public class VariableData{
 				try{
 					throw new InputMismatchException();
 				}catch(InputMismatchException e){
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				}
 			}
 		}
@@ -156,7 +156,7 @@ public class VariableData{
 				try{
 					throw new InputMismatchException();
 				}catch(InputMismatchException e){
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				}
 			}
 		}
@@ -218,7 +218,7 @@ public class VariableData{
 				try{
 					throw new InputMismatchException();
 				}catch(InputMismatchException e){
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				}
 			}
 		}
@@ -242,7 +242,7 @@ public class VariableData{
 				try{
 					throw new InputMismatchException();
 				}catch(InputMismatchException e){
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				}
 			}
 		}

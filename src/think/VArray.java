@@ -159,7 +159,7 @@ public class VArray extends Variable{
 				return ((VariableData.Array) getParentVarData()).value.get(((VariableData.Integer) input[0]).value);
 			}catch(IndexOutOfBoundsException e){
 				Debug.console.post("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[0].getValueAsString()+" of "+((VariableData.Array) getParentVarData()).value.size());
-				e.printStackTrace();
+				Out.printStackTrace(e);
 			}
 			return null;
 			
@@ -254,7 +254,7 @@ public class VArray extends Variable{
 				
 			}catch(IndexOutOfBoundsException e){
 				Debug.console.post("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[0].getValueAsString()+" of "+((VariableData.Array) getParentVarData()).value.size());
-				e.printStackTrace();
+				Out.printStackTrace(e);
 			}
 			return null;
 			
@@ -295,7 +295,7 @@ public class VArray extends Variable{
 					((VariableData.Array) getParentVarData()).value.set(index,VariableData.clone(input[0]));
 				}catch(IndexOutOfBoundsException e){
 					Debug.console.post("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[1].getValueAsString()+" of "+size);
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				}
 			}
 			return null;

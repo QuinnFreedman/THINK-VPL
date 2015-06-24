@@ -401,7 +401,7 @@ public class Blueprint implements GraphEditor,ActionListener,MouseListener,KeyLi
 			}
 			new Console.getStr(p, Variable.DataType.DOUBLE, (GraphEditor) this);
 		}else{
-			System.out.println("null Action:"+c);
+			Out.println("null Action:"+c);
 		}
 	}
 	

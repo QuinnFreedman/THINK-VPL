@@ -323,14 +323,14 @@ public class FunctionSelector extends VObject{
 		return true;
 	}
 	private static boolean couldConnect(ArrayList<Variable.DataType> a, Variable.DataType b){
-		//System.out.print("Could Connect ("+a+", "+b+") = ");
+		//Out.print("Could Connect ("+a+", "+b+") = ");
 		if(a.contains(b)){
-			//System.out.println("true - contains");
+			//Out.println("true - contains");
 			return true;
 		}else{
 			for(Variable.DataType d : a){
 				if(Cast.isCastable(d, b)){
-					//System.out.println("true - castable");
+					//Out.println("true - castable");
 					return true;
 				}else if((d == Variable.DataType.NUMBER && b.isNumber()) ||
 						(b == Variable.DataType.NUMBER && d.isNumber()) ||
@@ -340,19 +340,19 @@ public class FunctionSelector extends VObject{
 					return true;
 				}
 			}
-			//System.out.println("false");
+			//Out.println("false");
 			return false;
 		}
 	}
 	private static boolean couldConnect(Variable.DataType a, ArrayList<Variable.DataType> b){
-		//System.out.print("Could Connect ("+a+", "+b+") = ");
+		//Out.print("Could Connect ("+a+", "+b+") = ");
 		if(b.contains(a)){
-			//System.out.println("true - contains");
+			//Out.println("true - contains");
 			return true;
 		}else{
 			for(Variable.DataType d : b){
 				if(Cast.isCastable(a, d)){
-					//System.out.println("true - castable");
+					//Out.println("true - castable");
 					return true;
 				}else if((a == Variable.DataType.NUMBER && d.isNumber()) ||
 						(d == Variable.DataType.NUMBER && a.isNumber()) ||
@@ -362,7 +362,7 @@ public class FunctionSelector extends VObject{
 					return true;
 				}
 			}
-			//System.out.println("false");
+			//Out.println("false");
 			return false;
 		}
 	}
@@ -521,9 +521,9 @@ public class FunctionSelector extends VObject{
 					ex = new VConstructor(pos, bp, owner);
 				}
 				if(parentNode.type == Node.NodeType.SENDING){
-					System.out.println(ex.getInputNodes());
+					Out.println(ex.getInputNodes());
 					for(Node n : ex.getInputNodes()){
-						System.out.println(Node.canConnect(parentNode, n));
+						Out.println(Node.canConnect(parentNode, n));
 						if(Node.canConnect(parentNode, n)){
 							Node.castOrConnect(parentNode, n);
 							break;
@@ -538,7 +538,7 @@ public class FunctionSelector extends VObject{
 					}
 				}
 			}catch(Exception e){
-				e.printStackTrace();
+				Out.printStackTrace(e);
 			}
 			
 			this.childPicker.delete();

@@ -119,7 +119,7 @@ public class PrimitiveFunctionSelector extends VObject{
 			public void mousePressed(MouseEvent arg0) {
 				PrimitiveFunction pf = null;
 				try {
-					System.out.println(f.getClass());
+					Out.println(f.getClass());
 					Constructor<?> constructor = f.getClass().getDeclaredConstructor(Point.class, Variable.class);
 					pf = (PrimitiveFunction) constructor.newInstance(
 							Node.getLocationOnPanel(this.childPicker, owner.getPanel()), 
@@ -127,22 +127,22 @@ public class PrimitiveFunctionSelector extends VObject{
 						);
 				} catch (InstantiationException e) {
 					// Auto-generated catch block
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				} catch (IllegalAccessException e) {
 					// Auto-generated catch block
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				} catch (IllegalArgumentException e) {
 					// Auto-generated catch block
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				} catch (InvocationTargetException e) {
 					// Auto-generated catch block
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				} catch (NoSuchMethodException e) {
 					// Auto-generated catch block
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				} catch (SecurityException e) {
 					// Auto-generated catch block
-					e.printStackTrace();
+					Out.printStackTrace(e);
 				}catch(Exception e){
 					//pf = null;//= new VariableFunction(Node.getLocationOnPanel(this.childPicker), ((Variable) this.childPicker.parent).dataType, parentNode, (Variable) this.childPicker.parent,"error");
 				}

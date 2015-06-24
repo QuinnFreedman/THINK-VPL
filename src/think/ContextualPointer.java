@@ -38,7 +38,7 @@ public class ContextualPointer extends Executable{
 			try{
 				throw(new IllegalArgumentException());
 			}catch(IllegalArgumentException e){
-				e.printStackTrace();
+				Out.printStackTrace(e);
 			}
 		}
 	}
@@ -63,7 +63,7 @@ public class ContextualPointer extends Executable{
 			try{
 				throw(new IllegalArgumentException());
 			}catch(IllegalArgumentException e){
-				e.printStackTrace();
+				Out.printStackTrace(e);
 			}
 			output = null;
 		}

@@ -280,9 +280,9 @@ class VFunction extends SidebarItem implements FunctionOverseer{
 	}
 	
 	public static Variable getVariable(ArrayList<Variable> variables, String s){
-		System.out.println("	looking for\""+s+"\" in "+variables);
+		Out.println("	looking for\""+s+"\" in "+variables);
 		for(Variable v : variables){
-			System.out.println("		"+v);
+			Out.println("		"+v);
 			if(v.getID().equals(s))
 				return v;
 		}
