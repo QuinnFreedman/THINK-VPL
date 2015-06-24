@@ -1,16 +1,36 @@
+/**
+ * 
+ *  THINK VPL is a visual programming language and integrated development environment for that language
+ *  Copyright (C) 2015  Quinn Freedman
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ *  For more information, visit the THINK VPL website or email the author at
+ *  quinnfreedman@gmail.com
+ * 
+ */
+
 import java.util.Arrays;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
-import javax.swing.JEditorPane;
 import javax.swing.JTextArea;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
-import javax.swing.text.StyledDocument;
 
 public class SpecialEditorPane extends JTextArea implements KeyListener{
 	private static final long serialVersionUID = 1L;

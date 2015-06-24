@@ -1,34 +1,49 @@
+/**
+ * 
+ *  THINK VPL is a visual programming language and integrated development environment for that language
+ *  Copyright (C) 2015  Quinn Freedman
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ *  For more information, visit the THINK VPL website or email the author at
+ *  quinnfreedman@gmail.com
+ * 
+ */
+
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
-import javax.swing.JScrollPane;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -36,22 +51,19 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.MouseInputListener;
-import javax.swing.JLabel;
 
-import java.awt.Component;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-
-import javax.swing.JButton;
-import javax.swing.SwingConstants;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 public class Main implements ActionListener{
 	static Point mousePos = new Point();
 	static HashMap<Variable.DataType,Color> colors = new HashMap<Variable.DataType,Color>();
 	public static boolean altPressed = false;
-	/**
-	 * @wbp.parser.entryPoint
-	 */
+	
 	static ComponentMover componentMover;
 	public static JFrame window;
 	static Point clickLocation;
@@ -63,7 +75,18 @@ public class Main implements ActionListener{
 	static ArrayList<Blueprint> blueprints;
 	static ArrayList<Module> modules;
 	
+	private static final String ModulesDir = System.getProperty("user.home")+"/Documents/THINK VPL/Modules";
+	
 	public static void main(String[] args){
+		/*try{
+		URL[] myJarFile = new URL[]{new URL("jar","","file:"+"C:/Users/Quinn/Documents/THINK VPL/Modules")};
+		URLClassLoader child = new URLClassLoader (myJarFile , Main.class.getClassLoader());
+		Class classToLoad = Class.forName ("CanvasModule", true, child);
+		Object instance = classToLoad.newInstance ();
+		}catch(Exception e){
+			e.printStackTrace();
+		}*/
+		
 		THIS = new Main();
 		colors.put(Variable.DataType.BOOLEAN, new Color(20,210,20));
 		colors.put(Variable.DataType.INTEGER, Color.red);
@@ -131,11 +154,52 @@ public class Main implements ActionListener{
                     }
          	        return false;
                 }
-
-     			//}};
-     	        //t.start();
-     	        }
+            }
         });
+	}
+	private static ArrayList<Module> getAllJars(String s){
+		File folder = new File(s);
+		System.out.println("Looking for files in "+s);
+		File[] listOfFiles = folder.listFiles();
+		
+		ArrayList<Module> modules = new ArrayList<Module>();
+		
+		for(int i = 0; i < listOfFiles.length; i++) {
+			if(listOfFiles[i].isFile()){
+				System.out.println("opening file " + listOfFiles[i].getName());
+				modules.add(jarLoader(listOfFiles[i].getName()));
+			}else if(listOfFiles[i].isDirectory()) {
+				modules.addAll(getAllJars(listOfFiles[i].getName()));
+			}
+		}
+		return modules;
+	}
+	private static Module jarLoader(String jar){
+		try{
+			ZipInputStream zip = new ZipInputStream(new FileInputStream(ModulesDir+"/"+jar));
+			URL[] myJarFile = new URL[]{new URL("jar","","file:"+ModulesDir)};
+			URLClassLoader child = new URLClassLoader (myJarFile , Main.class.getClassLoader());
+			for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
+			    if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
+			        // This ZipEntry represents a class. Now, what class does it represent?
+			        String className = entry.getName().replace('/', '.'); // including ".class"
+			        className = className.substring(0, className.length() - ".class".length());
+			        String[] classNameParts = className.replace('$', ':').split(":");
+			        if(classNameParts.length == 1){
+			        	Class classToLoad = Class.forName(classNameParts[0], true, child);
+						System.out.println("loaded class "+classToLoad.getName());
+			        	if(classToLoad.getSuperclass() == Module.class){
+				        	Module instance = (Module) classToLoad.newInstance();
+				        	return instance;
+						}
+			        }
+			    }
+			}
+			zip.close();
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	Main(){
@@ -169,7 +233,7 @@ public class Main implements ActionListener{
 				mainBP.setName("Main");
 				blueprints.add(mainBP);
 				
-				modules.add(new CanvasModule());
+				modules.addAll(getAllJars(ModulesDir));
 				
 			//Menu Bar
 				JMenuBar menuBar = new JMenuBar();

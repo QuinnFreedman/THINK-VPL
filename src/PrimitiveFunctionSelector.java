@@ -1,7 +1,29 @@
+/**
+ * 
+ *  THINK VPL is a visual programming language and integrated development environment for that language
+ *  Copyright (C) 2015  Quinn Freedman
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ *  For more information, visit the THINK VPL website or email the author at
+ *  quinnfreedman@gmail.com
+ * 
+ */
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -15,13 +37,12 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 
-public class PrimitiveChildPicker extends VObject{
+public class PrimitiveFunctionSelector extends VObject{
 		private static final long serialVersionUID = 1L;
 		Variable parent;
 		
-		PrimitiveChildPicker(Variable parent, Point position, GraphEditor owner){
+		PrimitiveFunctionSelector(Variable parent, Point position, GraphEditor owner){
 			super(owner);
 			this.parent = parent;
 			
@@ -37,14 +58,8 @@ public class PrimitiveChildPicker extends VObject{
 			this.body.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
 			body.add(headerLabel);
 			
-			/*for(Class<? extends VariableFunction> c : ((Variable) this.parent).functions){
-				System.out.println((c.getClass()));
-			}*/
-
-			if(parent instanceof ContainsChildFunctions){ //TODO should be implied
-				for(PrimitiveFunction f : ((ContainsChildFunctions) parent).getFunctions()){
-					this.body.add(new MenuItem(f,this));
-				}
+			for(PrimitiveFunction f : parent.getFunctions()){
+				this.body.add(new MenuItem(f,this));
 			}
 			
 			this.setBounds(new Rectangle(position,new Dimension(100,this.getPreferredSize().height+5)));
@@ -52,9 +67,9 @@ public class PrimitiveChildPicker extends VObject{
 		
 		private class MenuItem extends JLabel implements MouseListener{
 			String name;
-			PrimitiveChildPicker childPicker;
+			PrimitiveFunctionSelector childPicker;
 			private PrimitiveFunction f;
-			MenuItem(PrimitiveFunction f, PrimitiveChildPicker primitiveChildPicker){
+			MenuItem(PrimitiveFunction f, PrimitiveFunctionSelector primitiveFunctionSelector){
 				super();
 				this.f = f;
 				String symbol;
@@ -71,7 +86,7 @@ public class PrimitiveChildPicker extends VObject{
 					
 				}
 				this.name = f.getSimpleName();
-				this.childPicker = primitiveChildPicker;
+				this.childPicker = primitiveFunctionSelector;
 				this.setBackground(Color.RED);
 				this.setText(symbol+" "+name);
 				this.addMouseListener(this);

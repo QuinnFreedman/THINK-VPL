@@ -1,3 +1,26 @@
+/**
+ * 
+ *  THINK VPL is a visual programming language and integrated development environment for that language
+ *  Copyright (C) 2015  Quinn Freedman
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ *  For more information, visit the THINK VPL website or email the author at
+ *  quinnfreedman@gmail.com
+ * 
+ */
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
@@ -279,6 +302,19 @@ public class SidebarItem extends JPanel{
 		public void keyPressed(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_TAB){
 				String text = this.getText().toLowerCase();
+				
+				for(Blueprint bp : Main.blueprints){
+					if(text.equalsIgnoreCase(bp.getName())){
+						VInstance newObj = new VInstance(owner, bp);
+						owner.getVariables().set(
+								owner.getVariables().indexOf(sidebarItemParent),
+								newObj);
+						owner.updateVars();
+						newObj.nameField.requestFocusInWindow();
+						return;
+					}
+				}
+				
 				Variable newVar = null;
 				
 				if(text.equals("i") || text.equals("in") || text.equals("int") || text.equals("integer")){
@@ -314,18 +350,6 @@ public class SidebarItem extends JPanel{
 				}else if(text.equals("<s") || text.equals("<st") || text.equals("<str") || text.equals("<string")){
 					newVar = new VArray(Variable.DataType.STRING,owner);
 					
-				}else{
-					for(Blueprint bp : Main.blueprints){
-						if(text.equalsIgnoreCase(bp.getName())){
-							VInstance newObj = new VInstance(owner, bp);
-							owner.getVariables().set(
-									owner.getVariables().indexOf(sidebarItemParent),
-									newObj);
-							owner.updateVars();
-							newObj.nameField.requestFocusInWindow();
-							return;
-						}
-					}
 				}
 				
 				if(newVar != null){

@@ -1,7 +1,33 @@
+/**
+ * 
+ *  THINK VPL is a visual programming language and integrated development environment for that language
+ *  Copyright (C) 2015  Quinn Freedman
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ *  For more information, visit the THINK VPL website or email the author at
+ *  quinnfreedman@gmail.com
+ * 
+ */
+
+import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.swing.BorderFactory;
+import javax.swing.event.DocumentEvent;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -11,18 +37,13 @@ public class VArray extends Variable{
 	private static final long serialVersionUID = 1L;
 	static int idCounter = 0;
 	String value;
-	ArrayList<VariableData.Integer> intData;
-	ArrayList<VariableData.Float> floatData;
-	ArrayList<VariableData.Double> doubleData;
-	ArrayList<VariableData.Boolean> booleanData;
-	ArrayList<VariableData.String> stringData;
-	ArrayList<VariableData.Character> charData;
 	protected VArray getThisVariable(){
 		return this;
 	}
 	VArray(DataType dt,GraphEditor owner){
 		super(owner);
 		this.dataType = dt;
+		this.varData = new VariableData.Array(dt);
 		this.typeField.setText(getSymbol());
 		this.typeField.setBackground(Main.colors.get(this.dataType));
 		this.typeField.setEditable(false);
@@ -39,47 +60,68 @@ public class VArray extends Variable{
 		this.functions.add(new Add(this));
 		this.functions.add(new Set(this));
 		this.functions.add(new Remove(this));
+		this.functions.add(new Get_Array_As_String(this));
 		
 		resetVariableData();
 	}
 	@Override
 	public void resetVariableData(){
+		value = valueField.getText();
+		
+		VariableData.Array data = new VariableData.Array(this.dataType);
+		
 		ArrayList<String> listOfStrings = new ArrayList<String>(Arrays.asList(value.split(",")));
+		if(listOfStrings.size() == 1 && listOfStrings.get(0).equals(""))
+			return;
+			
 		if(this.dataType == DataType.INTEGER){
-			this.intData = new ArrayList<VariableData.Integer>();
 			for(String s : listOfStrings){
-				if(s.length() != 0)
-					this.intData.add(new VariableData.Integer(Integer.parseInt(s)));
+				try{
+					data.add(new VariableData.Integer(Integer.parseInt(s)));
+					
+				}catch(Exception e){
+					valueField.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+				}
 			}
 		}else if(this.dataType == DataType.DOUBLE){
-			this.doubleData = new ArrayList<VariableData.Double>();
 			for(String s : listOfStrings){
-				if(s.length() != 0)
-					this.doubleData.add(new VariableData.Double(Double.parseDouble(s)));
+				try{
+					data.add(new VariableData.Double(Double.parseDouble(s)));
+					
+				}catch(Exception e){
+					valueField.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+				}
 			}
 		}else if(this.dataType == DataType.FLOAT){
-			this.floatData = new ArrayList<VariableData.Float>();
 			for(String s : listOfStrings){
-				if(s.length() != 0)
-					this.floatData.add(new VariableData.Float(Float.parseFloat(s)));
+				try{
+					data.add(new VariableData.Float(Float.parseFloat(s)));
+					
+				}catch(Exception e){
+					valueField.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+				}
 			}
 		}else if(this.dataType == DataType.BOOLEAN){
-			this.booleanData = new ArrayList<VariableData.Boolean>();
 			for(String s : listOfStrings){
-				if(s.length() != 0)
-					this.booleanData.add(new VariableData.Boolean(Boolean.parseBoolean(s)));
+				try{
+					data.add(new VariableData.Boolean(Boolean.parseBoolean(s)));
+					
+				}catch(Exception e){
+					valueField.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+				}
 			}
 		}else if(this.dataType == DataType.STRING){
-			this.stringData = new ArrayList<VariableData.String>();
 			for(String s : listOfStrings){
-				this.stringData.add(new VariableData.String(s));
-			}
-		}else if(this.dataType == DataType.CHARACTER){
-			this.charData = new ArrayList<VariableData.Character>();
-			for(String s : listOfStrings){
-				this.charData.add(new VariableData.Character((s.length() == 0) ? ' ' : s.charAt(0)));
+				try{
+					data.add(new VariableData.String(s));
+					
+				}catch(Exception e){
+					valueField.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+				}
 			}
 		}
+		
+		varData = data;
 	}
 	
 	@Override
@@ -96,29 +138,20 @@ public class VArray extends Variable{
 		}
 		@Override
 		public ArrayList<Variable.DataType> getOutputs(){
-			return new ArrayList<DataType>(Arrays.asList(getParentVar().dataType));
+			return new ArrayList<DataType>(Arrays.asList(((VariableData.Array) getParentVarData()).dataType));
 		}
 		@Override
 		public Mode getPrimairyMode(){return Mode.OUT;};
 		
 		@Override
 		public VariableData execute(VariableData[] input){
-			switch(getParentVar().dataType){
-			case BOOLEAN:
-				return ((VArray) getParentVar()).booleanData.get(((VariableData.Integer) input[0]).value);
-			case CHARACTER:
-				return ((VArray) getParentVar()).charData.get(((VariableData.Integer) input[0]).value);
-			case DOUBLE:
-				return ((VArray) getParentVar()).doubleData.get(((VariableData.Integer) input[0]).value);
-			case FLOAT:
-				return ((VArray) getParentVar()).floatData.get(((VariableData.Integer) input[0]).value);
-			case INTEGER:
-				return ((VArray) getParentVar()).intData.get(((VariableData.Integer) input[0]).value);
-			case STRING:
-				return ((VArray) getParentVar()).stringData.get(((VariableData.Integer) input[0]).value);
-			default:
-				return null;
+			try{
+				return ((VariableData.Array) getParentVarData()).value.get(((VariableData.Integer) input[0]).value);
+			}catch(IndexOutOfBoundsException e){
+				Debug.console.post("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[0].getValueAsString()+" of "+((VariableData.Array) getParentVarData()).value.size());
+				e.printStackTrace();
 			}
+			return null;
 			
 		}
 		Get(Point pos, Variable parent, GraphEditor owner) {
@@ -144,22 +177,7 @@ public class VArray extends Variable{
 		
 		@Override
 		public VariableData execute(VariableData[] input){
-			switch(getParentVar().dataType){
-			case BOOLEAN:
-				return new VariableData.Integer(((VArray) getParentVar()).booleanData.size());
-			case CHARACTER:
-				return new VariableData.Integer(((VArray) getParentVar()).charData.size());
-			case DOUBLE:
-				return new VariableData.Integer(((VArray) getParentVar()).doubleData.size());
-			case FLOAT:
-				return new VariableData.Integer(((VArray) getParentVar()).floatData.size());
-			case INTEGER:
-				return new VariableData.Integer(((VArray) getParentVar()).intData.size());
-			case STRING:
-				return new VariableData.Integer(((VArray) getParentVar()).stringData.size());
-			default:
-				return null;
-			}
+			return new VariableData.Integer(((VariableData.Array) getParentVarData()).value.size());
 			
 		}
 		Get_Length(Point pos, Variable parent, GraphEditor owner) {
@@ -178,7 +196,7 @@ public class VArray extends Variable{
 		private static final long serialVersionUID = 1L;
 		@Override
 		public ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.GENERIC,getParentVar().dataType));
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.GENERIC,((VariableData.Array) getParentVarData()).dataType));
 		}
 		@Override
 		public ArrayList<Variable.DataType> getOutputs(){
@@ -189,29 +207,9 @@ public class VArray extends Variable{
 		
 		@Override
 		public VariableData execute(VariableData[] input){
-			switch(getParentVar().dataType){
-			case BOOLEAN:
-				((VArray) getParentVar()).booleanData.add((VariableData.Boolean) input[0]);
-				return null;
-			case CHARACTER:
-				((VArray) getParentVar()).charData.add((VariableData.Character) input[0]);
-				return null;
-			case DOUBLE:
-				((VArray) getParentVar()).doubleData.add((VariableData.Double) input[0]);
-				return null;
-			case FLOAT:
-				((VArray) getParentVar()).floatData.add((VariableData.Float) input[0]);
-				return null;
-			case INTEGER:
-				((VArray) getParentVar()).intData.add((VariableData.Integer) input[0]);
-				return null;
-			case STRING:
-				((VArray) getParentVar()).stringData.add((VariableData.String) input[0]);
-				return null;
-			default:
-				return null;
-			}
+			((VariableData.Array) getParentVarData()).add(VariableData.clone(input[0]));
 			
+			return null;
 		}
 		Add(Point pos, Variable parent, GraphEditor owner) {
 			super(pos, parent, owner);
@@ -240,28 +238,15 @@ public class VArray extends Variable{
 		
 		@Override
 		public VariableData execute(VariableData[] input){
-			switch(getParentVar().dataType){
-			case BOOLEAN:
-				((VArray) getParentVar()).booleanData.remove(((VariableData.Integer) input[0]).value);
+			try{
+				((VariableData.Array) getParentVarData()).value.remove(((VariableData.Integer) input[0]).value);
 				return null;
-			case CHARACTER:
-				((VArray) getParentVar()).charData.remove(((VariableData.Integer) input[0]).value);
-				return null;
-			case DOUBLE:
-				((VArray) getParentVar()).doubleData.remove(((VariableData.Integer) input[0]).value);
-				return null;
-			case FLOAT:
-				((VArray) getParentVar()).floatData.remove(((VariableData.Integer) input[0]).value);
-				return null;
-			case INTEGER:
-				((VArray) getParentVar()).intData.remove(((VariableData.Integer) input[0]).value);
-				return null;
-			case STRING:
-				((VArray) getParentVar()).stringData.remove(((VariableData.Integer) input[0]).value);
-				return null;
-			default:
-				return null;
+				
+			}catch(IndexOutOfBoundsException e){
+				Debug.console.post("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[0].getValueAsString()+" of "+((VariableData.Array) getParentVarData()).value.size());
+				e.printStackTrace();
 			}
+			return null;
 			
 		}
 		Remove(Point pos, Variable parent, GraphEditor owner) {
@@ -280,7 +265,7 @@ public class VArray extends Variable{
 		private static final long serialVersionUID = 1L;
 		@Override
 		public ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.GENERIC,Variable.DataType.INTEGER,getParentVar().dataType));
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.GENERIC,Variable.DataType.INTEGER,((VariableData.Array) getParentVarData()).dataType));
 		}
 		@Override
 		public ArrayList<Variable.DataType> getOutputs(){
@@ -291,28 +276,19 @@ public class VArray extends Variable{
 		
 		@Override
 		public VariableData execute(VariableData[] input){
-			switch(getParentVar().dataType){
-			case BOOLEAN:
-				((VArray) getParentVar()).booleanData.set(((VariableData.Integer) input[0]).value, (VariableData.Boolean) input[1]);
-				return null;
-			case CHARACTER:
-				((VArray) getParentVar()).charData.set(((VariableData.Integer) input[0]).value, (VariableData.Character) input[1]);
-				return null;
-			case DOUBLE:
-				((VArray) getParentVar()).doubleData.set(((VariableData.Integer) input[0]).value, (VariableData.Double) input[1]);
-				return null;
-			case FLOAT:
-				((VArray) getParentVar()).floatData.set(((VariableData.Integer) input[0]).value, (VariableData.Float) input[1]);
-				return null;
-			case INTEGER:
-				((VArray) getParentVar()).intData.set(((VariableData.Integer) input[0]).value, (VariableData.Integer) input[1]);
-				return null;
-			case STRING:
-				((VArray) getParentVar()).stringData.set(((VariableData.Integer) input[0]).value, (VariableData.String) input[1]);
-				return null;
-			default:
-				return null;
+			int index = ((VariableData.Integer) input[1]).value;
+			int size = ((VariableData.Array) getParentVarData()).value.size();
+			if(index == 0){
+				((VariableData.Array) getParentVarData()).add(VariableData.clone(input[0]));
+			}else{
+				try{
+					((VariableData.Array) getParentVarData()).value.set(index,VariableData.clone(input[0]));
+				}catch(IndexOutOfBoundsException e){
+					Debug.console.post("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[1].getValueAsString()+" of "+size);
+					e.printStackTrace();
+				}
 			}
+			return null;
 			
 		}
 		Set(Point pos, Variable parent, GraphEditor owner) {
@@ -325,6 +301,48 @@ public class VArray extends Variable{
 			super(parent);
 		}
 		
+	}
+	
+	static class Get_Array_As_String extends PrimitiveFunction{
+		private static final long serialVersionUID = 1L;
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return null;
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.STRING));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.OUT;};
+		
+		@Override
+		public VariableData execute(VariableData[] input){
+			return new VariableData.String(((VariableData.Array) getParentVarData()).getValueAsString());
+			
+		}
+		Get_Array_As_String(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
+		Get_Array_As_String(Point pos, Variable parent) {
+			super(pos, parent);
+		}
+		Get_Array_As_String(Variable parent){
+			super(parent);
+		}
+		
+	}
+	@Override
+	public void changedUpdate(DocumentEvent e){
+		resetVariableData();
+	}
+	@Override
+	public void insertUpdate(DocumentEvent e){
+		resetVariableData();
+	}
+	@Override
+	public void removeUpdate(DocumentEvent e){
+		resetVariableData();
 	}
 	
 	static class ArrayDocumentFilter extends DocumentFilter {

@@ -1,3 +1,26 @@
+/**
+ * 
+ *  THINK VPL is a visual programming language and integrated development environment for that language
+ *  Copyright (C) 2015  Quinn Freedman
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ *  For more information, visit the THINK VPL website or email the author at
+ *  quinnfreedman@gmail.com
+ * 
+ */
+
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -24,13 +47,13 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-public class ChildPicker extends VObject{
+public class FunctionSelector extends VObject{
 	private static final long serialVersionUID = 1L;
 	Node parentNode;
 	ArrayList<MenuItem> items;
 	String searchKey = "";
 	JPanel itemHolder;
-	ChildPicker(Node parentNode, Point position, GraphEditor owner){
+	FunctionSelector(Node parentNode, Point position, GraphEditor owner){
 		super(owner);
 		this.parentNode = parentNode;
 		
@@ -137,7 +160,7 @@ public class ChildPicker extends VObject{
 		
 		for(Blueprint bp : Main.blueprints){
 			for(Variable v : bp.getVariables()){
-				for(PrimitiveFunction f : ((ContainsChildFunctions) v).getFunctions()){
+				for(PrimitiveFunction f : v.getFunctions()){
 					considerAdding(f);
 				}
 			}
@@ -148,75 +171,15 @@ public class ChildPicker extends VObject{
 		
 		if(owner instanceof FunctionEditor){
 			for(Variable v : owner.getVariables()){
-				for(PrimitiveFunction f : ((ContainsChildFunctions) v).getFunctions()){
+				for(PrimitiveFunction f : v.getFunctions()){
 					considerAdding(f);
 				}
 			}
 			
 		}
-		
-		/*for(Variable v : owner.getVariables()){
-			for(PrimitiveFunction f : ((ContainsChildFunctions) v).getFunctions()){
-				considerAdding(f);
-			}
-			if(v instanceof VInstance){
-				for(Variable v2 : ((VInstance) v).childVariables){
-					for(PrimitiveFunction f2 : ((ContainsChildFunctions) v2).getFunctions()){
-						considerAdding(f2);
-					}
-				}
-				for(VFunction f3 : ((VInstance) v).childFunctions){
-					considerAdding(f3);
-				}
-			}
-		}
-		if(owner instanceof Blueprint){
-			for(VFunction f : ((Blueprint) owner).getFunctions()){
-				considerAdding(f);
-			}
-			
-		}else if(owner instanceof FunctionEditor){
-			for(VFunction f : ((Blueprint) ((VFunction) ((FunctionEditor) owner).getOverseer()).getOwner()).getFunctions()){
-				considerAdding(f);
-			}
-			for(Variable v : ((Blueprint) ((VFunction) ((FunctionEditor) owner).getOverseer()).getOwner()).getVariables()){
-				for(PrimitiveFunction f2 : ((ContainsChildFunctions) v).getFunctions()){
-					considerAdding(f2);
-				}
-				if(v instanceof VInstance){
-					for(Variable v2 : ((VInstance) v).childVariables){
-						for(PrimitiveFunction f3 : ((ContainsChildFunctions) v2).getFunctions()){
-							considerAdding(f3);
-						}
-					}
-				}
-			}
-		}
-		
-		if(owner != Main.mainBP){
-			for(Variable v : Main.mainBP.getVariables()){
-				for(PrimitiveFunction f : ((ContainsChildFunctions) v).getFunctions()){
-					considerAdding(f);
-				}
-				if(v instanceof VInstance){
-					for(Variable v2 : ((VInstance) v).childVariables){
-						for(PrimitiveFunction f2 : ((ContainsChildFunctions) v2).getFunctions()){
-							considerAdding(f2);
-						}
-					}
-					for(VFunction f3 : ((VInstance) v).childFunctions){
-						considerAdding(f3);
-					}
-				}
-			}
-			for(VFunction f : Main.mainBP.getFunctions()){
-				considerAdding(f);
-			}
-			
-		}*/
 		
 		for(Module m : Main.modules){
-			for(Executable e : m.functions){
+			for(Executable e : m.getFunctions()){
 				considerAdding(e);
 			}
 		}
@@ -322,6 +285,14 @@ public class ChildPicker extends VObject{
 		}
 	}
 	
+	/*private void considerAdding(Class<? extends Executable> f){
+		if((parentNode.type == Node.NodeType.SENDING && f.getInputs() != null && couldConnect(parentNode.dataType,f.getInputs())) ||
+				(parentNode.type == Node.NodeType.RECIEVING && f.getOutputs() != null && couldConnect(f.getOutputs(),parentNode.dataType))	
+					){
+			this.items.add(new MenuItem(f,this));
+		}
+	}*/
+	
 	private void considerAdding(VFunction f){
 		if(couldConnect(parentNode.dataType,f.getInput()) || couldConnect(f.getOutput(),parentNode.dataType)){
 			this.items.add(new MenuItem(f,this));
@@ -396,14 +367,14 @@ public class ChildPicker extends VObject{
 	
 	private class MenuItem extends JLabel implements MouseListener{
 		public String name;
-		ChildPicker childPicker;
+		FunctionSelector childPicker;
 		private Executable f;
 		private Class<? extends Executable> c;
 		private VFunction vf;
 		Variable.DataType dataType;
 		private InstantiableBlueprint bp;
 		
-		MenuItem(Executable f, ChildPicker childPicker){
+		MenuItem(Executable f, FunctionSelector childPicker){
 			super();
 			this.f = f;
 			
@@ -435,7 +406,7 @@ public class ChildPicker extends VObject{
 			this.setCursor (Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		}
 		
-		MenuItem(Class<? extends Executable> c, String name, ChildPicker childPicker){
+		MenuItem(Class<? extends Executable> c, String name, FunctionSelector childPicker){
 			super();
 			this.c = c;
 
@@ -448,12 +419,12 @@ public class ChildPicker extends VObject{
 		}
 		
 		MenuItem(Class<? extends Executable> class1, String string,
-				ChildPicker childPicker2, Variable.DataType dataType) {
+				FunctionSelector childPicker2, Variable.DataType dataType) {
 			this(class1,string,childPicker2);
 			this.dataType = dataType;
 		}
 		
-		MenuItem(VFunction function, ChildPicker childPicker){
+		MenuItem(VFunction function, FunctionSelector childPicker){
 			this.vf = function;
 			
 			String s = "";
@@ -471,7 +442,7 @@ public class ChildPicker extends VObject{
 			this.setCursor (Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		}
 		
-		MenuItem(InstantiableBlueprint function, ChildPicker childPicker){
+		MenuItem(InstantiableBlueprint function, FunctionSelector childPicker){
 			this.bp = function;
 			
 			String s = "New "+function.getName();
@@ -565,7 +536,7 @@ public class ChildPicker extends VObject{
 					}
 				}
 			}catch(Exception e){
-				e.printStackTrace(System.err);
+				e.printStackTrace();
 			}
 			
 			this.childPicker.delete();

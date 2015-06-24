@@ -1,3 +1,26 @@
+/**
+ * 
+ *  THINK VPL is a visual programming language and integrated development environment for that language
+ *  Copyright (C) 2015  Quinn Freedman
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ *  For more information, visit the THINK VPL website or email the author at
+ *  quinnfreedman@gmail.com
+ * 
+ */
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -31,7 +54,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	boolean isHover = false;
 	public Variable.DataType dataType;
 	protected Dimension size = new Dimension(15,15);
-	private ChildPicker childPicker;
+	private FunctionSelector childPicker;
 	
 	Node(NodeType type,VObject parentObj,boolean mi){
 		this.canHaveMultipleInputs = mi;
@@ -278,7 +301,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 			childPicker.delete();
 		}
 		if(mouse.x > 0 && mouse.y > 0 && mouse.x < parentObject.owner.getPanel().getWidth() && mouse.y < parentObject.owner.getPanel().getHeight()){
-			ChildPicker childPicker = new ChildPicker(this, mouse, parentObject.owner);
+			FunctionSelector childPicker = new FunctionSelector(this, mouse, parentObject.owner);
 			this.childPicker = childPicker;
 		}
 	}
@@ -365,7 +388,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 			return new Point(c.getLocationOnScreen().x-p.getLocationOnScreen().x,c.getLocationOnScreen().y-p.getLocationOnScreen().y);
 		}catch(Exception e){
 			System.out.println(c.getClass().getName()+", "+p.getClass().getName());
-			e.printStackTrace(System.err);
+			e.printStackTrace();
 			return null;
 		}
 	}

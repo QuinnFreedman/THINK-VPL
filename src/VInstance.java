@@ -1,9 +1,30 @@
+/**
+ * 
+ *  THINK VPL is a visual programming language and integrated development environment for that language
+ *  Copyright (C) 2015  Quinn Freedman
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ *  For more information, visit the THINK VPL website or email the author at
+ *  quinnfreedman@gmail.com
+ * 
+ */
+
 import java.awt.Component;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.InputMismatchException;
-import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -12,8 +33,6 @@ import javax.swing.JPanel;
 
 public class VInstance extends Variable{
 	private static final long serialVersionUID = 1L;
-	
-	Random rng = new Random();
 	
 	Blueprint parentBlueprint;
 	ArrayList<Variable> childVariables = new ArrayList<Variable>();
@@ -52,8 +71,6 @@ public class VInstance extends Variable{
 		for(VFunction f : bp.getFunctions()){
 			addChildFunction(f);
 		}
-		
-		//this.setID(parentBlueprint.getName()+"::"+rng.nextInt(Integer.MAX_VALUE));
 		
 		this.varData = new VariableData.Instance(this);
 		System.out.println("varData = "+this.varData);
@@ -222,7 +239,7 @@ public class VInstance extends Variable{
 				try {
 					throw new Exception();
 				} catch (Exception e) {
-					Debug.console.post("ERROR: type missmatch");
+					Debug.console.post("ERROR: type missmatch at "+(this.getParentVariable() == null ? "Anonymous" : getParentVariable().getID())+" > \"Set\"");
 					e.printStackTrace();
 				}
 			}else{
@@ -232,15 +249,6 @@ public class VInstance extends Variable{
 					VariableData v2 = ((VariableData.Instance) input[0]).values.get(i);
 					v = v2;
 				}
-				/*for(int i = 0; i < ((VInstance) getParentVar()).childVariables.size(); i++){
-					VariableData v = ((VariableData.Instance) parentVarData).values.get(i);
-					String n  = ((VariableData.Instance) parentVarData).names.get(i);
-					VariableData v2 = ((VariableData.Instance) input[0]).values.get(i);
-					String n2 = ((VariableData.Instance) input[0]).names.get(i);
-					System.out.println("\""+n+"\" : "+v.getValueAsString()+" < "+"\""+n2+"\" : "+v2.getValueAsString());
-					v = v2;
-					n = n2;
-				}*/
 				
 			}
 			return null;

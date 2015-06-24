@@ -1,12 +1,32 @@
+/**
+ * 
+ *  THINK VPL is a visual programming language and integrated development environment for that language
+ *  Copyright (C) 2015  Quinn Freedman
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ *  For more information, visit the THINK VPL website or email the author at
+ *  quinnfreedman@gmail.com
+ * 
+ */
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -16,10 +36,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 class CanvasModule extends Module{
@@ -52,29 +69,24 @@ class CanvasModule extends Module{
 	}
 	
 	@Override
-	public String getName(){
-		return "Canvas";
-	}
-	
-	@Override
 	public void setup(){
 		currentlyOpen = new Canvas();
 		setCanvasSize(200,200);
-		functions.add(new Update());
-		functions.add(new Clear());
-		functions.add(new Set_Color());
-		functions.add(new Set_Line_Width());
-		functions.add(new Set_Canvas_Size());
-		functions.add(new Hide_Canvas());
-		functions.add(new Show_Canvas());
-		functions.add(new Get_Canvas_Width());
-		functions.add(new Get_Canvas_Height());
-		functions.add(new Set_Antialiasing_Enabled());
-		functions.add(new Fill_Rectangle());
-		functions.add(new Draw_Rectangle());
-		functions.add(new Fill_Circle());
-		functions.add(new Draw_Circle());
-		functions.add(new Draw_Line());
+		addFunction(new Update());
+		addFunction(new Clear());
+		addFunction(new Set_Color());
+		addFunction(new Set_Line_Width());
+		addFunction(new Set_Canvas_Size());
+		addFunction(new Hide_Canvas());
+		addFunction(new Show_Canvas());
+		addFunction(new Get_Canvas_Width());
+		addFunction(new Get_Canvas_Height());
+		addFunction(new Set_Antialiasing_Enabled());
+		addFunction(new Fill_Rectangle());
+		addFunction(new Draw_Rectangle());
+		addFunction(new Fill_Circle());
+		addFunction(new Draw_Circle());
+		addFunction(new Draw_Line());
 	}
 	
 	@Override
@@ -98,10 +110,6 @@ class CanvasModule extends Module{
 		public ArrayList<Variable.DataType> getOutputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC));
-		}
-
-		protected Class<? extends Module> getParentMod(){
-			return CanvasModule.class;
 		}
 		
 		CanvasExecutable(Point pos, GraphEditor owner) {

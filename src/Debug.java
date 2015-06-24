@@ -70,7 +70,7 @@ public class Debug{
 			int i = 0;
 			while(i < bp.getObjects().size()){
 				VObject o = bp.getObjects().get(i);
-				if(o instanceof ChildPicker || o instanceof PrimitiveChildPicker)
+				if(o instanceof FunctionSelector || o instanceof PrimitiveFunctionSelector)
 					o.delete();
 				else
 					i++;
@@ -272,19 +272,12 @@ public class Debug{
 		}
 		System.out.println();
 		System.out.println(getTop().getClass().getName()+" executeOnce = "+getTop().executeOnce+"; hasExecuted = "+getTop().hasExecuted);
-		//if(getTop() instanceof PrimitiveFunction)
-		//	System.out.println("parent var = "+((PrimitiveFunction) getTop()).getParentVar());
-		
 		
 		if(getTop() instanceof PrimitiveFunction && !((PrimitiveFunction) getTop()).isStatic()){
 			if(getTop().workingData.get(0) instanceof VariableData.Instance){
-				//if(((PrimitiveFunction) getTop()).getParentVariable().parentInstance == ((VariableData.Instance) getTop().workingData.get(0)).value){
-				//	//all good
-				//}else{
 				((PrimitiveFunction) getTop()).setParentVarData(
 						((VariableData.Instance) getTop().workingData.get(0)).getVariableDataByName( ((PrimitiveFunction) getTop()).getParentVariable().getID() )
 						);
-				//}
 				getTop().workingData.remove(0);
 			}else{
 				try{
@@ -295,8 +288,6 @@ public class Debug{
 				}
 			}
 		}
-		
-//TODO
 		
 		VariableData execute;
 		if(getTop().executeOnce && getTop().hasExecuted){
@@ -339,11 +330,13 @@ public class Debug{
 			System.out.println("currently executing = "+((FunctionEditor.FunctionIO) getTop()).getOverseer().getCurrentlyExecuting());
 			
 			if(overseer instanceof InstantiableBlueprint){
-				execute = new VariableData.Instance(((InstantiableBlueprint) overseer).getWorkingInstance());
+				execute = ((InstantiableBlueprint) overseer).getWorkingInstance();//TODO clone or point?
 			}
 			
 			((FunctionEditor.FunctionIO) getTop()).getOverseer().getCurrentlyExecuting().outputData = 
 					new ArrayList<VariableData>(Arrays.asList(execute));
+			
+			execute = null;
 		}
 		
 		if(mode != RunMode.RUN){
@@ -418,12 +411,14 @@ public class Debug{
 				stack.remove(stack.size()-1);
 			}
 		}
-		if(execute != null){
+		
+		if(execute != null){ 
 			System.out.println("add to "+getTop().workingData);
 			getTop().workingData.add(execute);
 		}else if(multiExecute != null){
 			getTop().workingData = new ArrayList<VariableData>(multiExecute);
 		}
+		
 		if(mode != RunMode.RUN){
 			getTop().setSelected(true);
 			getTop().repaint();
@@ -481,13 +476,15 @@ public class Debug{
 			}
 			s += ". The program will now exit.";
 			console.post(s);
-			e.printStackTrace(System.err);
+			e.printStackTrace();
 			exit();
 			return false;
 		}
 	}
 	
 	private static Executable getTop(){
+		if(stack.isEmpty())
+			return null;
 		return stack.get(stack.size()-1);
 	}
 	
@@ -539,7 +536,9 @@ public class Debug{
 	
 	public static void tab() {
 		if(isStepping && waitingForInput == null && mode != RunMode.RUN){
-			step();
+			do{
+				step();
+			}while(getTop() != null && !getTop().isShowing());
 		}
 	}
 	public static void f1() {
