@@ -52,6 +52,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
@@ -192,6 +193,9 @@ public class Main implements ActionListener{
 		}catch (Exception e){
 			e.printStackTrace();
 		}
+		String message = "Error loading moddule from "+MODULE_DIR+"/"+jar;
+		JOptionPane.showMessageDialog(new JFrame(), message, "Dialog",
+		        JOptionPane.ERROR_MESSAGE);
 		return null;
 	}
 	
@@ -260,7 +264,22 @@ public class Main implements ActionListener{
 				JMenu mnEdit = new JMenu("Edit");
 				menuBar.add(mnEdit);
 				
-				JMenu mnVariable = new JMenu("Variable");
+				JMenuItem mntmEdit = new JMenuItem("Cut");
+				mntmEdit.addActionListener(THIS);
+				mntmEdit.setEnabled(false);
+				mnEdit.add(mntmEdit);
+				
+				mntmEdit = new JMenuItem("Copy");
+				mntmEdit.addActionListener(THIS);
+				mntmEdit.setEnabled(false);
+				mnEdit.add(mntmEdit);
+				
+				mntmEdit = new JMenuItem("Paste");
+				mntmEdit.addActionListener(THIS);
+				mntmEdit.setEnabled(false);
+				mnEdit.add(mntmEdit);
+				
+				JMenu mnVariable = new JMenu("Variables");
 				menuBar.add(mnVariable);
 				
 				JMenuItem mntmNewInteger = new JMenuItem("New Integer");
@@ -324,6 +343,10 @@ public class Main implements ActionListener{
 				
 				JMenu mnHelp = new JMenu("Help");
 				menuBar.add(mnHelp);
+				
+				JMenuItem mntmHelp = new JMenuItem("Go to website");
+				mntmHelp.addActionListener(THIS);
+				mnHelp.add(mntmHelp);
 				
 				tabbedPane = new JTabbedPane();
 				
@@ -415,6 +438,13 @@ public class Main implements ActionListener{
 			Debug.f2();
 		}else if(c == "Debug (f3)"){
 			Debug.f3();
+		}else if(c == "Go to website"){
+			String url = "https://preview.c9.io/quinnfreedman/think/index.html#about";
+			try {
+				java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}else{
 			System.out.println("null Action:"+c);
 		}

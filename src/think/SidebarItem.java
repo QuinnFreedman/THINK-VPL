@@ -113,7 +113,15 @@ public class SidebarItem extends JPanel{
 		        
 		    case STRING: symbol += "str";
 		        break;
-		    case OBJECT: symbol += ((VInstance) this).parentBlueprint.getName();
+		    case OBJECT:
+		    	if(this instanceof VInstance){
+	    			symbol += ((VInstance) this).parentBlueprint.getName();
+		    	}else{
+		    		if(((VArray) this).objectType != null)
+		    			symbol += ((VArray) this).objectType.getName();
+		    		else
+		    			symbol += "obj";
+		    	}
 		    	break;
 			default:
 				break;
@@ -304,10 +312,24 @@ public class SidebarItem extends JPanel{
 		public void keyPressed(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_TAB){
 				String text = this.getText().toLowerCase();
+				boolean isArray = false;
+				if(text.startsWith("<")){
+					isArray = true;
+					text = text.substring(1);
+				}
 				
 				for(Blueprint bp : Main.blueprints){
-					if(text.equalsIgnoreCase(bp.getName())){
-						VInstance newObj = new VInstance(owner, bp);
+					if(text.equalsIgnoreCase(bp.getName()) && bp instanceof InstantiableBlueprint){
+						if(isArray){
+							VArray newObj = new VArray(Variable.DataType.OBJECT, (InstantiableBlueprint) bp, owner);
+							owner.getVariables().set(
+									owner.getVariables().indexOf(sidebarItemParent),
+									newObj);
+							owner.updateVars();
+							newObj.nameField.requestFocusInWindow();
+							return;
+						}
+						VInstance newObj = new VInstance(owner, (InstantiableBlueprint) bp);//TODO
 						owner.getVariables().set(
 								owner.getVariables().indexOf(sidebarItemParent),
 								newObj);
@@ -317,44 +339,35 @@ public class SidebarItem extends JPanel{
 					}
 				}
 				
-				Variable newVar = null;
+				Variable.DataType varType = null;
 				
-				if(text.equals("i") || text.equals("in") || text.equals("int") || text.equals("integer")){
-					newVar = new VInt(owner);
+				if(("integer").startsWith(text)){
+					varType = Variable.DataType.INTEGER;
 					
-				}else if(text.equals("d") || text.equals("db") || text.equals("do") || text.equals("double")){
-					newVar = new VDouble(owner);
+				}else if(("double").startsWith(text) || text.equals("db")){
+					varType = Variable.DataType.DOUBLE;
 					
-				}else if(text.equals("f") || text.equals("fl") || text.equals("flo") || text.equals("float")){
-					newVar = new VFloat(owner);
+				}else if(("float").startsWith(text)){
+					varType = Variable.DataType.FLOAT;
 					
-				}else if(text.equals("b") || text.equals("bo") || text.equals("bool") || text.equals("boolean")){
-					newVar = new VBoolean(owner);
+				}else if(("boolean").startsWith(text)){
+					varType = Variable.DataType.BOOLEAN;
 					
-				}else if(text.equals("s") || text.equals("st") || text.equals("str") || text.equals("string")){
-					newVar = new VString(owner);
+				}else if(("string").startsWith(text)){
+					varType = Variable.DataType.STRING;
+					
+				}else if(("object").startsWith(text)){
+					varType = Variable.DataType.OBJECT;
 					
 				}
 				
-			//ARRAYS
-				else if(text.equals("<i") || text.equals("<in") || text.equals("<int") || text.equals("<int>")){
-					newVar = new VArray(Variable.DataType.INTEGER,owner);
-					
-				}else if(text.equals("<d") || text.equals("<db") || text.equals("<do") || text.equals("<db>")){
-					newVar = new VArray(Variable.DataType.DOUBLE,owner);
-					
-				}else if(text.equals("<f") || text.equals("<fl") || text.equals("<fl>") || text.equals("<float>")){
-					newVar = new VArray(Variable.DataType.FLOAT,owner);
-					
-				}else if(text.equals("<b") || text.equals("<bo") || text.equals("<bool") || text.equals("<bool>")){
-					newVar = new VArray(Variable.DataType.BOOLEAN,owner);
-					
-				}else if(text.equals("<s") || text.equals("<st") || text.equals("<str") || text.equals("<string")){
-					newVar = new VArray(Variable.DataType.STRING,owner);
-					
-				}
-				
-				if(newVar != null){
+				if(varType != null){
+					Variable newVar;
+					if(!isArray){
+						newVar = Variable.create(varType, owner);
+					}else{
+						newVar = new VArray(varType, owner);
+					}
 					owner.getVariables().set(
 							owner.getVariables().indexOf(sidebarItemParent),
 							newVar);
@@ -368,6 +381,7 @@ public class SidebarItem extends JPanel{
 							}
 						}
 					}
+					
 				}
 			}
 			

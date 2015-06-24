@@ -35,10 +35,15 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
+import think.Variable.DataType;
+
 public class VArray extends Variable{
 	private static final long serialVersionUID = 1L;
 	static int idCounter = 0;
 	String value;
+	
+	public InstantiableBlueprint objectType;
+	
 	protected VArray getThisVariable(){
 		return this;
 	}
@@ -66,6 +71,10 @@ public class VArray extends Variable{
 		
 		resetVariableData();
 	}
+	public VArray(DataType object, InstantiableBlueprint bp, GraphEditor owner) {
+		this(object, owner);
+		this.objectType = bp;
+	}
 	@Override
 	public void resetVariableData(){
 		value = valueField.getText();
@@ -73,56 +82,55 @@ public class VArray extends Variable{
 		VariableData.Array data = new VariableData.Array(this.dataType);
 		
 		ArrayList<String> listOfStrings = new ArrayList<String>(Arrays.asList(value.split(",")));
-		if(listOfStrings.size() == 1 && listOfStrings.get(0).equals(""))
-			return;
+		if(!(listOfStrings.size() == 1 && listOfStrings.get(0).equals("")) || this.dataType == Variable.DataType.OBJECT){
 			
-		if(this.dataType == DataType.INTEGER){
-			for(String s : listOfStrings){
-				try{
-					data.add(new VariableData.Integer(Integer.parseInt(s)));
-					
-				}catch(Exception e){
-					valueField.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+			if(this.dataType == DataType.INTEGER){
+				for(String s : listOfStrings){
+					try{
+						data.add(new VariableData.Integer(Integer.parseInt(s)));
+						
+					}catch(Exception e){
+						valueField.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+					}
 				}
-			}
-		}else if(this.dataType == DataType.DOUBLE){
-			for(String s : listOfStrings){
-				try{
-					data.add(new VariableData.Double(Double.parseDouble(s)));
-					
-				}catch(Exception e){
-					valueField.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+			}else if(this.dataType == DataType.DOUBLE){
+				for(String s : listOfStrings){
+					try{
+						data.add(new VariableData.Double(Double.parseDouble(s)));
+						
+					}catch(Exception e){
+						valueField.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+					}
 				}
-			}
-		}else if(this.dataType == DataType.FLOAT){
-			for(String s : listOfStrings){
-				try{
-					data.add(new VariableData.Float(Float.parseFloat(s)));
-					
-				}catch(Exception e){
-					valueField.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+			}else if(this.dataType == DataType.FLOAT){
+				for(String s : listOfStrings){
+					try{
+						data.add(new VariableData.Float(Float.parseFloat(s)));
+						
+					}catch(Exception e){
+						valueField.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+					}
 				}
-			}
-		}else if(this.dataType == DataType.BOOLEAN){
-			for(String s : listOfStrings){
-				try{
-					data.add(new VariableData.Boolean(Boolean.parseBoolean(s)));
-					
-				}catch(Exception e){
-					valueField.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+			}else if(this.dataType == DataType.BOOLEAN){
+				for(String s : listOfStrings){
+					try{
+						data.add(new VariableData.Boolean(Boolean.parseBoolean(s)));
+						
+					}catch(Exception e){
+						valueField.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+					}
 				}
-			}
-		}else if(this.dataType == DataType.STRING){
-			for(String s : listOfStrings){
-				try{
-					data.add(new VariableData.String(s));
-					
-				}catch(Exception e){
-					valueField.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+			}else if(this.dataType == DataType.STRING){
+				for(String s : listOfStrings){
+					try{
+						data.add(new VariableData.String(s));
+						
+					}catch(Exception e){
+						valueField.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+					}
 				}
 			}
 		}
-		
 		varData = data;
 	}
 	

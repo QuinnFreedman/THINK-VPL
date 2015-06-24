@@ -37,6 +37,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
+import think.Variable.DataType;
+
 public class Variable extends SidebarItem implements DocumentListener{
 	private static final long serialVersionUID = 1L;
 	
@@ -264,5 +266,38 @@ public class Variable extends SidebarItem implements DocumentListener{
 	}
 	public ArrayList<PrimitiveFunction> getChildren() {
 		return children;
+	}
+	public static Variable create(DataType varType, GraphEditor owner) {
+		switch(varType){
+		case BOOLEAN:
+			return new VBoolean(owner);
+		case BYTE:
+			return null;
+		case CHARACTER:
+			return null;
+		case DOUBLE:
+			return new VDouble(owner);
+		case FLEX:
+			return null;
+		case FLOAT:
+			return new VFloat(owner);
+		case GENERIC:
+			return null;
+		case INTEGER:
+			return new VInt(owner);
+		case LONG:
+			return null;
+		case NUMBER:
+			return null;
+		case OBJECT:
+			return null;
+		case SHORT:
+			return null;
+		case STRING:
+			return new VString(owner);
+		default:
+			return null;
+		
+		}
 	}
 }
