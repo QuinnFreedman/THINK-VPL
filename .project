@@ -14,4 +14,11 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>External Modules</name>
+			<type>2</type>
+			<location>C:/Users/Quinn/Documents/THINK VPL/Modules</location>
+		</link>
+	</linkedResources>
 </projectDescription>
