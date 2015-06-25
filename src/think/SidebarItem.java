@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -47,14 +47,14 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.text.JTextComponent;
 
-public class SidebarItem extends JPanel{
+ class SidebarItem extends JPanel{
 	private static final long serialVersionUID = 1L;
 	
 	private GraphEditor owner;
 	private String name;
 	protected Type type;
-	public boolean isStatic = true;
-	public VInstance parentInstance = null;
+	 boolean isStatic = true;
+	 VInstance parentInstance = null;
 	protected JPanel header;
 	protected InputPane nameField;
 	protected InputPane typeField;
@@ -62,26 +62,26 @@ public class SidebarItem extends JPanel{
 	protected ArrayList<InputPane> fields = new ArrayList<InputPane>();
 	static protected BufferedImage bufferedImage = null;
 	
-	public void setID(String name){
+	 void setID(String name){
 		this.name = name;
 	}
-	public String getID(){
+	 String getID(){
 		return name;
 	}
-	public String getFullName(){
+	 String getFullName(){
 		return ((!isStatic && parentInstance != null) ? parentInstance.parentBlueprint.getName()+" > " : "")+name;
 	}
-	public GraphEditor getOwner(){
+	 GraphEditor getOwner(){
 		return owner;
 	}
 	private SidebarItem getThis(){
 		return this;
 	}
-	public enum Type{
+	 enum Type{
     	VARIABLE,FUNCTION,CLASS
     }
 	
-	public String getSymbol(){
+	 String getSymbol(){
 		String symbol = (this.getClass() == VArray.class) ? "<" : "";
 
 		switch (this.type) {
@@ -140,7 +140,7 @@ public class SidebarItem extends JPanel{
 		return symbol;
 	}
 	
-	public void setParentInstance(VInstance parentInstance){
+	 void setParentInstance(VInstance parentInstance){
 		this.parentInstance = parentInstance;
 		this.close.setText((parentInstance == null) ? "\u00D7" : ">");
 		close.setEnabled(parentInstance == null);
@@ -246,7 +246,7 @@ public class SidebarItem extends JPanel{
 		this.type = t;
 	}
 	
-	public void setEditable(boolean b){
+	 void setEditable(boolean b){
 		for(InputPane ip : fields){
 			ip.setEditable(b);
 		}
@@ -264,7 +264,7 @@ public class SidebarItem extends JPanel{
 	static class InputPane extends SpecialEditorPane{
 		private static final long serialVersionUID = 1L;
 		
-		public SidebarItem sidebarItemParent;
+		 SidebarItem sidebarItemParent;
 		
 		InputPane(SidebarItem si){
 			super();
@@ -433,7 +433,7 @@ public class SidebarItem extends JPanel{
 			fixName();
 			
 		}
-		public boolean fixName(){
+		 boolean fixName(){
 			String s = tc.getText();
 			int i = -1;
 			if(tc.getText().length() == 0){

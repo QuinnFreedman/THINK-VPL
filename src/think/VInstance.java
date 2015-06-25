@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -33,7 +33,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-public class VInstance extends Variable{
+ class VInstance extends Variable{
 	private static final long serialVersionUID = 1L;
 	
 	Blueprint parentBlueprint;
@@ -83,7 +83,7 @@ public class VInstance extends Variable{
 		//this.functions.add(new Get_JSON());
 	}
 	
-	public void addChildVariable(Variable v){
+	 void addChildVariable(Variable v){
 		if(v.dataType == null || v.isStatic)
 			return;
 		
@@ -138,7 +138,7 @@ public class VInstance extends Variable{
 		body.add(v2, Component.LEFT_ALIGNMENT);
 	}
 	
-	public void addChildFunction(VFunction f){
+	 void addChildFunction(VFunction f){
 		if(f.isStatic)
 			return;
 		
@@ -158,7 +158,7 @@ public class VInstance extends Variable{
 		body.add(f2, Component.LEFT_ALIGNMENT);
 	}
 	
-	public void removeChildFunction(VFunction f){
+	 void removeChildFunction(VFunction f){
 		for(VFunction f2 : childFunctions){
 			if(f2.getID().equals(f.getID())){
 				f2.clearChildren();
@@ -169,7 +169,7 @@ public class VInstance extends Variable{
 		}
 	}
 	
-	public void removeChildVariable(Variable v){
+	 void removeChildVariable(Variable v){
 		for(Variable v2 : childVariables){
 			if(v2.getID().equals(v.getID())){
 				v2.clearChildren();
@@ -180,7 +180,7 @@ public class VInstance extends Variable{
 		}
 	}
 	
-	public Variable getVariable(String s){
+	 Variable getVariable(String s){
 		for(Variable v : childVariables){
 			if(v.getID().equals(s))
 				return v;
@@ -215,7 +215,7 @@ public class VInstance extends Variable{
 	}
 	
 	@Override
-	public void resetVariableData(){
+	 void resetVariableData(){
 		this.varData = new VariableData.Instance(this);
 		for(Variable v : this.childVariables){
 			v.resetVariableData();

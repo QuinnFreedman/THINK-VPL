@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -38,33 +38,33 @@ import java.util.Collections;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-public class Debug{
+ class Debug{
 	
 	private static ArrayList<Executable> stack;
 	private static ArrayList<Executable> remember;
 	private static boolean isStepping = false;
 	private static Variable.DataType waitingForInput = null;
-	public static Console console;
+	 static Console console;
 	private static RunMode mode;
 	
 	static Status running;
 	
-	public static enum RunMode{
+	 static enum RunMode{
 		RUN,FAST,SLOW
 	}
 	
-	public static void setRunMode(RunMode rm){
+	 static void setRunMode(RunMode rm){
 		mode = rm;
 	}
 	
-	public static RunMode getRunMode(){
+	 static RunMode getRunMode(){
 		return mode;
 	}
 	
-	public static boolean isStepping() {
+	 static boolean isStepping() {
 		return isStepping;
 	}
-	public static Variable.DataType waitingForInput() {
+	 static Variable.DataType waitingForInput() {
 		return waitingForInput;
 	}
 	private static void reset(Variable var){
@@ -156,7 +156,7 @@ public class Debug{
 		stepForever();
 	}
 	
-	public static void stepForever(){
+	 static void stepForever(){
 		if(mode == RunMode.RUN){
 			Thread t = new Thread() {
 				public void run() {
@@ -326,7 +326,7 @@ public class Debug{
 		}
 	}
 	
-	public static boolean moveDownStack2(VariableData execute){
+	 static boolean moveDownStack2(VariableData execute){
 		waitingForInput = null;
 		
 	//SET OUTPUT DATA
@@ -550,14 +550,14 @@ public class Debug{
 		}
 	}
 	
-	public static void tab() {
+	 static void tab() {
 		if(isStepping && waitingForInput == null && mode != RunMode.RUN){
 			do{
 				step();
 			}while(getTop() != null && !getTop().isShowing());
 		}
 	}
-	public static void f1() {
+	 static void f1() {
 		if(running == null){
 			running = new Status(Main.mainBP);
 		}else{
@@ -573,7 +573,7 @@ public class Debug{
     		stepForever();
     	}
 	}
-	public static void f2() {
+	 static void f2() {
 		if(!isStepping()){
 			Main.blueprints.get(0).getPanel().requestFocusInWindow();
 			mode = RunMode.FAST;
@@ -583,7 +583,7 @@ public class Debug{
     		step();
     	}
 	}
-	public static void f3() {
+	 static void f3() {
     	if(!isStepping()){
     		Main.blueprints.get(0).getPanel().requestFocusInWindow();
     		mode = RunMode.SLOW;
@@ -597,16 +597,16 @@ public class Debug{
 		Collections.reverse(reverseList);
 		list.remove(list.size() - 1 - reverseList.indexOf(o));
 	}
-	public static class Status extends VObject{
+	 static class Status extends VObject{
 		private static final long serialVersionUID = 1L;
 		private ImageIcon run;
 		private ImageIcon paused;
 		
-		public void pause(){
+		 void pause(){
 			headerLabel.setIcon(paused);
 		}
 		
-		public void unpause(){
+		 void unpause(){
 			headerLabel.setIcon(run);
 		}
 		

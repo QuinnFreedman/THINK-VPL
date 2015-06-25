@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -41,7 +41,7 @@ class Console extends JFrame implements KeyListener{
 	private static final long serialVersionUID = 1L;
 	
 	private JTextArea output;
-	public JTextField input;
+	 JTextField input;
 	
 	protected Console getThis(){
 		return this;
@@ -82,7 +82,7 @@ class Console extends JFrame implements KeyListener{
 		
 	}
 	
-	public void post(String s){
+	 void post(String s){
 		SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
@@ -91,7 +91,7 @@ class Console extends JFrame implements KeyListener{
         	
         }});
 	}
-	public void clear(){
+	 void clear(){
 		if(output != null)
 			output.setText("");
 	}
@@ -137,12 +137,12 @@ class Console extends JFrame implements KeyListener{
 			addOutputNode(new Node(Node.NodeType.SENDING,this,dt));
 		}
 
-		public Variable.DataType getDataType() {
+		 Variable.DataType getDataType() {
 			return dt;
 		}
 		
 		@Override
-		public String getSimpleName(){
+		 String getSimpleName(){
 			if(dt.isNumber()){
 				return "Get Number From Console";
 			}else if(dt == Variable.DataType.STRING){
@@ -197,7 +197,7 @@ class Console extends JFrame implements KeyListener{
 		}
 	}
 	
-	public static boolean isNumeric(String str)
+	 static boolean isNumeric(String str)
 	{
 	  return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
 	}

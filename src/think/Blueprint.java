@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -44,7 +44,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
-public class Blueprint implements GraphEditor,ActionListener,MouseListener,KeyListener{
+ class Blueprint implements GraphEditor,ActionListener,MouseListener,KeyListener{
 
 	private ArrayList<VObject> objects = new ArrayList<VObject>();
 	private ArrayList<Curve> curves = new ArrayList<Curve>();
@@ -61,20 +61,20 @@ public class Blueprint implements GraphEditor,ActionListener,MouseListener,KeyLi
 	
 	private JPanel vars;
 	private JPanel funcs;
-	public JScrollPane scrollVars;
+	 JScrollPane scrollVars;
 	private JScrollPane scrollFuncs;
-	public JSplitPane splitPane;
+	 JSplitPane splitPane;
 	private JPopupMenu panelPopup;
 	private String name = "";
 	protected JPanel panelHolder;
 	
-	public String getName() {
+	 String getName() {
 		return name;
 	}
-	public void setName(String name) {
+	 void setName(String name) {
 		this.name = name;
 	}
-	public ArrayList<VFunction> getFunctions() {
+	 ArrayList<VFunction> getFunctions() {
 		return functions;
 	}
 	@Override
@@ -336,7 +336,7 @@ public class Blueprint implements GraphEditor,ActionListener,MouseListener,KeyLi
 		vars.revalidate();
 	}
 	
-	public void updateFuncs(){
+	 void updateFuncs(){
 		funcs.removeAll();
 		for(VFunction f : functions){
 			funcs.add(f);

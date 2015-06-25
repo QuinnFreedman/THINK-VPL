@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -31,26 +31,26 @@ import java.awt.Rectangle;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
-public class PrimitiveFunction extends Executable{
+ class PrimitiveFunction extends Executable{
 	private static final long serialVersionUID = 1L;
 	Variable.DataType type;
 	private JLabel label;
 	private String text = "";
 	protected VariableData parentVarData;
 	protected Variable parentVariable;
-	//public static ArrayList<Variable.DataType> getInputs(){return null;};
-	//public static ArrayList<Variable.DataType> getOutputs(){return null;};
+	// static ArrayList<Variable.DataType> getInputs(){return null;};
+	// static ArrayList<Variable.DataType> getOutputs(){return null;};
 	
 	private boolean isStatic = true;
 	
-	public VariableData getParentVarData(){
+	 VariableData getParentVarData(){
 		return parentVarData;
 	}
-	public void setParentVarData(VariableData v) {
+	 void setParentVarData(VariableData v) {
 		parentVarData = v;
 		
 	}
-	public boolean isStatic(){
+	 boolean isStatic(){
 		return isStatic;
 	}
 	PrimitiveFunction(Point pos, Variable parent){
@@ -97,7 +97,7 @@ public class PrimitiveFunction extends Executable{
 	       
 	}
 	
-	public void setText(String s) {
+	 void setText(String s) {
 		this.text = (isStatic ? "" : "\u0394 ")+crop(getPathName(),15) + crop(s,15)+" : "+crop(getSimpleName(),15);
 		label.setText(text);
 		this.setSize(this.getSize());
@@ -114,11 +114,11 @@ public class PrimitiveFunction extends Executable{
 		this.parentVariable = parent;
 	}
 
-	public void removeFromParent(){
+	 void removeFromParent(){
 		if(parentVariable != null)
 			parentVariable.removeChild(this);
 	}
-	public Variable getParentVariable() {
+	 Variable getParentVariable() {
 		return parentVariable;
 	}
 	

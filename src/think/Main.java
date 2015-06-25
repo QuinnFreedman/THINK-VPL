@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -60,17 +60,17 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class Main implements ActionListener{
+ class Main implements ActionListener{
 	static Point mousePos = new Point();
 	static HashMap<Variable.DataType,Color> colors = new HashMap<Variable.DataType,Color>();
-	public static boolean altPressed = false;
+	 static boolean altPressed = false;
 	
 	static ComponentMover componentMover;
-	public static JFrame window;
+	 static JFrame window;
 	static Point clickLocation;
-	public static EntryPoint entryPoint;
-	public static Main THIS;
-	public static Blueprint mainBP;
+	 static EntryPoint entryPoint;
+	 static Main THIS;
+	 static Blueprint mainBP;
 	protected static JTabbedPane tabbedPane;
 	
 	static ArrayList<Blueprint> blueprints;
@@ -101,7 +101,7 @@ public class Main implements ActionListener{
             @Override
             public boolean dispatchKeyEvent(KeyEvent ke) {
            	//Thread t = new Thread() {
-     	        //public void run() {
+     	        // void run() {
                 synchronized (Main.class) {
                     switch (ke.getID()) {
                     case KeyEvent.KEY_PRESSED:
@@ -368,7 +368,7 @@ public class Main implements ActionListener{
 				tabbedPane.addTab("+", plus);
 				
 				tabbedPane.addChangeListener(new ChangeListener() {
-			        public void stateChanged(ChangeEvent e) {
+					public void stateChanged(ChangeEvent e) {
 			            if(tabbedPane.getSelectedComponent() == plus){
 			            	InstantiableBlueprint ibp = new InstantiableBlueprint();
 			            	blueprints.add(ibp);
@@ -405,7 +405,7 @@ public class Main implements ActionListener{
 		});
 	}
 	
-	public static Blueprint getOpenClass(){
+	 static Blueprint getOpenClass(){
 		return blueprints.get(tabbedPane.getSelectedIndex());
 	}
 	
@@ -456,7 +456,7 @@ public class Main implements ActionListener{
 		
     }
 	
-	public static String crop(String s, int i){
+	 static String crop(String s, int i){
 		if(s.length() <= i){
 			return s;
 		}

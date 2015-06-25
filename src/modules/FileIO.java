@@ -21,53 +21,60 @@
  * 
  */
 
-package think;
+package modules;
 
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 
- class ContextualPointer extends Executable{
-	private static final long serialVersionUID = 1L;
+import think.Executable;
+import think.GraphEditor;
+import think.Module;
+import think.Variable.DataType;
+import think.VariableData;
 
-	ContextualPointer(Point pos, GraphEditor owner){
-		super(pos,owner);
-		this.color = Main.colors.get(Variable.DataType.OBJECT);
+public class FileIO extends Module{
+	
+	@Override
+	public void setup(){
+		setModuleName("FileIO");
+		addFunction(new Make_Directory());
+	}
+	
+	
+	@Override
+	public void run() {
 		
-		if(!(owner instanceof InstantiableBlueprint)){
-			try{
-				throw(new IllegalArgumentException());
-			}catch(IllegalArgumentException e){
-				Out.printStackTrace(e);
-			}
+	}
+	
+	class Make_Directory extends Executable{
+		private static final long serialVersionUID = 1L;
+		@Override
+		public Mode getPrimairyMode(){return Mode.IN;};
+		
+		@Override
+		public ArrayList<DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC));
 		}
-	}
-	
-	@Override
-	public ArrayList<Variable.DataType> getOutputs() {
-		return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.OBJECT));
-	}
-	
-	@Override
-	 String getSimpleName() {
-		return "THIS";
-	}
-	
-	@Override
-	public VariableData execute(VariableData[] inputs) {
-		VariableData.Instance output;
-		
-		if(owner instanceof InstantiableBlueprint){
-			output = (VariableData.Instance) ((InstantiableBlueprint) owner).getWorkingInstance();
-		}else{
-			try{
-				throw(new IllegalArgumentException());
-			}catch(IllegalArgumentException e){
-				Out.printStackTrace(e);
-			}
-			output = null;
+		@Override
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC));
 		}
 		
-		return output;	
+		@Override
+		public VariableData execute(VariableData[] input){
+			
+			return new VariableData.Integer(12);//test
+		}
+		Make_Directory(Point pos, GraphEditor owner) {
+			super(pos, owner);
+			
+		}
+		
+		Make_Directory(){
+			
+		}
 	}
 }

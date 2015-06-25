@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -84,13 +84,13 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 	private JPanel addOutputNode;
 	private JScrollPane scrollPane;
 	
-	public FunctionIO getInputObject(){
+	 FunctionIO getInputObject(){
 		return inputObject;
 	}
-	public FunctionIO getOutputObject(){
+	 FunctionIO getOutputObject(){
 		return outputObject;
 	}
-	public FunctionOverseer getOverseer(){
+	 FunctionOverseer getOverseer(){
 		return parent;
 	}
 	@Override
@@ -503,10 +503,10 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 	}
 	
 	static class FunctionIO extends Executable{
-		public Mode mode;
+		 Mode mode;
 		private Rectangle fillSize = null;
 		
-		public static enum Mode{
+		 static enum Mode{
 			OUTPUT,INPUT
 		}
 		@Override
@@ -520,7 +520,7 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 			else
 				return null;
 		}
-		public FunctionOverseer getOverseer(){
+		 FunctionOverseer getOverseer(){
 			if(owner instanceof FunctionEditor)
 				return ((FunctionEditor) owner).parent;
 			else if(owner instanceof FunctionOverseer)
@@ -581,7 +581,7 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 	class removeableNode extends Node{
 		Node THIS = this;
 		
-		public removeableNode(NodeType type, VObject parentObj, Variable.DataType dt, boolean b) {
+		 removeableNode(NodeType type, VObject parentObj, Variable.DataType dt, boolean b) {
 			super(type, parentObj, dt, b);
 			this.addMouseListener(new Deleter());
 			

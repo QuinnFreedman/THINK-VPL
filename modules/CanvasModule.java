@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -46,32 +46,32 @@ class CanvasModule extends Module{
 	private static ArrayList<Object> shapes= new ArrayList<Object>();
 	private static ArrayList<Boolean> isFill = new ArrayList<Boolean>();
 	
-	public static void addShape(Shape a, Boolean solid){
+	 static void addShape(Shape a, Boolean solid){
 		shapes.add(a);
 		isFill.add(solid);
 	}
 	
-	public static void setColor(Color a){
+	 static void setColor(Color a){
 		shapes.add(a);
 		isFill.add(false);
 	}
 	
-	public static void setLineWidth(float a){
+	 static void setLineWidth(float a){
 		shapes.add(new BasicStroke(a));
 		isFill.add(false);
 	}
 	
-	public static void clear(){
+	 static void clear(){
 		shapes.clear();
 		isFill.clear();
 	}
 	
-	public static void update(){
+	 static void update(){
 		currentlyOpen.canvas.repaint();
 	}
 	
 	@Override
-	public void setup(){
+	 void setup(){
 		currentlyOpen = new Canvas();
 		setCanvasSize(200,200);
 		addFunction(new Update());
@@ -92,7 +92,7 @@ class CanvasModule extends Module{
 	}
 	
 	@Override
-	public void run(){
+	 void run(){
 		clear();
 		update();
 		currentlyOpen.setVisible(false);
@@ -106,10 +106,10 @@ class CanvasModule extends Module{
 	static class CanvasExecutable extends Executable{
 		private static final long serialVersionUID = 1L;
 		@Override
-		public Mode getPrimairyMode(){return Mode.IN;};
+		 Mode getPrimairyMode(){return Mode.IN;};
 		
 		@Override
-		public ArrayList<Variable.DataType> getOutputs(){
+		 ArrayList<Variable.DataType> getOutputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC));
 		}
@@ -127,7 +127,7 @@ class CanvasModule extends Module{
 	static class Update extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
-		public ArrayList<Variable.DataType> getInputs(){
+		 ArrayList<Variable.DataType> getInputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC));
 		}
@@ -150,7 +150,7 @@ class CanvasModule extends Module{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		public ArrayList<Variable.DataType> getInputs(){
+		 ArrayList<Variable.DataType> getInputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC));
 		}
@@ -173,7 +173,7 @@ class CanvasModule extends Module{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		public ArrayList<Variable.DataType> getInputs(){
+		 ArrayList<Variable.DataType> getInputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC,
 					Variable.DataType.INTEGER,
@@ -182,7 +182,7 @@ class CanvasModule extends Module{
 		}
 		
 		@Override
-		public ArrayList<String> getInputTooltips(){
+		 ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					"Red",
 					"Green",
@@ -210,14 +210,14 @@ class CanvasModule extends Module{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		public ArrayList<Variable.DataType> getInputs(){
+		 ArrayList<Variable.DataType> getInputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC,
 					Variable.DataType.FLOAT));
 		}
 		
 		@Override
-		public ArrayList<String> getInputTooltips(){
+		 ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					"Line Width"));
 		}
@@ -241,7 +241,7 @@ class CanvasModule extends Module{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		public ArrayList<Variable.DataType> getInputs(){
+		 ArrayList<Variable.DataType> getInputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC,
 					Variable.DataType.INTEGER,
@@ -249,7 +249,7 @@ class CanvasModule extends Module{
 		}
 		
 		@Override
-		public ArrayList<String> getInputTooltips(){
+		 ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					"Width",
 					"Height"));
@@ -274,7 +274,7 @@ class CanvasModule extends Module{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		public ArrayList<Variable.DataType> getInputs(){
+		 ArrayList<Variable.DataType> getInputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC));
 		}
@@ -298,7 +298,7 @@ class CanvasModule extends Module{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		public ArrayList<Variable.DataType> getInputs(){
+		 ArrayList<Variable.DataType> getInputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC));
 		}
@@ -322,7 +322,7 @@ class CanvasModule extends Module{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		public ArrayList<Variable.DataType> getInputs(){
+		 ArrayList<Variable.DataType> getInputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC,
 					Variable.DataType.BOOLEAN));
@@ -348,12 +348,12 @@ class CanvasModule extends Module{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		public ArrayList<Variable.DataType> getOutputs(){
+		 ArrayList<Variable.DataType> getOutputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.INTEGER));
 		}
 		@Override
-		public ArrayList<Variable.DataType> getInputs(){
+		 ArrayList<Variable.DataType> getInputs(){
 			return null;
 		}
 		
@@ -375,12 +375,12 @@ class CanvasModule extends Module{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		public ArrayList<Variable.DataType> getOutputs(){
+		 ArrayList<Variable.DataType> getOutputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.INTEGER));
 		}
 		@Override
-		public ArrayList<Variable.DataType> getInputs(){
+		 ArrayList<Variable.DataType> getInputs(){
 			return null;
 		}
 		
@@ -401,7 +401,7 @@ class CanvasModule extends Module{
 	static class Fill_Rectangle extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
-		public ArrayList<Variable.DataType> getInputs(){
+		 ArrayList<Variable.DataType> getInputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC,
 					Variable.DataType.DOUBLE,
@@ -411,7 +411,7 @@ class CanvasModule extends Module{
 		}
 		
 		@Override
-		public ArrayList<String> getInputTooltips(){
+		 ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					" X ",
 					" Y ",
@@ -444,7 +444,7 @@ class CanvasModule extends Module{
 	static class Draw_Rectangle extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
-		public ArrayList<Variable.DataType> getInputs(){
+		 ArrayList<Variable.DataType> getInputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC,
 					Variable.DataType.DOUBLE,
@@ -454,7 +454,7 @@ class CanvasModule extends Module{
 		}
 		
 		@Override
-		public ArrayList<String> getInputTooltips(){
+		 ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					" X ",
 					" Y ",
@@ -487,7 +487,7 @@ class CanvasModule extends Module{
 	static class Fill_Circle extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
-		public ArrayList<Variable.DataType> getInputs(){
+		 ArrayList<Variable.DataType> getInputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC,
 					Variable.DataType.DOUBLE,
@@ -497,7 +497,7 @@ class CanvasModule extends Module{
 		}
 		
 		@Override
-		public ArrayList<String> getInputTooltips(){
+		 ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					" X ",
 					" Y ",
@@ -530,7 +530,7 @@ class CanvasModule extends Module{
 	static class Draw_Circle extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
-		public ArrayList<Variable.DataType> getInputs(){
+		 ArrayList<Variable.DataType> getInputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC,
 					Variable.DataType.DOUBLE,
@@ -540,7 +540,7 @@ class CanvasModule extends Module{
 		}
 		
 		@Override
-		public ArrayList<String> getInputTooltips(){
+		 ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					" X ",
 					" Y ",
@@ -573,7 +573,7 @@ class CanvasModule extends Module{
 	static class Draw_Line extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
-		public ArrayList<Variable.DataType> getInputs(){
+		 ArrayList<Variable.DataType> getInputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
 					Variable.DataType.GENERIC,
 					Variable.DataType.DOUBLE,
@@ -583,7 +583,7 @@ class CanvasModule extends Module{
 		}
 		
 		@Override
-		public ArrayList<String> getInputTooltips(){
+		 ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					"x1",
 					"y1",

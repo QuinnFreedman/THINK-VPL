@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -42,7 +42,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
-public class Node extends JPanel implements MouseListener, MouseMotionListener{
+ class Node extends JPanel implements MouseListener, MouseMotionListener{
 	private static final long serialVersionUID = 1L;
 	
 	static Node currentlyDragging;
@@ -54,7 +54,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 	private static JPopupMenu nodePopup;
 	boolean canHaveMultipleInputs = true;
 	boolean isHover = false;
-	public Variable.DataType dataType;
+	 Variable.DataType dataType;
 	protected Dimension size = new Dimension(15,15);
 	private FunctionSelector childPicker;
 	
@@ -74,15 +74,15 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		this(type,parentObj,false);
 		this.dataType = dt;
 	}
-	public Node(NodeType type, VObject parentObj, Variable.DataType dt,
+	 Node(NodeType type, VObject parentObj, Variable.DataType dt,
 			boolean b) {
 		this(type,parentObj,b);
 		this.dataType = dt;
 	}
-	public void onConnect(){
+	 void onConnect(){
 		//override in subclass
 	}
-	public void onDisconnect(){
+	 void onDisconnect(){
 		//override in subclass
 	}
 	protected static void clearChildren(Node nodeToClear){
@@ -121,7 +121,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		}
 	}
 	
-	public static ArrayList<ArrayList<Variable.DataType>> complement(ArrayList<Variable.DataType> A, ArrayList<Variable.DataType> B){
+	 static ArrayList<ArrayList<Variable.DataType>> complement(ArrayList<Variable.DataType> A, ArrayList<Variable.DataType> B){
 		ArrayList<Variable.DataType> sourceList = new ArrayList<Variable.DataType>(A);
 		ArrayList<Variable.DataType> destinationList = new ArrayList<Variable.DataType>(B);
 		
@@ -136,7 +136,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		return new ArrayList<ArrayList<Variable.DataType>>(Arrays.asList(sourceList,destinationList));
 	}
 	
-	public static void connect(Node A, Node B){
+	 static void connect(Node A, Node B){
 		
 		if(!A.canHaveMultipleInputs)
 			clearChildren(A);
@@ -179,7 +179,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 			
 	}
 	/*@Override
-	public Dimension getSize(){
+	 Dimension getSize(){
 		return new Dimension(300,300);
 	}*/
 	@Override
@@ -308,7 +308,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		}
 	}
 	
-	public static void castOrConnect(Node node1, Node node2){
+	 static void castOrConnect(Node node1, Node node2){
 		Node A;
 		Node B;
 		if(node1.type == NodeType.RECIEVING && node2.type == NodeType.SENDING){
@@ -331,7 +331,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		node2.parentObject.owner.getPanel().repaint();
 	}
 	
-	public static boolean canConnect(Node node1, Node node2){
+	 static boolean canConnect(Node node1, Node node2){
 		if(node1.parentObject == node2.parentObject){
 			return false;
 		}
@@ -385,7 +385,7 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 		Main.mousePos.x = e.getLocationOnScreen().y-this.getLocationOnScreen().y;
 		Main.panel.repaint();*/
 	}
-	public static Point getLocationOnPanel(Component c, JPanel p){
+	 static Point getLocationOnPanel(Component c, JPanel p){
 		try{
 			return new Point(c.getLocationOnScreen().x-p.getLocationOnScreen().x,c.getLocationOnScreen().y-p.getLocationOnScreen().y);
 		}catch(Exception e){
@@ -394,16 +394,16 @@ public class Node extends JPanel implements MouseListener, MouseMotionListener{
 			return null;
 		}
 	}
-	public static Point getLocationOnPanel(MouseEvent e, JPanel p){
+	 static Point getLocationOnPanel(MouseEvent e, JPanel p){
 		return new Point(e.getLocationOnScreen().x-p.getLocationOnScreen().x,e.getLocationOnScreen().y-p.getLocationOnScreen().y);
 	}
-	public enum Direction{
+	 enum Direction{
 		NORTH,SOUTH,EAST,WEST
 	}
-	public enum NodeType{
+	 enum NodeType{
 		SENDING,RECIEVING,INHERITANCE_SENDING,INHERITANCE_RECIEVING
 	}
-	public enum NodeStyle{
+	 enum NodeStyle{
 		INVISIBLE,VISIBLE
 	}
 }//6125

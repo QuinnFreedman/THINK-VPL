@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -49,7 +49,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-public class FunctionSelector extends VObject{
+ class FunctionSelector extends VObject{
 	private static final long serialVersionUID = 1L;
 	Node parentNode;
 	ArrayList<MenuItem> items;
@@ -88,7 +88,7 @@ public class FunctionSelector extends VObject{
 						
 					}
 					@Override
-					public void onDisconnect(){
+					 void onDisconnect(){
 						this.parentObject.delete();
 					}
 				{}};
@@ -368,7 +368,7 @@ public class FunctionSelector extends VObject{
 	}
 	
 	private class MenuItem extends JLabel implements MouseListener{
-		public String name;
+		 String name;
 		FunctionSelector childPicker;
 		private Executable f;
 		private Class<? extends Executable> c;
@@ -483,7 +483,7 @@ public class FunctionSelector extends VObject{
 			
 		}
 		
-		public void createObject(){
+		 void createObject(){
 			Executable ex = null;
 			try {
 				Point pos = Node.getLocationOnPanel(this.childPicker, owner.getPanel());

@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -27,7 +27,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class VString extends Variable{
+ class VString extends Variable{
 	private static final long serialVersionUID = 1L;
 	static int idCounter = 0;
 	String value = "";
@@ -56,7 +56,7 @@ public class VString extends Variable{
 		resetVariableData();
 	}
 	@Override
-	public void resetVariableData(){
+	 void resetVariableData(){
 		this.varData = new VariableData.String(value);
 	}
 	

@@ -20,7 +20,7 @@ import javax.swing.SwingUtilities;
  *  Components can be registered when the class is created. Additional
  *  components can be added at any time using the registerComponent() method.
  */
-public class ComponentMover extends MouseAdapter
+ class ComponentMover extends MouseAdapter
 {
 	private Insets dragInsets = new Insets(0, 0, 0, 0);
 	private Dimension snapSize = new Dimension(1, 1);
@@ -45,7 +45,7 @@ public class ComponentMover extends MouseAdapter
 	 *  Constructor for moving individual components. The components must be
 	 *  regisetered using the registerComponent() method.
 	 */
-	public ComponentMover()
+	 ComponentMover()
 	{
 	}
 
@@ -58,7 +58,7 @@ public class ComponentMover extends MouseAdapter
 	 *  @param component         the Components to be registered for forwarding
 	 *                           drag events to the ancestor Component.
 	 */
-	public ComponentMover(Class destinationClass, Component... components)
+	 ComponentMover(Class destinationClass, Component... components)
 	{
 		this.destinationClass = destinationClass;
 		registerComponent( components );
@@ -72,7 +72,7 @@ public class ComponentMover extends MouseAdapter
 	 *  @param components    the Components to be registered for forwarding drag
 	 *                       events to the parent component to be moved
 	 */
-	public ComponentMover(Component destinationComponent, Component... components)
+	 ComponentMover(Component destinationComponent, Component... components)
 	{
 		this.destinationComponent = destinationComponent;
 		registerComponent( components );
@@ -83,7 +83,7 @@ public class ComponentMover extends MouseAdapter
 	 *
 	 *  @return  the auto layout property
 	 */
-	public boolean isAutoLayout()
+	 boolean isAutoLayout()
 	{
 		return autoLayout;
 	}
@@ -93,7 +93,7 @@ public class ComponentMover extends MouseAdapter
 	 *
 	 *  @param  autoLayout when true layout will be invoked on the parent container
 	 */
-	public void setAutoLayout(boolean autoLayout)
+	 void setAutoLayout(boolean autoLayout)
 	{
 		this.autoLayout = autoLayout;
 	}
@@ -103,7 +103,7 @@ public class ComponentMover extends MouseAdapter
 	 *
 	 *  @return  the change cursor property
 	 */
-	public boolean isChangeCursor()
+	 boolean isChangeCursor()
 	{
 		return changeCursor;
 	}
@@ -114,7 +114,7 @@ public class ComponentMover extends MouseAdapter
 	 *  @param  changeCursor when true the cursor will be changed to the
 	 *                       Cursor.MOVE_CURSOR while the mouse is pressed
 	 */
-	public void setChangeCursor(boolean changeCursor)
+	 void setChangeCursor(boolean changeCursor)
 	{
 		this.changeCursor = changeCursor;
 	}
@@ -124,7 +124,7 @@ public class ComponentMover extends MouseAdapter
 	 *
 	 *  @return  the drag insets
 	 */
-	public Insets getDragInsets()
+	 Insets getDragInsets()
 	{
 		return dragInsets;
 	}
@@ -137,7 +137,7 @@ public class ComponentMover extends MouseAdapter
 	 *
 	 *  @param  dragInsets
 	 */
-	public void setDragInsets(Insets dragInsets)
+	 void setDragInsets(Insets dragInsets)
 	{
 		this.dragInsets = dragInsets;
 	}
@@ -147,7 +147,7 @@ public class ComponentMover extends MouseAdapter
 	 *
 	 *  @return  the bounds insets
 	 */
-	public Insets getEdgeInsets()
+	 Insets getEdgeInsets()
 	{
 		return edgeInsets;
 	}
@@ -160,7 +160,7 @@ public class ComponentMover extends MouseAdapter
 	 *
 	 *  @param  edgeInsets
 	 */
-	public void setEdgeInsets(Insets edgeInsets)
+	 void setEdgeInsets(Insets edgeInsets)
 	{
 		this.edgeInsets = edgeInsets;
 	}
@@ -170,7 +170,7 @@ public class ComponentMover extends MouseAdapter
 	 *
 	 *  @param component  the component the listeners are removed from
 	 */
-	public void deregisterComponent(Component... components)
+	 void deregisterComponent(Component... components)
 	{
 		for (Component component : components)
 			component.removeMouseListener( this );
@@ -181,7 +181,7 @@ public class ComponentMover extends MouseAdapter
 	 *
 	 *  @param component  the component the listeners are added to
 	 */
-	public void registerComponent(Component... components)
+	 void registerComponent(Component... components)
 	{
 		for (Component component : components)
 			component.addMouseListener( this );
@@ -192,7 +192,7 @@ public class ComponentMover extends MouseAdapter
 	 *
 	 *  @return the snap size
 	 */
-	public Dimension getSnapSize()
+	 Dimension getSnapSize()
 	{
 		return snapSize;
 	}
@@ -202,7 +202,7 @@ public class ComponentMover extends MouseAdapter
 	 *  the closest grid position. Snapping will occur when the mouse is
 	 *  dragged half way.
 	 */
-	public void setSnapSize(Dimension snapSize)
+	 void setSnapSize(Dimension snapSize)
 	{
 		if (snapSize.width < 1
 		||  snapSize.height < 1)

@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -51,29 +51,29 @@ public class Variable extends SidebarItem implements DocumentListener{
 	protected PrimitiveFunctionSelector childPicker;
 	private Variable originalVar;
 	
-	public void removeChild(PrimitiveFunction pf){
+	 void removeChild(PrimitiveFunction pf){
 		children.remove(pf);
 	}
-	public void addChild(PrimitiveFunction pf){
+	 void addChild(PrimitiveFunction pf){
 		children.add(pf);
 	}
-	public void clearChildren(){
+	 void clearChildren(){
 		while(children.size() > 0) {
 			children.get(0).delete();
 		}
 		if(childPicker != null)
 			childPicker.delete();
 	}
-	public void resetVariableData(){
+	 void resetVariableData(){
 		this.varData = null;
 	}
-	public Variable getOriginal(){
+	 Variable getOriginal(){
 		if(parentInstance != null){
 			return originalVar;
 		}
 		return this;
 	}
-	public void setOriginalVar(Variable v){
+	 void setOriginalVar(Variable v){
 		originalVar = v;
 	}
 	private Variable getThis(){
@@ -154,7 +154,7 @@ public class Variable extends SidebarItem implements DocumentListener{
 	}
 	
 	@Override
-	public void setEditable(boolean b){
+	 void setEditable(boolean b){
 		for(int i = 1; i < fields.size(); i++){
 			fields.get(i).setEditable(b);
 		}
@@ -220,7 +220,7 @@ public class Variable extends SidebarItem implements DocumentListener{
     	}
     
 		@Override
-	    public void removeUpdate(DocumentEvent e) {
+		public void removeUpdate(DocumentEvent e) {
 	    	try {
 	    		var.setID(e.getDocument().getText(0, e.getDocument().getLength()));
 				var.setChildTexts(e.getDocument().getText(0, e.getDocument().getLength()));
@@ -253,7 +253,7 @@ public class Variable extends SidebarItem implements DocumentListener{
     public enum DataType{
     	BOOLEAN,BYTE,SHORT,INTEGER,FLOAT,DOUBLE,LONG,CHARACTER,STRING,GENERIC,NUMBER,FLEX,OBJECT;
 
-		public boolean isNumber() {
+		 boolean isNumber() {
 			if(this == BYTE || this == SHORT || this == INTEGER || this == FLOAT || this == DOUBLE || this == LONG)
 				return true;
 			else
@@ -261,13 +261,13 @@ public class Variable extends SidebarItem implements DocumentListener{
 		}
     	
     }
-	public ArrayList<PrimitiveFunction> getFunctions() {
+	 ArrayList<PrimitiveFunction> getFunctions() {
 		return functions;
 	}
-	public ArrayList<PrimitiveFunction> getChildren() {
+	 ArrayList<PrimitiveFunction> getChildren() {
 		return children;
 	}
-	public static Variable create(DataType varType, GraphEditor owner) {
+	 static Variable create(DataType varType, GraphEditor owner) {
 		switch(varType){
 		case BOOLEAN:
 			return new VBoolean(owner);

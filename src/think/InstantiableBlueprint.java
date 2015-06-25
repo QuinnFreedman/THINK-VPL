@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -54,11 +54,12 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 	
 	JTextField className;
 	
-	public void setWorkingInstance(VariableData.Instance instance) {
+	 void setWorkingInstance(VariableData.Instance instance) {
 		this.workingInstance = instance;
 		
 	}
 	
+	@Override
 	public VariableData.Instance getWorkingInstance() {
 		return workingInstance;
 		
@@ -303,7 +304,7 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 		Node THIS = this;
 		private InstantiableBlueprint overseer;
 		
-		public removeableNode(NodeType type, VObject parentObj, Variable.DataType dt, InstantiableBlueprint overseer) {
+		 removeableNode(NodeType type, VObject parentObj, Variable.DataType dt, InstantiableBlueprint overseer) {
 			super(type, parentObj, dt, true);
 			this.overseer = overseer;
 			overseer.addInput(dataType);

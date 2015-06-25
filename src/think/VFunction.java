@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -55,13 +55,13 @@ class VFunction extends SidebarItem implements FunctionOverseer{
 	private VFunction originalFunc = null;
 	private VariableData.Instance workingInstance = null;
 	
-	public VFunction getOriginal(){
+	 VFunction getOriginal(){
 		if(parentInstance != null){
 			return originalFunc;
 		}
 		return this;
 	}
-	public void setOriginalFunc(VFunction f) {
+	 void setOriginalFunc(VFunction f) {
 		originalFunc = f;
 		
 	}
@@ -177,7 +177,7 @@ class VFunction extends SidebarItem implements FunctionOverseer{
 	}
 	
 	@Override
-	public void setEditable(boolean b){
+	 void setEditable(boolean b){
 		for(int i = 1; i < fields.size(); i++){
 			fields.get(i).setEditable(b);
 		}
@@ -264,7 +264,7 @@ class VFunction extends SidebarItem implements FunctionOverseer{
 	public UserFunc getCurrentlyExecuting() {
 		return currentlyExecuting;
 	}
-	public void setExecuteOnce(boolean b) {
+	 void setExecuteOnce(boolean b) {
 		this.executeOnce = b;
 		for(UserFunc f : children){
 			f.executeOnce = b;
@@ -279,7 +279,7 @@ class VFunction extends SidebarItem implements FunctionOverseer{
 		return executeOnce;
 	}
 	
-	public static Variable getVariable(ArrayList<Variable> variables, String s){
+	 static Variable getVariable(ArrayList<Variable> variables, String s){
 		Out.println("	looking for\""+s+"\" in "+variables);
 		for(Variable v : variables){
 			Out.println("		"+v);

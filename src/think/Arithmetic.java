@@ -4,22 +4,23 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
  *  quinnfreedman@gmail.com
  * 
  */
+
 package think;
 
 import java.awt.Color;
@@ -67,7 +68,7 @@ class Arithmetic extends Executable{
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public void onConnect(){
+		 void onConnect(){
 			if(this.dataType == Variable.DataType.NUMBER){
 				Node connectingNode = (this.type == NodeType.RECIEVING) ? this.parents.get(this.parents.size()-1) : this.children.get(this.children.size()-1);
 				this.dataType = connectingNode.dataType;
@@ -93,7 +94,7 @@ class Arithmetic extends Executable{
 			}
 		}
 		@Override
-		public void onDisconnect(){
+		 void onDisconnect(){
 			ArrayList<Node> nodeList = (this.type == NodeType.RECIEVING) ? this.parents : this.children;
 			if(nodeList.isEmpty()){
 				if(this.type == NodeType.RECIEVING){
@@ -145,7 +146,7 @@ class Arithmetic extends Executable{
 			super(type, parentObj,Variable.DataType.NUMBER);
 		}
 
-		public NumberNode(NodeType type, VObject parentObj, boolean b) {
+		 NumberNode(NodeType type, VObject parentObj, boolean b) {
 			super(type, parentObj,Variable.DataType.NUMBER,b);
 		}
 		

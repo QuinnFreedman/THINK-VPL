@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -37,12 +37,12 @@ import javax.swing.text.DocumentFilter;
 
 import think.Variable.DataType;
 
-public class VArray extends Variable{
+ class VArray extends Variable{
 	private static final long serialVersionUID = 1L;
 	static int idCounter = 0;
 	String value;
 	
-	public InstantiableBlueprint objectType;
+	 InstantiableBlueprint objectType;
 	
 	protected VArray getThisVariable(){
 		return this;
@@ -71,12 +71,12 @@ public class VArray extends Variable{
 		
 		resetVariableData();
 	}
-	public VArray(DataType object, InstantiableBlueprint bp, GraphEditor owner) {
+	 VArray(DataType object, InstantiableBlueprint bp, GraphEditor owner) {
 		this(object, owner);
 		this.objectType = bp;
 	}
 	@Override
-	public void resetVariableData(){
+	 void resetVariableData(){
 		value = valueField.getText();
 		
 		VariableData.Array data = new VariableData.Array(this.dataType);
@@ -360,7 +360,7 @@ public class VArray extends Variable{
 		AbstractDocument doc;
 		VArray parent;
 		
-		public ArrayDocumentFilter(AbstractDocument doc, VArray parent) {
+		 ArrayDocumentFilter(AbstractDocument doc, VArray parent) {
 			this.doc = doc;
 			this.doc.setDocumentFilter(this);
 			this.parent = parent;

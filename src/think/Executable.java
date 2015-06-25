@@ -4,16 +4,16 @@
  *  Copyright (C) 2015  Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  it under the terms of the GNU General  License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU General  License for more details.
  *
- *  You should have received a copy of the GNU General Public License
+ *  You should have received a copy of the GNU General  License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  *  For more information, visit the THINK VPL website or email the author at
@@ -58,11 +58,11 @@ public class Executable extends VObject{
 	private ArrayList<Node> inputNodes;
 	private ArrayList<Node> outputNodes;
 	protected int activeNode;
-	public ArrayList<VariableData> workingData;
+	 ArrayList<VariableData> workingData;
 	protected boolean selected = false;
 	protected boolean executeOnce;
 	protected boolean hasExecuted = false;
-	public ArrayList<VariableData> outputData;
+	 ArrayList<VariableData> outputData;
 	
 	protected int defaultActiveNode = 1;
 	
@@ -148,13 +148,13 @@ public class Executable extends VObject{
 	protected void setOutputNodes(ArrayList<Node> nodes){
 		outputNodes = nodes;
 	}
-	protected void addInputNode(Node node) {
+	public void addInputNode(Node node) {
 		inputNodes.add(node);
 		inputNodeHolder.add(node);
 		inputNodeHolder.revalidate();
 		inputNodeHolder.repaint();
 	}
-	protected void addOutputNode(Node node) {
+	public void addOutputNode(Node node) {
 		outputNodes.add(node);
 		outputNodeHolder.add(node);
 		outputNodeHolder.revalidate();
@@ -178,20 +178,20 @@ public class Executable extends VObject{
 		outputNodeHolder.revalidate();
 		outputNodeHolder.repaint();
 	}
-	public void setSelected(boolean b){
+	void setSelected(boolean b){
 		selected = b;
 	}
-	public void resetActiveNode() {
+	 void resetActiveNode() {
 		if(!this.getInputNodes().isEmpty() && this.getInputNodes().get(0).dataType == Variable.DataType.GENERIC){
 			this.activeNode = 1;
 		}else{
 			this.activeNode = 0;
 		}
 	}
-	public int getActiveNode() {
+	 int getActiveNode() {
 		return activeNode;
 	}
-	public void incrementActiveNode() {
+	 void incrementActiveNode() {
 		activeNode++;
 	}
 	
@@ -203,7 +203,7 @@ public class Executable extends VObject{
 	 * The length should correspond to the length of Executable.getInputs() (minus one if the first
 	 * element of getInputs() is GENERIC).
 	 */
-	public ArrayList<String> getInputTooltips(){
+	 ArrayList<String> getInputTooltips(){
 		return null;
 	}
 	
@@ -215,7 +215,7 @@ public class Executable extends VObject{
 	 * The length should correspond to the length of Executable.getOutputs() (minus one if the first
 	 * element of getOutputs() is GENERIC).
 	 */
-	public ArrayList<String> getOutputTooltips(){
+	 ArrayList<String> getOutputTooltips(){
 		return null;
 	}
 	
@@ -223,7 +223,7 @@ public class Executable extends VObject{
 	 * 
 	 * @param pos - the position on the graph where the executable will be created.
 	 * @param owner - the graph editor in which the executable will be created.
-	*  For example, a blueprint, constructor, or function.
+	 * For example, a blueprint, constructor, or function.
 	 */
 	protected Executable(Point pos, GraphEditor owner){
 		super(owner);
@@ -350,7 +350,7 @@ public class Executable extends VObject{
 		return new Dimension(Math.max(60,this.getPreferredSize().width),
 				30+inputNodeHolder.getPreferredSize().height+outputNodeHolder.getPreferredSize().height);
 	}
-	public String getPathName(){
+	 String getPathName(){
 		String s = "";
 		if(this instanceof PrimitiveFunction && this.owner != ((PrimitiveFunction) this).getParentVariable().getOwner()){
 			Out.println("this instanceof PrimitiveFunction");
@@ -378,10 +378,10 @@ public class Executable extends VObject{
 		}
 		return s;
 	}
-	public String getSimpleName(){
+	 String getSimpleName(){
 		return ((getParentMod() == null) ? "" : getParentMod().getModuleName()+" > ") + getFunctionName();
 	}
-	public String getFunctionName(){
+	 String getFunctionName(){
 		return this.getClass().getSimpleName().replace('_',' ');
 	}
 }
