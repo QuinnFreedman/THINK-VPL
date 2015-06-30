@@ -21,7 +21,7 @@
  * 
  */
 
-package think;
+package modules;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -41,7 +41,13 @@ import java.util.Arrays;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-class CanvasModule extends Module{
+import think.Executable;
+import think.GraphEditor;
+import think.Module;
+import think.Variable.DataType;
+import think.VariableData;
+
+public class CanvasModule extends Module{
 	static Canvas currentlyOpen;
 	private static ArrayList<Object> shapes= new ArrayList<Object>();
 	private static ArrayList<Boolean> isFill = new ArrayList<Boolean>();
@@ -71,7 +77,7 @@ class CanvasModule extends Module{
 	}
 	
 	@Override
-	 void setup(){
+	public void setup(){
 		currentlyOpen = new Canvas();
 		setCanvasSize(200,200);
 		addFunction(new Update());
@@ -92,7 +98,7 @@ class CanvasModule extends Module{
 	}
 	
 	@Override
-	 void run(){
+	public void run(){
 		clear();
 		update();
 		currentlyOpen.setVisible(false);
@@ -103,15 +109,15 @@ class CanvasModule extends Module{
 		currentlyOpen.pack();
 	}
 	
-	static class CanvasExecutable extends Executable{
+	public static class CanvasExecutable extends Executable{
 		private static final long serialVersionUID = 1L;
 		@Override
-		 Mode getPrimairyMode(){return Mode.IN;};
+		public Mode getPrimairyMode(){return Mode.IN;};
 		
 		@Override
-		 ArrayList<Variable.DataType> getOutputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.GENERIC));
+		public ArrayList<DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC));
 		}
 		
 		CanvasExecutable(Point pos, GraphEditor owner) {
@@ -124,12 +130,12 @@ class CanvasModule extends Module{
 		}
 	}
 	
-	static class Update extends CanvasExecutable{
+	public static class Update extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
-		 ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.GENERIC));
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC));
 		}
 		
 		@Override
@@ -146,13 +152,13 @@ class CanvasModule extends Module{
 		}
 	}
 	
-	static class Clear extends CanvasExecutable{
+	public static class Clear extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		 ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.GENERIC));
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC));
 		}
 		
 		@Override
@@ -161,7 +167,7 @@ class CanvasModule extends Module{
 			return null;
 		}
 		
-		Clear(Point pos, GraphEditor owner) {
+		public Clear(Point pos, GraphEditor owner) {
 			super(pos,owner);
 		}
 		Clear(){
@@ -169,20 +175,20 @@ class CanvasModule extends Module{
 		}
 	}
 	
-	static class Set_Color extends CanvasExecutable{
+	public static class Set_Color extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		 ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.GENERIC,
-					Variable.DataType.INTEGER,
-					Variable.DataType.INTEGER,
-					Variable.DataType.INTEGER));
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC,
+					DataType.INTEGER,
+					DataType.INTEGER,
+					DataType.INTEGER));
 		}
 		
 		@Override
-		 ArrayList<String> getInputTooltips(){
+		public ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					"Red",
 					"Green",
@@ -198,7 +204,7 @@ class CanvasModule extends Module{
 			return null;
 		}
 		
-		Set_Color(Point pos, GraphEditor owner) {
+		public Set_Color(Point pos, GraphEditor owner) {
 			super(pos,owner);
 		}
 		Set_Color(){
@@ -206,18 +212,18 @@ class CanvasModule extends Module{
 		}
 	}
 	
-	static class Set_Line_Width extends CanvasExecutable{
+	public static class Set_Line_Width extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		 ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.GENERIC,
-					Variable.DataType.FLOAT));
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC,
+					DataType.FLOAT));
 		}
 		
 		@Override
-		 ArrayList<String> getInputTooltips(){
+		public ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					"Line Width"));
 		}
@@ -229,7 +235,7 @@ class CanvasModule extends Module{
 			return null;
 		}
 		
-		Set_Line_Width(Point pos, GraphEditor owner) {
+		public Set_Line_Width(Point pos, GraphEditor owner) {
 			super(pos,owner);
 		}
 		Set_Line_Width(){
@@ -237,19 +243,19 @@ class CanvasModule extends Module{
 		}
 	}
 	
-	static class Set_Canvas_Size extends CanvasExecutable{
+	public static class Set_Canvas_Size extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		 ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.GENERIC,
-					Variable.DataType.INTEGER,
-					Variable.DataType.INTEGER));
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC,
+					DataType.INTEGER,
+					DataType.INTEGER));
 		}
 		
 		@Override
-		 ArrayList<String> getInputTooltips(){
+		public ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					"Width",
 					"Height"));
@@ -262,7 +268,7 @@ class CanvasModule extends Module{
 			return null;
 		}
 		
-		Set_Canvas_Size(Point pos, GraphEditor owner) {
+		public Set_Canvas_Size(Point pos, GraphEditor owner) {
 			super(pos,owner);
 		}
 		Set_Canvas_Size(){
@@ -270,13 +276,13 @@ class CanvasModule extends Module{
 		}
 	}
 	
-	static class Show_Canvas extends CanvasExecutable{
+	public static class Show_Canvas extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		 ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.GENERIC));
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC));
 		}
 		
 		@Override
@@ -286,7 +292,7 @@ class CanvasModule extends Module{
 			return null;
 		}
 		
-		Show_Canvas(Point pos, GraphEditor owner) {
+		public Show_Canvas(Point pos, GraphEditor owner) {
 			super(pos,owner);
 		}
 		Show_Canvas(){
@@ -294,13 +300,13 @@ class CanvasModule extends Module{
 		}
 	}
 	
-	static class Hide_Canvas extends CanvasExecutable{
+	public static class Hide_Canvas extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		 ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.GENERIC));
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC));
 		}
 		
 		@Override
@@ -310,7 +316,7 @@ class CanvasModule extends Module{
 			return null;
 		}
 		
-		Hide_Canvas(Point pos, GraphEditor owner) {
+		public Hide_Canvas(Point pos, GraphEditor owner) {
 			super(pos,owner);
 		}
 		Hide_Canvas(){
@@ -318,14 +324,14 @@ class CanvasModule extends Module{
 		}
 	}
 	
-	static class Set_Antialiasing_Enabled extends CanvasExecutable{
+	public static class Set_Antialiasing_Enabled extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		 ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.GENERIC,
-					Variable.DataType.BOOLEAN));
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC,
+					DataType.BOOLEAN));
 		}
 		
 		@Override
@@ -336,7 +342,7 @@ class CanvasModule extends Module{
 			return null;
 		}
 		
-		Set_Antialiasing_Enabled(Point pos, GraphEditor owner) {
+		public Set_Antialiasing_Enabled(Point pos, GraphEditor owner) {
 			super(pos,owner);
 		}
 		Set_Antialiasing_Enabled(){
@@ -344,16 +350,16 @@ class CanvasModule extends Module{
 		}
 	}
 	
-	static class Get_Canvas_Width extends CanvasExecutable{
+	public static class Get_Canvas_Width extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		 ArrayList<Variable.DataType> getOutputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.INTEGER));
+		public ArrayList<DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.INTEGER));
 		}
 		@Override
-		 ArrayList<Variable.DataType> getInputs(){
+		public ArrayList<DataType> getInputs(){
 			return null;
 		}
 		
@@ -363,7 +369,7 @@ class CanvasModule extends Module{
 			return new VariableData.Integer(currentlyOpen.canvas.getWidth());
 		}
 		
-		Get_Canvas_Width(Point pos, GraphEditor owner) {
+		public Get_Canvas_Width(Point pos, GraphEditor owner) {
 			super(pos,owner);
 		}
 		Get_Canvas_Width(){
@@ -371,16 +377,16 @@ class CanvasModule extends Module{
 		}
 	}
 	
-	static class Get_Canvas_Height extends CanvasExecutable{
+	public static class Get_Canvas_Height extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		 ArrayList<Variable.DataType> getOutputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.INTEGER));
+		public ArrayList<DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.INTEGER));
 		}
 		@Override
-		 ArrayList<Variable.DataType> getInputs(){
+		public ArrayList<DataType> getInputs(){
 			return null;
 		}
 		
@@ -390,7 +396,7 @@ class CanvasModule extends Module{
 			return new VariableData.Integer(currentlyOpen.canvas.getHeight());
 		}
 		
-		Get_Canvas_Height(Point pos, GraphEditor owner) {
+		public Get_Canvas_Height(Point pos, GraphEditor owner) {
 			super(pos,owner);
 		}
 		Get_Canvas_Height(){
@@ -398,20 +404,21 @@ class CanvasModule extends Module{
 		}
 	}
 	
-	static class Fill_Rectangle extends CanvasExecutable{
+	public static class Fill_Rectangle extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
-		
-		 ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.GENERIC,
-					Variable.DataType.DOUBLE,
-					Variable.DataType.DOUBLE,
-					Variable.DataType.DOUBLE,
-					Variable.DataType.DOUBLE));
+
+		@Override
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC,
+					DataType.DOUBLE,
+					DataType.DOUBLE,
+					DataType.DOUBLE,
+					DataType.DOUBLE));
 		}
 		
 		@Override
-		 ArrayList<String> getInputTooltips(){
+		public ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					" X ",
 					" Y ",
@@ -433,7 +440,7 @@ class CanvasModule extends Module{
 			
 		}
 		
-		Fill_Rectangle(Point pos, GraphEditor owner) {
+		public Fill_Rectangle(Point pos, GraphEditor owner) {
 			super(pos,owner);
 		}
 		Fill_Rectangle(){
@@ -441,20 +448,21 @@ class CanvasModule extends Module{
 		}
 	}
 	
-	static class Draw_Rectangle extends CanvasExecutable{
+	public static class Draw_Rectangle extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
-		 ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.GENERIC,
-					Variable.DataType.DOUBLE,
-					Variable.DataType.DOUBLE,
-					Variable.DataType.DOUBLE,
-					Variable.DataType.DOUBLE));
+		@Override
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC,
+					DataType.DOUBLE,
+					DataType.DOUBLE,
+					DataType.DOUBLE,
+					DataType.DOUBLE));
 		}
 		
 		@Override
-		 ArrayList<String> getInputTooltips(){
+		public ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					" X ",
 					" Y ",
@@ -476,7 +484,7 @@ class CanvasModule extends Module{
 			
 		}
 		
-		Draw_Rectangle(Point pos, GraphEditor owner) {
+		public Draw_Rectangle(Point pos, GraphEditor owner) {
 			super(pos,owner);
 		}
 		Draw_Rectangle(){
@@ -484,20 +492,21 @@ class CanvasModule extends Module{
 		}
 	}
 	
-	static class Fill_Circle extends CanvasExecutable{
+	public static class Fill_Circle extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
-		 ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.GENERIC,
-					Variable.DataType.DOUBLE,
-					Variable.DataType.DOUBLE,
-					Variable.DataType.DOUBLE,
-					Variable.DataType.DOUBLE));
+		@Override
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC,
+					DataType.DOUBLE,
+					DataType.DOUBLE,
+					DataType.DOUBLE,
+					DataType.DOUBLE));
 		}
 		
 		@Override
-		 ArrayList<String> getInputTooltips(){
+		public ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					" X ",
 					" Y ",
@@ -519,7 +528,7 @@ class CanvasModule extends Module{
 			
 		}
 		
-		Fill_Circle(Point pos, GraphEditor owner) {
+		public Fill_Circle(Point pos, GraphEditor owner) {
 			super(pos,owner);
 		}
 		Fill_Circle(){
@@ -527,20 +536,21 @@ class CanvasModule extends Module{
 		}
 		
 	}
-	static class Draw_Circle extends CanvasExecutable{
+	public static class Draw_Circle extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
-		
-		 ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.GENERIC,
-					Variable.DataType.DOUBLE,
-					Variable.DataType.DOUBLE,
-					Variable.DataType.DOUBLE,
-					Variable.DataType.DOUBLE));
+
+		@Override
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC,
+					DataType.DOUBLE,
+					DataType.DOUBLE,
+					DataType.DOUBLE,
+					DataType.DOUBLE));
 		}
 		
 		@Override
-		 ArrayList<String> getInputTooltips(){
+		public ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					" X ",
 					" Y ",
@@ -562,7 +572,7 @@ class CanvasModule extends Module{
 			
 		}
 		
-		Draw_Circle(Point pos, GraphEditor owner) {
+		public Draw_Circle(Point pos, GraphEditor owner) {
 			super(pos,owner);
 		}
 		Draw_Circle(){
@@ -570,20 +580,21 @@ class CanvasModule extends Module{
 		}
 	}
 	
-	static class Draw_Line extends CanvasExecutable{
+	public static class Draw_Line extends CanvasExecutable{
 		private static final long serialVersionUID = 1L;
 		
-		 ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<Variable.DataType>(Arrays.asList(
-					Variable.DataType.GENERIC,
-					Variable.DataType.DOUBLE,
-					Variable.DataType.DOUBLE,
-					Variable.DataType.DOUBLE,
-					Variable.DataType.DOUBLE));
+		@Override
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC,
+					DataType.DOUBLE,
+					DataType.DOUBLE,
+					DataType.DOUBLE,
+					DataType.DOUBLE));
 		}
 		
 		@Override
-		 ArrayList<String> getInputTooltips(){
+		public ArrayList<String> getInputTooltips(){
 			return new ArrayList<String>(Arrays.asList(
 					"x1",
 					"y1",
@@ -605,7 +616,7 @@ class CanvasModule extends Module{
 			
 		}
 		
-		Draw_Line(Point pos, GraphEditor owner) {
+		public Draw_Line(Point pos, GraphEditor owner) {
 			super(pos,owner);
 		}
 		Draw_Line(){

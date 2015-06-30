@@ -41,6 +41,7 @@ import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -58,11 +59,15 @@ public class Executable extends VObject{
 	private ArrayList<Node> inputNodes;
 	private ArrayList<Node> outputNodes;
 	protected int activeNode;
-	 ArrayList<VariableData> workingData;
+	ArrayList<VariableData> workingData;
 	protected boolean selected = false;
 	protected boolean executeOnce;
 	protected boolean hasExecuted = false;
-	 ArrayList<VariableData> outputData;
+	ArrayList<VariableData> outputData;
+	
+	//protected boolean isExecuteOnce(){
+	//	return false;
+	//}
 	
 	protected int defaultActiveNode = 1;
 	
@@ -203,7 +208,7 @@ public class Executable extends VObject{
 	 * The length should correspond to the length of Executable.getInputs() (minus one if the first
 	 * element of getInputs() is GENERIC).
 	 */
-	 ArrayList<String> getInputTooltips(){
+	public ArrayList<String> getInputTooltips(){
 		return null;
 	}
 	
@@ -215,7 +220,7 @@ public class Executable extends VObject{
 	 * The length should correspond to the length of Executable.getOutputs() (minus one if the first
 	 * element of getOutputs() is GENERIC).
 	 */
-	 ArrayList<String> getOutputTooltips(){
+	public ArrayList<String> getOutputTooltips(){
 		return null;
 	}
 	
@@ -252,7 +257,9 @@ public class Executable extends VObject{
 		if(!(this instanceof PrimitiveFunction)){
 			if(getInputs() != null){
 				for(Variable.DataType dt : getInputs()){
-					if(dt == Variable.DataType.GENERIC)
+					if(dt == Variable.DataType.NUMBER && this instanceof Arithmetic)
+						break;
+					else if(dt == Variable.DataType.GENERIC)
 						addInputNode(new Node(Node.NodeType.RECIEVING,this,dt,true));
 					else
 						addInputNode(new Node(Node.NodeType.RECIEVING,this,dt,false));
@@ -260,19 +267,23 @@ public class Executable extends VObject{
 			}
 			if(getOutputs() != null){
 				for(Variable.DataType dt : getOutputs()){
+					if(dt == Variable.DataType.NUMBER && this instanceof Arithmetic)
+						break;
 					boolean b = (dt != Variable.DataType.GENERIC);
 					addOutputNode(new Node(Node.NodeType.SENDING,this,dt,b));
 				}
 			}
 		}
 		if(getInputTooltips() != null){
+			int j = (Collections.frequency(getInputTooltips(), Variable.DataType.GENERIC) == 1) ? 1 : 0;
 			for(int i = 0; i < getInputTooltips().size(); i++){
-				getInputNodes().get(i + 1).setToolTipText(getInputTooltips().get(i));
+				getInputNodes().get(i + j).setToolTipText(getInputTooltips().get(i));
 			}
 		}
 		if(getOutputTooltips() != null){
-			for(int i = 0; i < getInputTooltips().size(); i++){
-				getOutputNodes().get(i + 1).setToolTipText(getOutputTooltips().get(i));
+			int j = (Collections.frequency(getOutputTooltips(), Variable.DataType.GENERIC) == 1) ? 1 : 0;
+			for(int i = 0; i < getOutputTooltips().size(); i++){
+				getOutputNodes().get(i + j).setToolTipText(getOutputTooltips().get(i));
 			}
 		}
 		
@@ -299,7 +310,7 @@ public class Executable extends VObject{
 	 * members should correspond to the output of Executable.getInputs();
 	 * @return a single VariableData object.  The type should correspond to the return type of Executable.getOutputs();
 	 */
-	public VariableData execute(VariableData[] inputs){
+	public VariableData execute(VariableData[] inputs) throws Exception{
 		return null;
 	}
 	
@@ -383,5 +394,9 @@ public class Executable extends VObject{
 	}
 	 String getFunctionName(){
 		return this.getClass().getSimpleName().replace('_',' ');
+	}
+
+	String getMenuName() {
+		return getSimpleName();
 	}
 }

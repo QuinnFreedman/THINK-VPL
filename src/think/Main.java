@@ -26,6 +26,7 @@ package think;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
@@ -63,18 +64,21 @@ import javax.swing.event.ChangeListener;
  class Main implements ActionListener{
 	static Point mousePos = new Point();
 	static HashMap<Variable.DataType,Color> colors = new HashMap<Variable.DataType,Color>();
-	 static boolean altPressed = false;
+	static boolean altPressed = false;
 	
 	static ComponentMover componentMover;
-	 static JFrame window;
+	static JFrame window;
 	static Point clickLocation;
-	 static EntryPoint entryPoint;
-	 static Main THIS;
-	 static Blueprint mainBP;
+	static EntryPoint entryPoint;
+	static Main THIS;
+	static Blueprint mainBP;
 	protected static JTabbedPane tabbedPane;
 	
 	static ArrayList<Blueprint> blueprints;
 	static ArrayList<Module> modules;
+	static ArrayList<Executable> defaultLibrairy;
+	
+	static Image icon;
 	
 	private static final String MODULE_DIR = System.getProperty("user.home")+"/Documents/THINK VPL/Modules";
 	
@@ -86,6 +90,7 @@ import javax.swing.event.ChangeListener;
 		colors.put(Variable.DataType.FLOAT, new Color(207,0,91));
 		colors.put(Variable.DataType.STRING, new Color(0,132,0));
 		colors.put(Variable.DataType.OBJECT, new Color(69,168,230));
+		colors.put(Variable.DataType.ARRAY, new Color(69,168,230));
 		colors.put(Variable.DataType.GENERIC, Color.WHITE);
 		colors.put(Variable.DataType.NUMBER, Color.GRAY);
 		colors.put(Variable.DataType.FLEX, Color.GRAY);
@@ -95,6 +100,30 @@ import javax.swing.event.ChangeListener;
 		} catch (IOException e1) {
 			Out.printStackTrace(e1);
 		}
+		
+		defaultLibrairy = new ArrayList<Executable>();
+		defaultLibrairy.add(new Arithmetic.Add());
+		defaultLibrairy.add(new Arithmetic.Subtract());
+		defaultLibrairy.add(new Arithmetic.Multiply());
+		defaultLibrairy.add(new Arithmetic.Divide());
+		defaultLibrairy.add(new Arithmetic.Round());
+		defaultLibrairy.add(new Arithmetic.Random());
+		defaultLibrairy.add(new Arithmetic.Concatinate());
+		defaultLibrairy.add(new Logic.Equals());
+		defaultLibrairy.add(new Logic.Less_Than());
+		defaultLibrairy.add(new Logic.Greater_Than());
+		defaultLibrairy.add(new Logic.Less_Than_Or_Equal_To());
+		defaultLibrairy.add(new Logic.Greater_Than_Or_Equal_To());
+		defaultLibrairy.add(new Logic.And());
+		defaultLibrairy.add(new Logic.Not());
+		defaultLibrairy.add(new Logic.Or());
+		defaultLibrairy.add(new Logic.Branch());
+		defaultLibrairy.add(new Logic.While());
+		defaultLibrairy.add(new Logic.Sequence());
+		defaultLibrairy.add(new Logic.Wait());
+		defaultLibrairy.add(new VInstance.Get_JSON());
+		defaultLibrairy.add(new Logic.For());
+		defaultLibrairy.add(new Logic.AdvancedFor());
 		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 
@@ -149,11 +178,11 @@ import javax.swing.event.ChangeListener;
             }
         });
 	}
-	private ArrayList<Module> getAllJars(String s){
+	private ArrayList<Module> getAllJars(String path){
 		new File(MODULE_DIR).mkdirs();
 		
-		File folder = new File(s);
-		Out.println("Looking for files in "+s);
+		File folder = new File(path);
+		Out.println("Looking for files in "+path);
 		File[] listOfFiles = folder.listFiles();
 		
 		ArrayList<Module> modules = new ArrayList<Module>();
@@ -163,18 +192,20 @@ import javax.swing.event.ChangeListener;
 		for(int i = 0; i < listOfFiles.length; i++) {
 			if(listOfFiles[i].isFile()){
 				Out.println("opening file " + listOfFiles[i].getName());
-				modules.add(loadJar(listOfFiles[i].getName()));
+				modules.add(loadJar(path,listOfFiles[i].getName()));
 			}else if(listOfFiles[i].isDirectory()) {
-				modules.addAll(getAllJars(listOfFiles[i].getName()));
+				ArrayList<Module> jars = getAllJars(path+"/"+listOfFiles[i].getName());
+				if(jars != null)
+					modules.addAll(jars);
 			}
 		}
 		return modules;
 	}
-	private Module loadJar(String jar){
+	private Module loadJar(String path, String jar){
 		try{
-			ZipInputStream zip = new ZipInputStream(new FileInputStream(MODULE_DIR+"/"+jar));
-			URL[] myJarFile = new URL[]{new URL("jar","","file:/"+MODULE_DIR)};
-			URLClassLoader child = new URLClassLoader (myJarFile , Main.class.getClassLoader());
+			ZipInputStream zip = new ZipInputStream(new FileInputStream(path+"/"+jar));
+			//URL[] myJarFile = new URL[]{new URL("jar","","file:/"+path)};
+			//URLClassLoader child = new URLClassLoader (myJarFile , Main.class.getClassLoader());
 			for(ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()){
 			    if(!entry.isDirectory() && entry.getName().endsWith(".class")){
 			        
@@ -183,7 +214,7 @@ import javax.swing.event.ChangeListener;
 			        String[] classNameParts = className.replace('$', ':').split(":");
 			        if(classNameParts.length == 1){
 			        	Out.println("trying to load classes from "+jar);
-			        	addLibrary(MODULE_DIR+"/"+jar);
+			        	addLibrary(path+"/"+jar);
 			        	Class classToLoad = Class.forName(className);
 			        	Out.println("loaded "+classToLoad);
 			        	if(classToLoad.getSuperclass() == Module.class){
@@ -223,7 +254,8 @@ import javax.swing.event.ChangeListener;
 				window.setLocationRelativeTo(null);
 				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				
-				window.setIconImage(Toolkit.getDefaultToolkit().getImage(window.getClass().getResource("/images/icon.png")));
+				icon = Toolkit.getDefaultToolkit().getImage(window.getClass().getResource("/images/icon.png"));
+				window.setIconImage(icon);
 				
 				
 				try {
@@ -244,8 +276,10 @@ import javax.swing.event.ChangeListener;
 				if(loadedModules != null){
 					loadedModules.removeAll(Collections.singleton(null));
 				
-					modules.addAll(loadedModules);
+					//modules.addAll(loadedModules);
 				}
+				//modules.add(new modules.FileIO());
+				//modules.add(new modules.CanvasModule());
 				
 			//Menu Bar
 				JMenuBar menuBar = new JMenuBar();

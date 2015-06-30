@@ -35,46 +35,40 @@ import think.VariableData;
 
 public class FileIO extends Module{
 	
+	
 	@Override
 	public void setup(){
-		setModuleName("FileIO");
 		addFunction(new Make_Directory());
 	}
 	
-	
-	@Override
-	public void run() {
-		
-	}
-	
-	class Make_Directory extends Executable{
+	public static class Make_Directory extends Executable{
 		private static final long serialVersionUID = 1L;
+		
 		@Override
 		public Mode getPrimairyMode(){return Mode.IN;};
 		
 		@Override
-		public ArrayList<DataType> getOutputs(){
+		public ArrayList<DataType> getInputs(){
 			return new ArrayList<DataType>(Arrays.asList(
 					DataType.GENERIC));
 		}
 		@Override
-		public ArrayList<DataType> getInputs(){
+		public ArrayList<DataType> getOutputs(){
 			return new ArrayList<DataType>(Arrays.asList(
 					DataType.GENERIC));
 		}
 		
 		@Override
 		public VariableData execute(VariableData[] input){
-			
-			return new VariableData.Integer(12);//test
-		}
-		Make_Directory(Point pos, GraphEditor owner) {
-			super(pos, owner);
-			
+			return null;
 		}
 		
+		public Make_Directory(Point pos, GraphEditor owner) {
+			super(pos,owner);
+		}
 		Make_Directory(){
 			
 		}
 	}
+
 }

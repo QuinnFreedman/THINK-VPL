@@ -362,7 +362,7 @@ import javax.swing.SwingConstants;
 		}else if(c == "Round"){
 			new Arithmetic.Round(p, this);
 		}else if(c == "Concatenate"){
-			new Arithmetic.Concat(p, this);
+			new Arithmetic.Concatinate(p, this);
 		}else if(c == "Branch"){
 			new Logic.Branch(p, this);
 		}else if(c == "While"){
@@ -372,13 +372,13 @@ import javax.swing.SwingConstants;
 		}else if(c == "Equals"){
 			new Logic.Equals(p, this);
 		}else if(c == "Is Less Than"){
-			new Logic.LessThan(p, this);
+			new Logic.Less_Than(p, this);
 		}else if(c == "Is Greater Than"){
-			new Logic.GreaterThan(p, this);
+			new Logic.Greater_Than(p, this);
 		}else if(c == "Is Less Than Or Equal To"){
-			new Logic.LessOrEqual(p, this);
+			new Logic.Less_Than_Or_Equal_To(p, this);
 		}else if(c == "Is Greater Than Or Equal To"){
-			new Logic.GreaterOrEqual(p, this);
+			new Logic.Greater_Than_Or_Equal_To(p, this);
 		}else if(c == "And"){
 			new Logic.And(p, this);
 		}else if(c == "Or"){

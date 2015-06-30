@@ -236,14 +236,10 @@ import javax.swing.JPanel;
 		public Mode getPrimairyMode(){return Mode.IN;};
 		
 		@Override
-		public VariableData execute(VariableData[] input){
+		public VariableData execute(VariableData[] input) throws Exception{
 			if(((VariableData.Instance) parentVarData).parentBlueprint != ((VariableData.Instance) input[0]).parentBlueprint){
-				try {
-					throw new Exception();
-				} catch (Exception e) {
-					Debug.console.post("ERROR: type missmatch at "+(this.getParentVariable() == null ? "Anonymous" : getParentVariable().getID())+" > \"Set\"");
-					Out.printStackTrace(e);
-				}
+				throw new Exception("ERROR: type missmatch at \""+(this.getParentVariable() == null ? "Anonymous" : getParentVariable().getID())+" > Set\";"
+							+" type mismatch: can't convert from <"+((VariableData.Instance) input[0]).parentBlueprint.getName()+"> to <"+((VariableData.Instance) getParentVarData()).parentBlueprint.getName()+">");
 			}else{
 				parentVarData = input[0];
 				for(int i = 0; i < ((VariableData.Instance) getParentVarData()).values.size(); i++){
@@ -286,6 +282,10 @@ import javax.swing.JPanel;
 		public VariableData execute(VariableData[] input){
 			
 			return new VariableData.String(((VariableData.Instance) input[0]).getJSON());
+		}
+		@Override
+		String getMenuName(){
+			return "Get Object JSON";
 		}
 		Get_JSON(Point pos, GraphEditor owner) {
 			super(pos, owner);

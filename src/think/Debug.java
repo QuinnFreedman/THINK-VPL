@@ -264,7 +264,7 @@ import javax.swing.JLabel;
 							next.getOutputNodes().indexOf(
 									parents.get(0)
 									)
-							-((next.getOutputNodes().get(0).dataType == Variable.DataType.GENERIC) ? 1 : 0)
+							-((next.getOutputNodes().get(0).dataType == Variable.DataType.GENERIC/* && next.outputData.get(0) != null*/) ? 1 : 0)
 							)
 					);
 			getTop().incrementActiveNode();
@@ -295,22 +295,28 @@ import javax.swing.JLabel;
 						);
 				getTop().workingData.remove(0);
 			}else{
-				try{
-					throw new Exception();
-				}catch(Exception e){
-					Debug.console.post("ERROR: internal error");
-					Out.printStackTrace(e);
-				}
+				Debug.console.post("ERROR: internal error");
+				exit();
+				return false;
 			}
 		}
 		
 		VariableData execute;
 		if(getTop().executeOnce && getTop().hasExecuted){
+			Out.println("is executeOnce has executed.  Output = "+getTop().outputData);
 			execute = null;
 		}else{
 			VariableData[] array = new VariableData[getTop().workingData.size()];
 			array = getTop().workingData.toArray(array);
-			execute = getTop().execute(array);
+			try {
+				execute = getTop().execute(array);
+			} catch (Exception e) {
+				exit();
+				console.post(e.getMessage());
+				Out.printStackTrace(e);
+				return false;
+			}
+			System.out.println("execute = "+execute);
 		}
 		
 		if(getTop().getClass() == Console.getStr.class){
@@ -334,11 +340,12 @@ import javax.swing.JLabel;
 		if(!(getTop() instanceof FunctionEditor.FunctionIO)){
 			if(execute != null){
 				getTop().outputData = new ArrayList<VariableData>(Arrays.asList(execute));
+				Out.println("outputData = "+getTop().outputData);
 			}else{
-				if(getTop() instanceof UserFunc){
+				//if(getTop() instanceof UserFunc){
 					Out.println("execute == null, getTop().outputData = "+getTop().outputData);
 					multiExecute = getTop().outputData;
-				}
+				//}
 			}
 		}else if(((FunctionEditor.FunctionIO) getTop()).mode == FunctionEditor.FunctionIO.Mode.OUTPUT){
 			FunctionOverseer overseer = ((FunctionEditor.FunctionIO) getTop()).getOverseer();
@@ -359,8 +366,10 @@ import javax.swing.JLabel;
 			getTop().setSelected(false);
 			getTop().repaint();
 		}
-
+		
 		getTop().hasExecuted = true;
+
+		System.err.println("output = "+getTop().outputData);
 		
 	//FIND NEXT
 		if(stack.size() == 1){
@@ -408,6 +417,7 @@ import javax.swing.JLabel;
 			}else{
 				if(!remember.isEmpty()){
 					stack.add(remember.get(remember.size()-1));
+					getTop().hasExecuted = false;
 				}else{
 					exit();
 					return false;
@@ -428,6 +438,8 @@ import javax.swing.JLabel;
 			}
 		}
 		
+		System.err.println("execute = "+execute);
+		
 		if(execute != null){ 
 			Out.println("add to "+getTop().workingData);
 			getTop().workingData.add(execute);
@@ -447,7 +459,7 @@ import javax.swing.JLabel;
 		
 		if(!isStepping){
 			Out.println("ABORTED");
-			console.post("ERROR: program aborted by user");
+			Debug.console.post("ERROR: program aborted by user");
 			return false;
 		}
 		
@@ -511,22 +523,24 @@ import javax.swing.JLabel;
 			children = ((EntryPoint) o).startNode.children;
 		}else if(o instanceof Logic.Branch){
 			children = o.getOutputNodes().get((((Logic.Branch) o).isTrue()) ? 0 : 1).children;
-		}else if(o instanceof Logic.While){
-			if(((Repeater) o).isContinue()){
-				o.resetActiveNode();
-				o.workingData = new ArrayList<VariableData>();
-				o.outputData = new ArrayList<VariableData>();
-				children = o.getOutputNodes().get(0).children;
-			}else{
-				children = o.getOutputNodes().get(1).children;
-				removeFromEnd(remember,o);
-			}
 		}else if(o instanceof Logic.Sequence){
 			if(((Logic.Sequence) o).activeOutNode < o.getOutputNodes().size()){
 				children = o.getOutputNodes().get(((Logic.Sequence) o).activeOutNode).children;
 				((Logic.Sequence) o).activeOutNode++;
 			}else{
 				children = new ArrayList<Node>();
+				removeFromEnd(remember,o);
+			}
+		}else if(o instanceof Repeater){
+			if(((Repeater) o).isContinue()){
+				o.resetActiveNode();
+				if(!(o.executeOnce && o.hasExecuted)){
+					o.workingData = new ArrayList<VariableData>();
+					o.outputData = new ArrayList<VariableData>();
+				}
+				children = o.getOutputNodes().get(0).children;
+			}else{
+				children = o.getOutputNodes().get(o.getOutputNodes().size()-1).children;
 				removeFromEnd(remember,o);
 			}
 		}else if(o instanceof UserFunc){

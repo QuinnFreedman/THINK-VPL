@@ -29,19 +29,25 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import think.Variable.DataType;
+
 class Logic extends Executable{
 	private static final long serialVersionUID = 1L;
-
-	private Logic getThis() {
-		return this;
-	}
+	
 	
 	protected String getID(){
 		return null;
+	}
+	
+	@Override
+	public ArrayList<Variable.DataType> getOutputs(){
+		return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.BOOLEAN));
 	}
 	
 	Logic(Point pos, GraphEditor owner){
@@ -51,9 +57,11 @@ class Logic extends Executable{
 		headerLabel.setFont(headerLabel.getFont().deriveFont(Font.PLAIN, headerLabel.getFont().getSize()+20));
 		headerLabel.setBorder(new EmptyBorder(new Insets(-10,-1,-1,-1)));
 		headerLabel.setText(getID());
-		
-		addOutputNode(new Node(Node.NodeType.SENDING, getThis(), Variable.DataType.BOOLEAN, true));
 
+	}
+	
+	Logic() {
+		
 	}
 	
 	static class Equals extends Logic{
@@ -63,6 +71,14 @@ class Logic extends Executable{
 		protected String getID(){
 			return "=";
 		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.FLEX,
+					Variable.DataType.FLEX));
+		}
+		
 		@Override
 		public VariableData execute(VariableData[] inputs){
 			if(VariableData.isNumber(inputs[0]) && VariableData.isNumber(inputs[0]))
@@ -72,13 +88,15 @@ class Logic extends Executable{
 		}
 		Equals(Point p, GraphEditor owner) {
 			super(p, owner);
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.FLEX));
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.FLEX));
+		}
+
+		Equals() {
+			
 		}
 		
 	}
 	
-	static class LessThan extends Logic{
+	static class Less_Than extends Logic{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
@@ -86,18 +104,30 @@ class Logic extends Executable{
 			return "<";
 		}
 		@Override
+		String getMenuName() {
+			return"Less Than (<)";
+		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.NUMBER,
+					Variable.DataType.NUMBER));
+		}
+		
+		@Override
 		public VariableData execute(VariableData[] inputs){
 			return new VariableData.Boolean((inputs[0].getValueAsDouble() < inputs[1].getValueAsDouble()));
 		}
-		LessThan(Point p, GraphEditor owner) {
+		Less_Than(Point p, GraphEditor owner) {
 			super(p, owner);
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.NUMBER));
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.NUMBER));
 		}
-		
+		Less_Than(){
+			
+		}
 	}
 	
-	static class GreaterThan extends Logic{
+	static class Greater_Than extends Logic{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
@@ -105,18 +135,31 @@ class Logic extends Executable{
 			return ">";
 		}
 		@Override
+		String getMenuName() {
+			return"Greater Than (>)";
+		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.NUMBER,
+					Variable.DataType.NUMBER));
+		}
+		
+		@Override
 		public VariableData execute(VariableData[] inputs){
 			return new VariableData.Boolean((inputs[0].getValueAsDouble() > inputs[1].getValueAsDouble()));
 		}
-		GreaterThan(Point p, GraphEditor owner) {
+		Greater_Than(Point p, GraphEditor owner) {
 			super(p, owner);
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.NUMBER));
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.NUMBER));
+		}
+		Greater_Than(){
+			
 		}
 		
 	}
 	
-	static class LessOrEqual extends Logic{
+	static class Less_Than_Or_Equal_To extends Logic{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
@@ -124,18 +167,31 @@ class Logic extends Executable{
 			return "\u2264";
 		}
 		@Override
+		String getMenuName() {
+			return"Greater Than Or Equal To (\u2264)";
+		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.NUMBER,
+					Variable.DataType.NUMBER));
+		}
+		
+		@Override
 		public VariableData execute(VariableData[] inputs){
 			return new VariableData.Boolean((inputs[0].getValueAsDouble() <= inputs[1].getValueAsDouble()));
 		}
-		LessOrEqual(Point p, GraphEditor owner) {
+		Less_Than_Or_Equal_To(Point p, GraphEditor owner) {
 			super(p, owner);
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.NUMBER));
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.NUMBER));
+		}
+		Less_Than_Or_Equal_To(){
+			
 		}
 		
 	}
 	
-	static class GreaterOrEqual extends Logic{
+	static class Greater_Than_Or_Equal_To extends Logic{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
@@ -143,13 +199,26 @@ class Logic extends Executable{
 			return "\u2265";
 		}
 		@Override
+		String getMenuName() {
+			return"Less Than Or Equal To (\u2265)";
+		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.NUMBER,
+					Variable.DataType.NUMBER));
+		}
+		
+		@Override
 		public VariableData execute(VariableData[] inputs){
 			return new VariableData.Boolean((inputs[0].getValueAsDouble() >= inputs[1].getValueAsDouble()));
 		}
-		GreaterOrEqual(Point p, GraphEditor owner) {
+		Greater_Than_Or_Equal_To(Point p, GraphEditor owner) {
 			super(p, owner);
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.NUMBER));
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.NUMBER));
+		}
+		Greater_Than_Or_Equal_To(){
+			
 		}
 		
 	}
@@ -165,10 +234,19 @@ class Logic extends Executable{
 		public VariableData execute(VariableData[] inputs){
 			return new VariableData.Boolean(((VariableData.Boolean) inputs[0]).value && ((VariableData.Boolean) inputs[1]).value);
 		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.BOOLEAN,
+					Variable.DataType.BOOLEAN));
+		}
+		
 		And(Point p, GraphEditor owner) {
 			super(p, owner);
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.BOOLEAN));
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.BOOLEAN));
+		}
+		public And() {
+			
 		}
 		
 	}
@@ -180,19 +258,29 @@ class Logic extends Executable{
 		protected String getID(){
 			return "||";
 		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.BOOLEAN,
+					Variable.DataType.BOOLEAN));
+		}
+		
 		@Override
 		public VariableData execute(VariableData[] inputs){
 			return new VariableData.Boolean(((VariableData.Boolean) inputs[0]).value || ((VariableData.Boolean) inputs[1]).value);
 		}
 		Or(Point p, GraphEditor owner) {
 			super(p, owner);
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.BOOLEAN));
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.BOOLEAN));
 			SwingUtilities.invokeLater(new Runnable() {
 		        @Override
 		        public void run() {
 		        	headerLabel.setFont(headerLabel.getFont().deriveFont(Font.PLAIN, headerLabel.getFont().getSize()-6));
 		        }});
+		}
+
+		Or() {
+			
 		}
 		
 	}
@@ -204,18 +292,28 @@ class Logic extends Executable{
 		protected String getID(){
 			return "!";
 		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.BOOLEAN));
+		}
+		
 		@Override
 		public VariableData execute(VariableData[] inputs){
 			return new VariableData.Boolean(!((VariableData.Boolean) inputs[0]).value);
 		}
 		Not(Point p, GraphEditor owner) {
 			super(p, owner);
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.BOOLEAN));
 			SwingUtilities.invokeLater(new Runnable() {
 		        @Override
 		        public void run() {
 		        	headerLabel.setBorder(new EmptyBorder(new Insets(-8,-1,-1,-1)));
 		        }});
+		}
+
+		public Not() {
+			
 		}
 		
 	}
@@ -229,8 +327,27 @@ class Logic extends Executable{
 			return isTrue;
 		}
 		
-		private Branch getThis(){
-			return this;
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.GENERIC,
+					Variable.DataType.BOOLEAN));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.GENERIC,
+					Variable.DataType.GENERIC));
+		}
+		
+		
+		@Override
+		public ArrayList<String> getInputTooltips(){
+			return new ArrayList<String>(Arrays.asList("Condition"));
+		}@Override
+		public ArrayList<String> getOutputTooltips(){
+			return new ArrayList<String>(Arrays.asList("If true...",
+					"If false..."));
 		}
 		
 		@Override
@@ -240,16 +357,10 @@ class Logic extends Executable{
 		}
 		Branch(Point pos, GraphEditor owner) {
 			super(pos, owner);
-			this.color = Color.BLACK;
 			
-			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.GENERIC, true));
-			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.BOOLEAN));
-			addOutputNode(new Node(Node.NodeType.SENDING, getThis(), Variable.DataType.GENERIC));
-			addOutputNode(new Node(Node.NodeType.SENDING, getThis(), Variable.DataType.GENERIC));
-			
-			this.getInputNodes().get(1).setToolTipText("Condition");
-			this.getOutputNodes().get(0).setToolTipText("If true...");
-			this.getOutputNodes().get(1).setToolTipText("If false...");
+		}
+
+		public Branch() {
 			
 		}
 		
@@ -259,12 +370,32 @@ class Logic extends Executable{
 		
 		private boolean isTrue;
 		
+		@Override
 		public boolean isContinue(){
 			return isTrue;
 		}
 		
-		private While getThis(){
-			return this;
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.GENERIC,
+					Variable.DataType.BOOLEAN));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.GENERIC,
+					Variable.DataType.GENERIC));
+		}
+
+		@Override
+		public ArrayList<String> getInputTooltips(){
+			return new ArrayList<String>(Arrays.asList("Condition"));
+		}
+		@Override
+		public ArrayList<String> getOutputTooltips(){
+			return new ArrayList<String>(Arrays.asList("Repeat while true...",
+					"When false..."));
 		}
 		
 		@Override
@@ -275,18 +406,211 @@ class Logic extends Executable{
 		While(Point pos, GraphEditor owner) {
 			super(pos, owner);
 			
-			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.GENERIC, true));
-			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.BOOLEAN));
-			addOutputNode(new Node(Node.NodeType.SENDING, getThis(), Variable.DataType.GENERIC));
-			addOutputNode(new Node(Node.NodeType.SENDING, getThis(), Variable.DataType.GENERIC));
-			
-			this.getInputNodes().get(1).setToolTipText("Condition");
-			this.getOutputNodes().get(0).setToolTipText("Repeat while true...");
-			this.getOutputNodes().get(1).setToolTipText("When false...");
+		}
+		While(){
 			
 		}
 		
 	}
+	
+	static class For extends Executable implements Repeater{
+		private static final long serialVersionUID = 1L;
+		
+		private boolean isContinue;
+		
+		private int max = -1;
+		private int index = -1;
+		
+		@Override
+		public boolean isContinue(){
+			return isContinue;
+		}
+		
+		@Override
+		String getFunctionName() {
+			return "For 0 . . . n";
+		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.GENERIC,
+					Variable.DataType.INTEGER));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.GENERIC,
+					Variable.DataType.INTEGER,
+					Variable.DataType.GENERIC));
+		}
+
+		@Override
+		public ArrayList<String> getInputTooltips(){
+			return new ArrayList<String>(Arrays.asList("Max"));
+		}
+		@Override
+		public ArrayList<String> getOutputTooltips(){
+			return new ArrayList<String>(Arrays.asList("Repeat while index < max...",
+					"index",
+					"When done..."));
+		}
+		
+		@Override
+		public VariableData execute(VariableData[] inputs){
+			if(index == -1){
+				max = ((VariableData.Integer) inputs[0]).value;
+				index = 0;
+				isContinue = true;
+			}else{
+				if(index < max){
+					index++;
+				}else{
+					index = -1;
+					isContinue = false;
+				}
+			}
+			
+			
+			return new VariableData.Integer(index);
+		}
+		For(Point pos, GraphEditor owner) {
+			super(pos, owner);
+			this.executeOnce = true;
+		}
+		For(){
+			
+		}
+		
+	}
+	static class AdvancedFor extends Executable implements Repeater{
+		private static final long serialVersionUID = 1L;
+		
+		private boolean isContinue;
+		
+		private VariableData.Array array;
+		private int index = -1;
+		
+		@Override
+		public boolean isContinue(){
+			return isContinue;
+		}
+		
+		@Override
+		String getFunctionName() {
+			return "For Element in List";
+		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.GENERIC,
+					Variable.DataType.ARRAY));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.GENERIC,
+					Variable.DataType.FLEX,
+					Variable.DataType.GENERIC));
+		}
+
+		@Override
+		public ArrayList<String> getInputTooltips(){
+			return new ArrayList<String>(Arrays.asList("List"));
+		}
+		@Override
+		public ArrayList<String> getOutputTooltips(){
+			return new ArrayList<String>(Arrays.asList("Repeat while for each element in list...",
+					"element",
+					"When done..."));
+		}
+		
+		@Override
+		public VariableData execute(VariableData[] inputs){
+			VariableData output = null;
+			if(index == -1){
+				array = ((VariableData.Array) inputs[0]);
+				index = 0;
+				isContinue = true;
+				output = array.value.get(index);
+				index++;
+			}else{
+				if(index < array.value.size()){
+					output = array.value.get(index);
+					index++;
+				}else{
+					index = -1;
+					isContinue = false;
+				}
+			}
+			
+			
+			return output;
+		}
+		AdvancedFor(Point pos, GraphEditor owner) {
+			super(pos, owner);
+			this.executeOnce = true;
+		}
+		AdvancedFor(){
+			
+		}
+		
+	}
+	/*
+	static class For extends Executable implements Repeater{
+		private static final long serialVersionUID = 1L;
+		
+		private boolean cont;
+		
+		private int index = -1;
+		private int max = -1;
+		
+		@Override
+		public boolean isContinue(){
+			return cont;
+		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.GENERIC,
+					Variable.DataType.INTEGER));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.GENERIC,
+					Variable.DataType.INTEGER));
+		}
+		
+		@Override
+		public VariableData execute(VariableData[] inputs){
+			Out.println("executing for...");
+			if(index == -1){
+				index = 0;
+				max = ((VariableData.Integer) inputs[0]).value;
+				cont = true;
+			}else{
+				index++;
+				if(index == max){
+					cont = false;
+					index = -1;
+				}
+			}
+			
+			return new VariableData.Integer(index);
+		}
+		For(Point pos, GraphEditor owner) {
+			super(pos, owner);
+			//this.executeOnce = true;
+			
+		}
+		For(){
+			
+		}
+		
+	}*/
 	
 	static class Sequence extends Executable implements Repeater{
 		private static final long serialVersionUID = 1L;
@@ -298,8 +622,14 @@ class Logic extends Executable{
 			return isTrue;
 		}
 		
-		private Sequence getThis(){
-			return this;
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.GENERIC));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return null;
 		}
 		
 		@Override
@@ -309,11 +639,13 @@ class Logic extends Executable{
 		Sequence(Point pos, GraphEditor owner) {
 			super(pos, owner);
 			
-			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.GENERIC, true));
-			addOutputNode(new ReplicatingNode(Node.NodeType.SENDING, getThis(), Variable.DataType.GENERIC));
-			
+			addOutputNode(new ReplicatingNode(Node.NodeType.RECIEVING, this, Variable.DataType.GENERIC));
 		}
 		
+		public Sequence() {
+			
+		}
+
 		@Override
 		public Dimension getSize(){
 			return new Dimension(Math.max(60,this.getPreferredSize().width),
@@ -356,6 +688,23 @@ class Logic extends Executable{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.GENERIC,
+					Variable.DataType.INTEGER));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(
+					Variable.DataType.GENERIC));
+		}
+		
+		@Override
+		public ArrayList<String> getInputTooltips(){
+			return new ArrayList<String>(Arrays.asList("Wait time (miliseconds)"));
+		}
+		
+		@Override
 		public VariableData execute(VariableData[] inputs){
 			if(Debug.getRunMode() == Debug.RunMode.RUN){
 				try {
@@ -368,13 +717,9 @@ class Logic extends Executable{
 		}
 		Wait(Point pos, GraphEditor owner) {
 			super(pos, owner);
+		}
+		Wait(){
 			
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.GENERIC, true));
-			addInputNode(new Node(Node.NodeType.RECIEVING, this, Variable.DataType.INTEGER));
-			getInputNodes().get(1).setToolTipText("Wait time (miliseconds)");
-			addOutputNode(new Node(Node.NodeType.SENDING, this, Variable.DataType.GENERIC));
-			 
-			setBounds(new Rectangle(pos,getSize()));
 		}
 		
 	}

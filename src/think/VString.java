@@ -52,6 +52,7 @@ import java.util.Arrays;
 		this.functions.add(new Get_Length(this));
 		this.functions.add(new Get_Char_At(this));
 		this.functions.add(new Replace(this));
+		this.functions.add(new Split(this));
 		
 		resetVariableData();
 	}
@@ -226,6 +227,42 @@ import java.util.Arrays;
 			super(pos, parent);
 		}
 		Get_Char_At(Variable parent){
+			super(parent);
+		}
+		
+	}
+	static class Split extends PrimitiveFunction{
+		private static final long serialVersionUID = 1L;
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(DataType.STRING));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.ARRAY));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.OUT;};
+		@Override
+		public VariableData execute(VariableData[] input){
+			String regex = ((VariableData.String) input[0]).value;
+			String s = ((VariableData.String) parentVarData).value;
+			String[] strs = s.split(regex);
+			VariableData.Array output = new VariableData.Array(Variable.DataType.STRING);
+			
+			for(String str : strs){
+				output.add(new VariableData.String(str));
+			}
+			
+			return output;
+		}
+		Split(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
+		Split(Point pos, Variable parent) {
+			super(pos, parent);
+		}
+		Split(Variable parent){
 			super(parent);
 		}
 		

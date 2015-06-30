@@ -38,16 +38,22 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import think.Variable.DataType;
+
 class Arithmetic extends Executable{
 	private static final long serialVersionUID = 1L;
 	
-	protected Arithmetic getThis() {
-		return this;
-	}
 	protected String getID(){
 		return null;
 		
 	}
+	
+	@Override
+	public ArrayList<Variable.DataType> getInputs(){
+		return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.NUMBER,
+				Variable.DataType.NUMBER));
+	}
+	
 	Arithmetic(Point pos, GraphEditor owner){
 		super(pos,owner);
 		this.color = Color.GRAY;
@@ -56,8 +62,8 @@ class Arithmetic extends Executable{
 		headerLabel.setBorder(new EmptyBorder(new Insets(-10,-1,-1,-1)));
 		headerLabel.setText(getID());
 		
-		addInputNode(new NumberNode(Node.NodeType.RECIEVING, getThis()));
-		addInputNode(new NumberNode(Node.NodeType.RECIEVING, getThis()));
+		addInputNode(new NumberNode(Node.NodeType.RECIEVING, this));
+		addInputNode(new NumberNode(Node.NodeType.RECIEVING, this));
 		 
 		setBounds(new Rectangle(pos,getSize()));
 	}
@@ -159,6 +165,17 @@ class Arithmetic extends Executable{
 		protected String getID(){
 			return "+";
 		}
+		
+		@Override
+		String getMenuName() {
+			return "Add (+)";
+		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.NUMBER));
+		}
+		
 		@Override
 		public VariableData execute(VariableData[] inputs){
 			if(this.getOutputNodes().get(0).dataType == Variable.DataType.INTEGER)
@@ -170,7 +187,7 @@ class Arithmetic extends Executable{
 		}
 		Add(Point p, GraphEditor owner) {
 			super(p, owner);
-			addOutputNode(new NumberNode(Node.NodeType.SENDING, getThis(), true));
+			addOutputNode(new NumberNode(Node.NodeType.SENDING, this, true));
 		}
 		
 		Add(){};
@@ -184,6 +201,15 @@ class Arithmetic extends Executable{
 			return "-";
 		}
 		@Override
+		String getMenuName() {
+			return "Subtract (-)";
+		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.NUMBER));
+		}
+		@Override
 		public VariableData execute(VariableData[] inputs){
 			if(this.getOutputNodes().get(0).dataType == Variable.DataType.INTEGER)
 				return new VariableData.Integer((int) (inputs[0].getValueAsDouble() - inputs[1].getValueAsDouble()));
@@ -194,7 +220,7 @@ class Arithmetic extends Executable{
 		}
 		Subtract(Point p, GraphEditor owner) {
 			super(p, owner);
-			addOutputNode(new NumberNode(Node.NodeType.SENDING, getThis(), true));
+			addOutputNode(new NumberNode(Node.NodeType.SENDING, this, true));
 		}
 		
 		Subtract(){};
@@ -208,6 +234,15 @@ class Arithmetic extends Executable{
 			return "\u00D7";
 		}
 		@Override
+		String getMenuName() {
+			return "Multiply (\u00D7)";
+		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.NUMBER));
+		}
+		@Override
 		public VariableData execute(VariableData[] inputs){
 			if(this.getOutputNodes().get(0).dataType == Variable.DataType.INTEGER)
 				return new VariableData.Integer((int) (inputs[0].getValueAsDouble() * inputs[1].getValueAsDouble()));
@@ -218,7 +253,7 @@ class Arithmetic extends Executable{
 		}
 		Multiply(Point p, GraphEditor owner) {
 			super(p, owner);
-			addOutputNode(new NumberNode(Node.NodeType.SENDING, getThis(), true));
+			addOutputNode(new NumberNode(Node.NodeType.SENDING, this, true));
 		}
 		
 		Multiply(){};
@@ -232,51 +267,73 @@ class Arithmetic extends Executable{
 			return "\u00F7";
 		}
 		@Override
+		String getMenuName() {
+			return "Divide (\u00F7)";
+		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE));
+		}
+		@Override
 		public VariableData execute(VariableData[] inputs){
 			return new VariableData.Double((inputs[0].getValueAsDouble() * inputs[1].getValueAsDouble()));
 		}
 		Divide(Point p, GraphEditor owner) {
 			super(p, owner);
-			addOutputNode(new Node(Node.NodeType.SENDING, getThis(), Variable.DataType.DOUBLE, true));
 		}
 		
 		Divide(){};
 		
 	}
-	static class Concat extends Executable{
+	static class Concatinate extends Executable{
 		private static final long serialVersionUID = 1L;
-		
-		private Concat getThis(){
-			return this;
+		@Override
+		String getMenuName() {
+			return "Concatinate (+)";
 		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.STRING,
+					Variable.DataType.STRING));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.STRING));
+		}
+		
 		@Override
 		public VariableData execute(VariableData[] inputs){
 			
 			return new VariableData.String((inputs[0].getValueAsString().concat(inputs[1].getValueAsString())));
 		}
-		Concat(Point pos, GraphEditor owner) {
+		
+		Concatinate(Point pos, GraphEditor owner) {
 			super(pos, owner);
 			this.color = Color.GRAY;
 			
 			headerLabel.setFont(headerLabel.getFont().deriveFont(Font.PLAIN, headerLabel.getFont().getSize()+20));
 			headerLabel.setBorder(new EmptyBorder(new Insets(-10,-1,-1,-1)));
 			headerLabel.setText("+");
-			
-			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.STRING));
-			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.STRING));
-			addOutputNode(new Node(Node.NodeType.SENDING, getThis(), Variable.DataType.STRING, true));
 			 
 			setBounds(new Rectangle(pos,getSize()));
 		}
 		
-		Concat(){};
+		Concatinate(){};
 		
 	}
 	static class Random extends Executable{
 		private static final long serialVersionUID = 1L;
 		
-		private Random getThis(){
-			return this;
+		@Override
+		String getMenuName() {
+			return "Random (?)";
+		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE));
 		}
 		@Override
 		public VariableData execute(VariableData[] inputs){
@@ -290,8 +347,6 @@ class Arithmetic extends Executable{
 			headerLabel.setFont(headerLabel.getFont().deriveFont(Font.PLAIN, headerLabel.getFont().getSize()+20));
 			headerLabel.setBorder(new EmptyBorder(new Insets(-10,-1,-1,-1)));
 			headerLabel.setText("?");
-			
-			addOutputNode(new Node(Node.NodeType.SENDING, getThis(), Variable.DataType.DOUBLE, true));
 			 
 			setBounds(new Rectangle(pos,getSize()));
 		        
@@ -303,9 +358,20 @@ class Arithmetic extends Executable{
 	static class Round extends Executable{
 		private static final long serialVersionUID = 1L;
 		
-		private Round getThis(){
-			return this;
+		@Override
+		String getMenuName() {
+			return "Round (\u2248)";
 		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE));
+		}
+		
 		@Override
 		public VariableData execute(VariableData[] inputs){
 			
@@ -318,9 +384,6 @@ class Arithmetic extends Executable{
 			headerLabel.setFont(headerLabel.getFont().deriveFont(Font.PLAIN, headerLabel.getFont().getSize()+20));
 			headerLabel.setBorder(new EmptyBorder(new Insets(-10,-1,-1,-1)));
 			headerLabel.setText("\u2248");
-			
-			addInputNode(new Node(Node.NodeType.RECIEVING, getThis(), Variable.DataType.DOUBLE));
-			addOutputNode(new Node(Node.NodeType.SENDING, getThis(), Variable.DataType.DOUBLE, true));
 			 
 			setBounds(new Rectangle(pos,getSize()));
 		}

@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Random;
 
+import think.VariableData.Array;
+
  public class VariableData{
 	
 	 public java.lang.String getValueAsString(){
@@ -233,7 +235,7 @@ import java.util.Random;
 			return java.lang.Boolean.toString(value);
 		}
 	}
-	static class String extends VariableData{
+	public static class String extends VariableData{
 		public java.lang.String value = "";
 		public String(VariableData variableData) {
 			if(variableData instanceof VariableData.String){
@@ -340,6 +342,11 @@ import java.util.Random;
 		Array(Variable.DataType dataType) {
 			this.dataType = dataType;
 			this.value = new ArrayList<VariableData>();
+		}
+
+		public Array(Array array) {
+			this.dataType = array.dataType;
+			this.value = array.value;
 		}
 
 		void add(VariableData data) {

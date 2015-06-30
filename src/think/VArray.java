@@ -67,7 +67,9 @@ import think.Variable.DataType;
 		this.functions.add(new Add(this));
 		this.functions.add(new Set(this));
 		this.functions.add(new Remove(this));
-		this.functions.add(new Get_Array_As_String(this));
+		this.functions.add(new To_String(this));
+		this.functions.add(new Get_Array(this));
+		this.functions.add(new Set_Array(this));
 		
 		resetVariableData();
 	}
@@ -154,14 +156,13 @@ import think.Variable.DataType;
 		public Mode getPrimairyMode(){return Mode.OUT;};
 		
 		@Override
-		public VariableData execute(VariableData[] input){
+		public VariableData execute(VariableData[] input) throws Exception{
 			try{
 				return ((VariableData.Array) getParentVarData()).value.get(((VariableData.Integer) input[0]).value);
 			}catch(IndexOutOfBoundsException e){
-				Debug.console.post("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[0].getValueAsString()+" of "+((VariableData.Array) getParentVarData()).value.size());
 				Out.printStackTrace(e);
+				throw new Exception("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[0].getValueAsString()+" of "+((VariableData.Array) getParentVarData()).value.size());
 			}
-			return null;
 			
 		}
 		Get(Point pos, Variable parent, GraphEditor owner) {
@@ -247,16 +248,15 @@ import think.Variable.DataType;
 		public Mode getPrimairyMode(){return Mode.OUT;};
 		
 		@Override
-		public VariableData execute(VariableData[] input){
+		public VariableData execute(VariableData[] input) throws Exception{
 			try{
 				((VariableData.Array) getParentVarData()).value.remove(((VariableData.Integer) input[0]).value);
 				return null;
 				
 			}catch(IndexOutOfBoundsException e){
-				Debug.console.post("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[0].getValueAsString()+" of "+((VariableData.Array) getParentVarData()).value.size());
 				Out.printStackTrace(e);
+				throw new Exception("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[0].getValueAsString()+" of "+((VariableData.Array) getParentVarData()).value.size());
 			}
-			return null;
 			
 		}
 		Remove(Point pos, Variable parent, GraphEditor owner) {
@@ -266,6 +266,38 @@ import think.Variable.DataType;
 			super(pos, parent);
 		}
 		Remove(Variable parent){
+			super(parent);
+		}
+		
+	}
+	
+	static class Clear extends PrimitiveFunction{
+		private static final long serialVersionUID = 1L;
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.GENERIC));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.GENERIC));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.IN;};
+		
+		@Override
+		public VariableData execute(VariableData[] input){
+			((VariableData.Array) getParentVarData()).value.clear();
+				
+			return null;
+			
+		}
+		Clear(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
+		Clear(Point pos, Variable parent) {
+			super(pos, parent);
+		}
+		Clear(Variable parent){
 			super(parent);
 		}
 		
@@ -285,7 +317,7 @@ import think.Variable.DataType;
 		public Mode getPrimairyMode(){return Mode.IN;};
 		
 		@Override
-		public VariableData execute(VariableData[] input){
+		public VariableData execute(VariableData[] input) throws Exception{
 			int index = ((VariableData.Integer) input[1]).value;
 			int size = ((VariableData.Array) getParentVarData()).value.size();
 			if(index == 0){
@@ -294,8 +326,8 @@ import think.Variable.DataType;
 				try{
 					((VariableData.Array) getParentVarData()).value.set(index,VariableData.clone(input[0]));
 				}catch(IndexOutOfBoundsException e){
-					Debug.console.post("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[1].getValueAsString()+" of "+size);
 					Out.printStackTrace(e);
+					throw new Exception("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[1].getValueAsString()+" of "+size);
 				}
 			}
 			return null;
@@ -313,7 +345,7 @@ import think.Variable.DataType;
 		
 	}
 	
-	static class Get_Array_As_String extends PrimitiveFunction{
+	static class To_String extends PrimitiveFunction{
 		private static final long serialVersionUID = 1L;
 		@Override
 		public ArrayList<Variable.DataType> getInputs(){
@@ -331,17 +363,83 @@ import think.Variable.DataType;
 			return new VariableData.String(((VariableData.Array) getParentVarData()).getValueAsString());
 			
 		}
-		Get_Array_As_String(Point pos, Variable parent, GraphEditor owner) {
+		To_String(Point pos, Variable parent, GraphEditor owner) {
 			super(pos, parent, owner);
 		}
-		Get_Array_As_String(Point pos, Variable parent) {
+		To_String(Point pos, Variable parent) {
 			super(pos, parent);
 		}
-		Get_Array_As_String(Variable parent){
+		To_String(Variable parent){
 			super(parent);
 		}
 		
 	}
+	
+	static class Set_Array extends PrimitiveFunction{
+		private static final long serialVersionUID = 1L;
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.GENERIC, Variable.DataType.ARRAY));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.GENERIC));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.IN;};
+		
+		@Override
+		public VariableData execute(VariableData[] input) throws Exception{
+			if(((VariableData.Array) parentVarData).dataType == ((VariableData.Array) input[0]).dataType){
+				((VariableData.Array) parentVarData).value = ((VariableData.Array) input[0]).value;
+			}else{
+				throw new Exception("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; type mismatch: can't convert from ["+((VariableData.Array) input[0]).dataType+"] to ["+((VariableData.Array) getParentVarData()).dataType+"]");
+			}
+			return null;
+			
+		}
+		Set_Array(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
+		Set_Array(Point pos, Variable parent) {
+			super(pos, parent);
+		}
+		Set_Array(Variable parent){
+			super(parent);
+		}
+		
+	}
+	
+	static class Get_Array extends PrimitiveFunction{
+		private static final long serialVersionUID = 1L;
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return null;
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.ARRAY));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.OUT;};
+		
+		@Override
+		public VariableData execute(VariableData[] input){
+			return getParentVarData();
+			
+		}
+		Get_Array(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
+		Get_Array(Point pos, Variable parent) {
+			super(pos, parent);
+		}
+		Get_Array(Variable parent){
+			super(parent);
+		}
+		
+	}
+	
 	@Override
 	public void changedUpdate(DocumentEvent e){
 		resetVariableData();

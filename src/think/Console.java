@@ -58,7 +58,8 @@ class Console extends JFrame implements KeyListener{
     	setSize(500,300);
     	setMinimumSize(new Dimension(200,150));
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    	
+		this.setIconImage(Main.icon);
+		
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		JPanel container = new JPanel();
@@ -82,7 +83,7 @@ class Console extends JFrame implements KeyListener{
 		
 	}
 	
-	 void post(String s){
+	public void post(String s){
 		SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
@@ -91,7 +92,7 @@ class Console extends JFrame implements KeyListener{
         	
         }});
 	}
-	 void clear(){
+	public void clear(){
 		if(output != null)
 			output.setText("");
 	}
