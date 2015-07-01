@@ -89,4 +89,13 @@ public class Module{
 		
 	}
 	
+	/**
+	 * Prints a string to the user's console.  Placed here so that modules can access it
+	 * @param s - the message to print
+	 */
+	public static void postToConsole(String s){
+		if(Debug.console != null)
+			Debug.console.post(s);
+	}
+	
 }

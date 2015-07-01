@@ -33,6 +33,9 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
+import think.Executable.Mode;
+import think.Variable.DataType;
+
  class VInstance extends Variable{
 	private static final long serialVersionUID = 1L;
 	
@@ -79,8 +82,9 @@ import javax.swing.JPanel;
 		
 		this.functions.add(new Get(this));
 		this.functions.add(new Set(this));
-		//this.functions.add(new Get_Name());
-		//this.functions.add(new Get_JSON());
+		this.functions.add(new Get_Name(this));
+		this.functions.add(new Get_Type(this));
+		this.functions.add(new Get_JSON(this));
 	}
 	
 	 void addChildVariable(Variable v){
@@ -263,14 +267,9 @@ import javax.swing.JPanel;
 		}
 		
 	}
-	
-	
-	static class Get_JSON extends Executable{
+	static class Get_JSON extends PrimitiveFunction{
 		private static final long serialVersionUID = 1L;
-		@Override
-		public ArrayList<Variable.DataType> getInputs(){
-			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.OBJECT));
-		}
+
 		@Override
 		public ArrayList<Variable.DataType> getOutputs(){
 			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.STRING));
@@ -281,18 +280,68 @@ import javax.swing.JPanel;
 		@Override
 		public VariableData execute(VariableData[] input){
 			
-			return new VariableData.String(((VariableData.Instance) input[0]).getJSON());
+			return new VariableData.String(((VariableData.Instance) getParentVarData()).getJSON());
+		}
+		Get_JSON(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
+		Get_JSON(Point pos, Variable parent) {
+			super(pos, parent);
+		}
+		Get_JSON(Variable parent){
+			super(parent);
+		}
+		
+	}
+	static class Get_Name extends PrimitiveFunction{
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.STRING));
 		}
 		@Override
-		String getMenuName(){
-			return "Get Object JSON";
+		public Mode getPrimairyMode(){return Mode.OUT;};
+		
+		@Override
+		public VariableData execute(VariableData[] input){
+			
+			return new VariableData.String(((VariableData.Instance) getParentVarData()).getName());
 		}
-		Get_JSON(Point pos, GraphEditor owner) {
-			super(pos, owner);
-			this.defaultActiveNode = 0;
+		Get_Name(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
 		}
-		Get_JSON(){
-			super();
+		Get_Name(Point pos, Variable parent) {
+			super(pos, parent);
+		}
+		Get_Name(Variable parent){
+			super(parent);
+		}
+		
+	}
+	static class Get_Type extends PrimitiveFunction{
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.STRING));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.OUT;};
+		
+		@Override
+		public VariableData execute(VariableData[] input){
+			
+			return new VariableData.String(((VariableData.Instance) getParentVarData()).parentBlueprint.getName());
+		}
+		Get_Type(Point pos, Variable parent, GraphEditor owner) {
+			super(pos, parent, owner);
+		}
+		Get_Type(Point pos, Variable parent) {
+			super(pos, parent);
+		}
+		Get_Type(Variable parent){
+			super(parent);
 		}
 		
 	}

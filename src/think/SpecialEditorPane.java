@@ -1,7 +1,7 @@
 /**
  * 
  *  THINK VPL is a visual programming language and integrated development environment for that language
- *  Copyright (C) 2015  Quinn Freedman
+ *  Copyright (C) 2015 Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General  License as published by
@@ -26,6 +26,7 @@ package think;
 import java.util.Arrays;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.JTextArea;
@@ -36,7 +37,7 @@ import javax.swing.text.DocumentFilter;
 
  class SpecialEditorPane extends JTextArea implements KeyListener{
 	private static final long serialVersionUID = 1L;
-
+	
 	private NoBreakDocumentFilter filter;
 	private VObject parent;
 	
@@ -78,7 +79,9 @@ import javax.swing.text.DocumentFilter;
 		
 	}
 	
-	static class NoBreakDocumentFilter extends DocumentFilter {
+	static class NoBreakDocumentFilter extends DocumentFilter implements Serializable{
+		private static final long serialVersionUID = 1L;
+		
 		private ArrayList<Character> illegalChars = new ArrayList<Character>(Arrays.asList('\n','\f','\r','\t'));
 		
 		@Override

@@ -368,8 +368,6 @@ import javax.swing.JLabel;
 		}
 		
 		getTop().hasExecuted = true;
-
-		System.err.println("output = "+getTop().outputData);
 		
 	//FIND NEXT
 		if(stack.size() == 1){
@@ -404,8 +402,8 @@ import javax.swing.JLabel;
 				next.hasExecuted = false;
 				if(next instanceof Repeater){
 					remember.add(next);
-					if(next instanceof Logic.Sequence){
-						((Logic.Sequence) next).activeOutNode = 0;
+					if(next instanceof FlowControl.Sequence){
+						((FlowControl.Sequence) next).activeOutNode = 0;
 					}
 				}
 				
@@ -437,8 +435,6 @@ import javax.swing.JLabel;
 				stack.remove(stack.size()-1);
 			}
 		}
-		
-		System.err.println("execute = "+execute);
 		
 		if(execute != null){ 
 			Out.println("add to "+getTop().workingData);
@@ -521,12 +517,12 @@ import javax.swing.JLabel;
 		ArrayList<Node> children;
 		if(o instanceof EntryPoint){
 			children = ((EntryPoint) o).startNode.children;
-		}else if(o instanceof Logic.Branch){
-			children = o.getOutputNodes().get((((Logic.Branch) o).isTrue()) ? 0 : 1).children;
-		}else if(o instanceof Logic.Sequence){
-			if(((Logic.Sequence) o).activeOutNode < o.getOutputNodes().size()){
-				children = o.getOutputNodes().get(((Logic.Sequence) o).activeOutNode).children;
-				((Logic.Sequence) o).activeOutNode++;
+		}else if(o instanceof FlowControl.Branch){
+			children = o.getOutputNodes().get((((FlowControl.Branch) o).isTrue()) ? 0 : 1).children;
+		}else if(o instanceof FlowControl.Sequence){
+			if(((FlowControl.Sequence) o).activeOutNode < o.getOutputNodes().size()){
+				children = o.getOutputNodes().get(((FlowControl.Sequence) o).activeOutNode).children;
+				((FlowControl.Sequence) o).activeOutNode++;
 			}else{
 				children = new ArrayList<Node>();
 				removeFromEnd(remember,o);

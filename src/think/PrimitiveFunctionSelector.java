@@ -68,6 +68,8 @@ import javax.swing.JLabel;
 		}
 		
 		private class MenuItem extends JLabel implements MouseListener{
+			private static final long serialVersionUID = 1L;
+			
 			String name;
 			PrimitiveFunctionSelector childPicker;
 			private PrimitiveFunction f;

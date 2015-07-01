@@ -69,8 +69,8 @@ import javax.swing.event.MouseInputListener;
 		owner.getPanel().revalidate();
 	}
 	
-	 VObject() {
-		//Auto-generated constructor stub
+	VObject() {
+		
 	}
 	public void delete(){
 		if(Debug.isStepping() && this.getClass() != PrimitiveFunctionSelector.class)

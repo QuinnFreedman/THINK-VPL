@@ -60,8 +60,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
-import think.Arithmetic.Concatinate;
-
 class FunctionEditor extends JFrame implements ActionListener, MouseListener, GraphEditor,ComponentListener{
 	private static final long serialVersionUID = 1L;
 	
@@ -431,11 +429,11 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 			}else if(c == "Concatenate"){
 				new Arithmetic.Concatinate(p, this);
 			}else if(c == "Branch"){
-				new Logic.Branch(p, this);
+				new FlowControl.Branch(p, this);
 			}else if(c == "While"){
-				new Logic.While(p, this);
+				new FlowControl.While(p, this);
 			}else if(c == "Sequence"){
-				new Logic.Sequence(p, this);
+				new FlowControl.Sequence(p, this);
 			}else if(c == "Equals"){
 				new Logic.Equals(p, this);
 			}else if(c == "Is Less Than"){
@@ -505,7 +503,9 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 	}
 	
 	static class FunctionIO extends Executable{
-		 Mode mode;
+		private static final long serialVersionUID = 1L;
+		
+		Mode mode;
 		private Rectangle fillSize = null;
 		
 		 static enum Mode{
@@ -581,6 +581,10 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 		}
 	}
 	class removeableNode extends Node{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		Node THIS = this;
 		
 		 removeableNode(NodeType type, VObject parentObj, Variable.DataType dt, boolean b) {

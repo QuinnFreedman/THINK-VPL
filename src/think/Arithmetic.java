@@ -25,20 +25,13 @@ package think;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-
-import think.Variable.DataType;
 
 class Arithmetic extends Executable{
 	private static final long serialVersionUID = 1L;
@@ -167,7 +160,7 @@ class Arithmetic extends Executable{
 		}
 		
 		@Override
-		String getMenuName() {
+		public String getMenuName() {
 			return "Add (+)";
 		}
 		
@@ -201,7 +194,7 @@ class Arithmetic extends Executable{
 			return "-";
 		}
 		@Override
-		String getMenuName() {
+		public String getMenuName() {
 			return "Subtract (-)";
 		}
 		
@@ -234,7 +227,7 @@ class Arithmetic extends Executable{
 			return "\u00D7";
 		}
 		@Override
-		String getMenuName() {
+		public String getMenuName() {
 			return "Multiply (\u00D7)";
 		}
 		
@@ -267,7 +260,7 @@ class Arithmetic extends Executable{
 			return "\u00F7";
 		}
 		@Override
-		String getMenuName() {
+		public String getMenuName() {
 			return "Divide (\u00F7)";
 		}
 		
@@ -289,7 +282,7 @@ class Arithmetic extends Executable{
 	static class Concatinate extends Executable{
 		private static final long serialVersionUID = 1L;
 		@Override
-		String getMenuName() {
+		public String getMenuName() {
 			return "Concatinate (+)";
 		}
 		
@@ -327,7 +320,7 @@ class Arithmetic extends Executable{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		String getMenuName() {
+		public String getMenuName() {
 			return "Random (?)";
 		}
 		
@@ -359,7 +352,7 @@ class Arithmetic extends Executable{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
-		String getMenuName() {
+		public String getMenuName() {
 			return "Round (\u2248)";
 		}
 		

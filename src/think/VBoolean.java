@@ -24,6 +24,7 @@
 package think;
 
 import java.awt.Point;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -146,17 +147,15 @@ import javax.swing.text.DocumentFilter;
 		
 	}
 	
-	static class BooleanDocumentFilter extends DocumentFilter {
+	static class BooleanDocumentFilter extends DocumentFilter implements Serializable{
+		
+		private static final long serialVersionUID = 1L;
 		
 		AbstractDocument doc;
 		
-		 BooleanDocumentFilter(AbstractDocument doc) {
+		BooleanDocumentFilter(AbstractDocument doc) {
 			this.doc = doc;
 			this.doc.setDocumentFilter(this);
-		}
-		
-		 BooleanDocumentFilter() {
-			// TODO Auto-generated constructor stub
 		}
 
 		@Override

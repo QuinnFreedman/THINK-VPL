@@ -76,7 +76,7 @@ import javax.swing.JLabel;
 		
 		if(!parent.isStatic){
 			addInputNode(new Node(Node.NodeType.RECIEVING,this,Variable.DataType.OBJECT));
-			defaultActiveNode = 0;
+			//defaultActiveNode = 0;
 			isStatic = false;
 		}
 		

@@ -31,6 +31,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -42,6 +43,10 @@ import javax.swing.event.DocumentListener;
 
 class InstantiableBlueprint extends Blueprint implements FunctionOverseer, ComponentListener{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private FunctionEditor.FunctionIO inputObject;
 	private FunctionEditor.FunctionIO outputObject;
 	private ArrayList<UserFunc> children = new ArrayList<UserFunc>();
@@ -256,10 +261,8 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 		output = dt;
 	}
 
-
 	@Override
 	public boolean isEcexuteOnce() {
-		//System.err.println("Error: incomplete 207");
 		return true;
 	}
 
@@ -268,7 +271,11 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 		return this;
 	}
 	
-	private class NodeAdder implements ActionListener{
+	private class NodeAdder implements ActionListener, Serializable{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private InstantiableBlueprint overseer;
 
 		@Override
@@ -301,6 +308,10 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 			
 	}
 	class removeableNode extends Node{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		Node THIS = this;
 		private InstantiableBlueprint overseer;
 		

@@ -23,15 +23,18 @@
 
 package think;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Random;
 
-import think.VariableData.Array;
-
- public class VariableData{
+ public class VariableData implements Serializable{
 	
-	 public java.lang.String getValueAsString(){
+	 /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public java.lang.String getValueAsString(){
 		return null;
 	}
 	public double getValueAsDouble(){
@@ -63,6 +66,10 @@ import think.VariableData.Array;
 		return newData;
 	}
 	public static class Integer extends VariableData{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public int value = 0;
 		public Integer(VariableData variableData) {
 			if(variableData instanceof VariableData.Integer){
@@ -94,6 +101,10 @@ import think.VariableData.Array;
 		}
 	}
 	public static class Double extends VariableData{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public double value = 0;
 		public Double(VariableData variableData) {
 			if(variableData instanceof VariableData.Double){
@@ -122,6 +133,10 @@ import think.VariableData.Array;
 		}
 	}
 	public static class Float extends VariableData{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public float value = 0;
 		public Float(VariableData variableData) {
 			if(variableData instanceof VariableData.Float){
@@ -150,6 +165,10 @@ import think.VariableData.Array;
 		}
 	}
 	 static class Long extends VariableData{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public long value = 0;
 		public Long(VariableData variableData) {
 			if(variableData instanceof VariableData.Long){
@@ -178,6 +197,10 @@ import think.VariableData.Array;
 		}
 	}
 	public static class Short extends VariableData{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public short value = 0;
 		public Short(short input) {
 			this.value = input;
@@ -195,6 +218,10 @@ import think.VariableData.Array;
 		}
 	}
 	 static class Byte extends VariableData{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public byte value = 0;
 		public Byte(byte input) {
 			this.value = input;
@@ -212,6 +239,10 @@ import think.VariableData.Array;
 		}
 	}
 	public static class Boolean extends VariableData{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public boolean value = false;
 		public Boolean(VariableData variableData) {
 			if(variableData instanceof VariableData.Boolean){
@@ -236,6 +267,10 @@ import think.VariableData.Array;
 		}
 	}
 	public static class String extends VariableData{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public java.lang.String value = "";
 		public String(VariableData variableData) {
 			if(variableData instanceof VariableData.String){
@@ -260,6 +295,10 @@ import think.VariableData.Array;
 		}
 	}
 	public static class Character extends VariableData{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public char value = ' ';
 		public Character(char input) {
 			this.value = input;
@@ -273,6 +312,11 @@ import think.VariableData.Array;
 		}
 	}
 	public static class Instance extends VariableData{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		static final Random rng = new Random();
 		
 		public ArrayList<VariableData> values;
@@ -308,6 +352,10 @@ import think.VariableData.Array;
 			return "<"+name+">";
 		}
 		
+		public java.lang.String getName(){
+			return name;
+		}
+		
 		public VariableData getVariableDataByName(java.lang.String string){
 			for(int i = 0; i < values.size(); i++){
 				if(names.get(i).equals(string))
@@ -331,6 +379,10 @@ import think.VariableData.Array;
 		}
 	}
 	public static class Array extends VariableData{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public Variable.DataType dataType;
 		public ArrayList<VariableData> value;
 		

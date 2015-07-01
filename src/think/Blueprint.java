@@ -32,6 +32,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
@@ -44,8 +45,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
- class Blueprint implements GraphEditor,ActionListener,MouseListener,KeyListener{
-
+ class Blueprint implements GraphEditor,ActionListener,MouseListener,KeyListener,Serializable{
+	private static final long serialVersionUID = 1L;
+	
 	private ArrayList<VObject> objects = new ArrayList<VObject>();
 	private ArrayList<Curve> curves = new ArrayList<Curve>();
 	private ArrayList<Node> nodes = new ArrayList<Node>();
@@ -364,11 +366,11 @@ import javax.swing.SwingConstants;
 		}else if(c == "Concatenate"){
 			new Arithmetic.Concatinate(p, this);
 		}else if(c == "Branch"){
-			new Logic.Branch(p, this);
+			new FlowControl.Branch(p, this);
 		}else if(c == "While"){
-			new Logic.While(p, this);
+			new FlowControl.While(p, this);
 		}else if(c == "Sequence"){
-			new Logic.Sequence(p, this);
+			new FlowControl.Sequence(p, this);
 		}else if(c == "Equals"){
 			new Logic.Equals(p, this);
 		}else if(c == "Is Less Than"){

@@ -29,13 +29,16 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.geom.CubicCurve2D;
+import java.io.Serializable;
 
- class Curve{
+class Curve implements Serializable{
+	private static final long serialVersionUID = -1435605905680673953L;
+	
 	CubicCurve2D c = new CubicCurve2D.Double();
 	Point[] points = new Point[2];
 	Node[] nodes = new Node[2];
 	boolean[] isNode = new boolean[2];
-	 void draw(Graphics g){
+	public void draw(Graphics g){
 		Point[][] curvePoints = new Point[2][2];
 		int offset;
 		if(isNode[0] && isNode[1]){

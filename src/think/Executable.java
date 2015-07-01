@@ -69,7 +69,7 @@ public class Executable extends VObject{
 	//	return false;
 	//}
 	
-	protected int defaultActiveNode = 1;
+	//protected int defaultActiveNode = 1;
 	
 	/**
 	 * Semi-deprecated.
@@ -275,13 +275,13 @@ public class Executable extends VObject{
 			}
 		}
 		if(getInputTooltips() != null){
-			int j = (Collections.frequency(getInputTooltips(), Variable.DataType.GENERIC) == 1) ? 1 : 0;
+			int j = (Collections.frequency(getInputs(), Variable.DataType.GENERIC) == 1) ? 1 : 0;
 			for(int i = 0; i < getInputTooltips().size(); i++){
 				getInputNodes().get(i + j).setToolTipText(getInputTooltips().get(i));
 			}
 		}
 		if(getOutputTooltips() != null){
-			int j = (Collections.frequency(getOutputTooltips(), Variable.DataType.GENERIC) == 1) ? 1 : 0;
+			int j = (Collections.frequency(getOutputs(), Variable.DataType.GENERIC) == 1) ? 1 : 0;
 			for(int i = 0; i < getOutputTooltips().size(); i++){
 				getOutputNodes().get(i + j).setToolTipText(getOutputTooltips().get(i));
 			}
@@ -389,14 +389,14 @@ public class Executable extends VObject{
 		}
 		return s;
 	}
-	 String getSimpleName(){
+	String getSimpleName(){
 		return ((getParentMod() == null) ? "" : getParentMod().getModuleName()+" > ") + getFunctionName();
 	}
-	 String getFunctionName(){
+	public String getFunctionName(){
 		return this.getClass().getSimpleName().replace('_',' ');
 	}
 
-	String getMenuName() {
+	public String getMenuName() {
 		return getSimpleName();
 	}
 }

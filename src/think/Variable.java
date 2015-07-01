@@ -37,8 +37,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
-import think.Variable.DataType;
-
 public class Variable extends SidebarItem implements DocumentListener{
 	private static final long serialVersionUID = 1L;
 	
