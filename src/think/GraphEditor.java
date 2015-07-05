@@ -23,6 +23,7 @@
 
 package think;
 
+import java.awt.Point;
 import java.util.ArrayList;
 
 public interface GraphEditor{
@@ -40,4 +41,6 @@ public interface GraphEditor{
 	void addNode(Node n);
 	
 	ArrayList<Node> getNodes();
+	
+	Point getClickLocation();
 }

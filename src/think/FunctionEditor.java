@@ -46,6 +46,7 @@ import java.awt.event.MouseListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
@@ -60,7 +61,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
-class FunctionEditor extends JFrame implements ActionListener, MouseListener, GraphEditor,ComponentListener{
+import think.Blueprint.ContextualMenu;
+
+class FunctionEditor extends JFrame implements MouseListener, GraphEditor, ComponentListener{
 	private static final long serialVersionUID = 1L;
 	
 	private VFunction parent;
@@ -255,16 +258,7 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 		addVar.setPreferredSize(new Dimension(30,addVar.getPreferredSize().height));
 		//addVar.setFocusable(false);
 		varButtonHolder.add(addVar);
-		FunctionEditor THIS = this;
-		addVar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Variable v = new Variable(THIS);
-				variables.add(0,v);
-				updateVars();
-				variables.get(0).fields.get(0).requestFocusInWindow();
-				scrollVars.getViewport().setViewPosition(new Point(0,0));
-			}
-		});
+		addVar.addActionListener(new AddVarListener(this));
 		
 		scrollVars.setMinimumSize(minimumSize);
 		varsContainer.add(scrollVars);
@@ -285,113 +279,8 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 		//componentMover = new ComponentMover();
 		//componentMover.setEdgeInsets(new Insets(10, 10, 10, 10));
 		
-		panelPopup = new JPopupMenu();
+		panelPopup = new ContextualMenu(this);
 		panel.addMouseListener(this);
-		
-		JMenuItem popupAdd = new JMenuItem("Add");
-		popupAdd.addActionListener(this);
-		panelPopup.add(popupAdd);
-		
-		JMenuItem popupSubract = new JMenuItem("Subtract");
-		popupSubract.addActionListener(this);
-		panelPopup.add(popupSubract);
-		
-		JMenuItem popupMultiply = new JMenuItem("Multiply");
-		popupMultiply.addActionListener(this);
-		panelPopup.add(popupMultiply);
-		
-		JMenuItem popupDivide = new JMenuItem("Divide");
-		popupDivide.addActionListener(this);
-		panelPopup.add(popupDivide);
-		
-		JMenuItem popupRand = new JMenuItem("Random");
-		popupRand.addActionListener(this);
-		panelPopup.add(popupRand);
-		
-		JMenuItem popupRound = new JMenuItem("Round");
-		popupRound.addActionListener(this);
-		panelPopup.add(popupRound);
-		
-		JMenuItem popupConcat = new JMenuItem("Concatenate");
-		popupConcat.addActionListener(this);
-		panelPopup.add(popupConcat);
-		
-		panelPopup.addSeparator();
-		
-		JMenuItem popupLogic = new JMenuItem("Branch");
-		popupLogic.addActionListener(this);
-		panelPopup.add(popupLogic);
-		
-		JMenuItem popupEquals = new JMenuItem("Equals");
-		popupEquals.addActionListener(this);
-		panelPopup.add(popupEquals);
-		
-		JMenuItem popupLessThan = new JMenuItem("Is Less Than");
-		popupLessThan.addActionListener(this);
-		panelPopup.add(popupLessThan);
-		
-		JMenuItem popupGreaterThan = new JMenuItem("Is Greater Than");
-		popupGreaterThan.addActionListener(this);
-		panelPopup.add(popupGreaterThan);
-		
-		JMenuItem popupLessEqual = new JMenuItem("Is Less Than Or Equal To");
-		popupLessEqual.addActionListener(this);
-		panelPopup.add(popupLessEqual);
-		
-		JMenuItem popupGreaterEqual = new JMenuItem("Is Greater Than Or Equal To");
-		popupGreaterEqual.addActionListener(this);
-		panelPopup.add(popupGreaterEqual);
-		
-		JMenuItem popupItem = new JMenuItem("And");
-		popupItem.addActionListener(this);
-		panelPopup.add(popupItem);
-		
-		popupItem = new JMenuItem("Or");
-		popupItem.addActionListener(this);
-		panelPopup.add(popupItem);
-		
-		popupItem = new JMenuItem("Not");
-		popupItem.addActionListener(this);
-		panelPopup.add(popupItem);
-
-		panelPopup.addSeparator();
-		
-		popupItem = new JMenuItem("While");
-		popupItem.addActionListener(this);
-		panelPopup.add(popupItem);
-		
-		popupItem = new JMenuItem("Sequence");
-		popupItem.addActionListener(this);
-		panelPopup.add(popupItem);
-		
-		panelPopup.addSeparator();
-		
-		JMenuItem popupLog = new JMenuItem("Log To Console");
-		popupLog.addActionListener(this);
-		panelPopup.add(popupLog);
-		
-		JMenuItem popupGet = new JMenuItem("Get String From Console");
-		popupGet.addActionListener(this);
-		panelPopup.add(popupGet);
-		
-		JMenuItem popupGetNum = new JMenuItem("Get Number From Console");
-		popupGetNum.addActionListener(this);
-		panelPopup.add(popupGetNum);
-		
-		/*JMenuItem popupMath = new JMenuItem("Math");
-		popupMath.setEnabled(false);
-		popupMath.addActionListener(THIS);
-		panelPopup.add(popupMath);
-		
-		JMenuItem popupTimeline = new JMenuItem("Timeline");
-		popupTimeline.addActionListener(THIS);
-		popupTimeline.setEnabled(false);
-		panelPopup.add(popupTimeline);
-		
-		JMenuItem popupBlueprint = new JMenuItem("Blueprint");
-		popupBlueprint.addActionListener(THIS);
-		popupBlueprint.setEnabled(false);
-		panelPopup.add(popupBlueprint);*/
 
 		this.panel.requestFocusInWindow();
 
@@ -408,68 +297,7 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 		vars.repaint();
 		vars.revalidate();
 	}
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		String c = e.getActionCommand();
-		Point p;
-		if(((JComponent) e.getSource()).getParent() == panelPopup){
-			p = clickLocation;
-			if(c == "Add"){
-				new Arithmetic.Add(p, this);
-			}else if(c == "Subtract"){
-				new Arithmetic.Subtract(p, this);
-			}else if(c == "Multiply"){
-				new Arithmetic.Multiply(p, this);
-			}else if(c == "Divide"){
-				new Arithmetic.Divide(p, this);
-			}else if(c == "Random"){
-				new Arithmetic.Random(p, this);
-			}else if(c == "Round"){
-				new Arithmetic.Round(p, this);
-			}else if(c == "Concatenate"){
-				new Arithmetic.Concatinate(p, this);
-			}else if(c == "Branch"){
-				new FlowControl.Branch(p, this);
-			}else if(c == "While"){
-				new FlowControl.While(p, this);
-			}else if(c == "Sequence"){
-				new FlowControl.Sequence(p, this);
-			}else if(c == "Equals"){
-				new Logic.Equals(p, this);
-			}else if(c == "Is Less Than"){
-				new Logic.Less_Than(p, this);
-			}else if(c == "Is Greater Than"){
-				new Logic.Greater_Than(p, this);
-			}else if(c == "Is Less Than Or Equal To"){
-				new Logic.Less_Than_Or_Equal_To(p, this);
-			}else if(c == "Is Greater Than Or Equal To"){
-				new Logic.Greater_Than_Or_Equal_To(p, this);
-			}else if(c == "And"){
-				new Logic.And(p, this);
-			}else if(c == "Or"){
-				new Logic.Or(p, this);
-			}else if(c == "Not"){
-				new Logic.Not(p, this);
-			}else if(c == "Log To Console"){
-				if(Debug.console == null){
-					Debug.console = new Console();
-				}
-				new Console.Log_To_Console(p, this);
-			}else if(c == "Get String From Console"){
-				if(Debug.console == null){
-					Debug.console = new Console();
-				}
-				new Console.getStr(p, Variable.DataType.STRING, this);
-			}else if(c == "Get Number From Console"){
-				if(Debug.console == null){
-					Debug.console = new Console();
-				}
-				new Console.getStr(p, Variable.DataType.DOUBLE, this);
-			}else{
-				Out.println("null Action:"+c);
-			}
-		}
-	}
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// Auto-generated method stub
@@ -498,6 +326,7 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 	public void mouseReleased(MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON3){
 			clickLocation = new Point(e.getX(), e.getY());
+			Out.println(clickLocation);
 			panelPopup.show(panel, e.getX(), e.getY());
 		}
 	}
@@ -772,5 +601,27 @@ class FunctionEditor extends JFrame implements ActionListener, MouseListener, Gr
 	public void componentShown(ComponentEvent e) {
 		// Auto-generated method stub
 		
+	}
+	@Override
+	public Point getClickLocation() {
+		return clickLocation;
+	}
+	public class AddVarListener implements ActionListener, Serializable {
+		private static final long serialVersionUID = 1L;
+		
+		GraphEditor owner;
+		AddVarListener(GraphEditor owner){
+			this.owner = owner;
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Variable v = new Variable(owner);
+			variables.add(0,v);
+			updateVars();
+			variables.get(0).fields.get(0).requestFocusInWindow();
+			scrollVars.getViewport().setViewPosition(new Point(0,0));
+		}
+
 	}
 }

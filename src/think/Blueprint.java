@@ -45,7 +45,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
- class Blueprint implements GraphEditor,ActionListener,MouseListener,KeyListener,Serializable{
+ class Blueprint implements GraphEditor,MouseListener,KeyListener,Serializable{
+	
 	private static final long serialVersionUID = 1L;
 	
 	private ArrayList<VObject> objects = new ArrayList<VObject>();
@@ -63,27 +64,28 @@ import javax.swing.SwingConstants;
 	
 	private JPanel vars;
 	private JPanel funcs;
-	 JScrollPane scrollVars;
+	JScrollPane scrollVars;
 	private JScrollPane scrollFuncs;
-	 JSplitPane splitPane;
+	JSplitPane splitPane;
 	private JPopupMenu panelPopup;
 	private String name = "";
 	protected JPanel panelHolder;
+	private Point clickLocation;
 	
-	 String getName() {
+	String getName() {
 		return name;
 	}
-	 void setName(String name) {
+	void setName(String name) {
 		this.name = name;
 	}
-	 ArrayList<VFunction> getFunctions() {
+	ArrayList<VFunction> getFunctions() {
 		return functions;
 	}
 	@Override
 	public ArrayList<Variable> getVariables() {
 		return variables;
 	}
-
+	
 	@Override
 	public DisplayPanel getPanel() {
 		return panel;
@@ -139,16 +141,7 @@ import javax.swing.SwingConstants;
 		addVar.setPreferredSize(new Dimension(30,addVar.getPreferredSize().height));
 		//addVar.setFocusable(false);
 		varButtonHolder.add(addVar);
-		Blueprint THIS = this;
-		addVar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Variable v = new Variable(THIS);
-				variables.add(0,v);
-				updateVars();
-				variables.get(0).fields.get(0).requestFocusInWindow();
-				scrollVars.getViewport().setViewPosition(new Point(0,0));
-			}
-		});
+		addVar.addActionListener(new AddVarListener(this));
 		
 		scrollVars.setMinimumSize(minimumSize);
 		varsContainer.add(scrollVars);
@@ -177,22 +170,7 @@ import javax.swing.SwingConstants;
 		addFunc = new JButton("+");
 		addFunc.setPreferredSize(new Dimension(30,addFunc.getPreferredSize().height));
 		funcsButtonHolder.add(addFunc);
-		addFunc.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				VFunction f = new VFunction(THIS);
-				functions.add(0,f);
-				THIS.updateFuncs();
-				functions.get(0).fields.get(1).requestFocusInWindow();
-				scrollFuncs.getViewport().setViewPosition(new Point(0,0));
-				if(THIS instanceof InstantiableBlueprint){
-					for(Variable v : Main.mainBP.getVariables()){
-						if(v instanceof VInstance && ((VInstance) v).parentBlueprint == THIS){
-							((VInstance) v).addChildFunction(f);
-						}
-					}
-				}
-			}
-		});
+		addFunc.addActionListener(new AddFuncListener(this));
 		
 		scrollFuncs.setMinimumSize(minimumSize);
 		funcsContainer.add(scrollFuncs);
@@ -219,113 +197,10 @@ import javax.swing.SwingConstants;
 		
 		panel.addKeyListener(this);
 		
-		panelPopup = new JPopupMenu();
+		panelPopup = new ContextualMenu(this);
 		panel.addMouseListener(this);
 		
-		JMenuItem popupAdd = new JMenuItem("Add");
-		popupAdd.addActionListener(this);
-		panelPopup.add(popupAdd);
 		
-		JMenuItem popupSubract = new JMenuItem("Subtract");
-		popupSubract.addActionListener(this);
-		panelPopup.add(popupSubract);
-		
-		JMenuItem popupMultiply = new JMenuItem("Multiply");
-		popupMultiply.addActionListener(this);
-		panelPopup.add(popupMultiply);
-		
-		JMenuItem popupDivide = new JMenuItem("Divide");
-		popupDivide.addActionListener(this);
-		panelPopup.add(popupDivide);
-		
-		JMenuItem popupRand = new JMenuItem("Random");
-		popupRand.addActionListener(this);
-		panelPopup.add(popupRand);
-		
-		JMenuItem popupRound = new JMenuItem("Round");
-		popupRound.addActionListener(this);
-		panelPopup.add(popupRound);
-		
-		JMenuItem popupConcat = new JMenuItem("Concatenate");
-		popupConcat.addActionListener(this);
-		panelPopup.add(popupConcat);
-		
-		panelPopup.addSeparator();
-		
-		JMenuItem popupLogic = new JMenuItem("Branch");
-		popupLogic.addActionListener(this);
-		panelPopup.add(popupLogic);
-		
-		JMenuItem popupEquals = new JMenuItem("Equals");
-		popupEquals.addActionListener(this);
-		panelPopup.add(popupEquals);
-		
-		JMenuItem popupLessThan = new JMenuItem("Is Less Than");
-		popupLessThan.addActionListener(this);
-		panelPopup.add(popupLessThan);
-		
-		JMenuItem popupGreaterThan = new JMenuItem("Is Greater Than");
-		popupGreaterThan.addActionListener(this);
-		panelPopup.add(popupGreaterThan);
-		
-		JMenuItem popupLessEqual = new JMenuItem("Is Less Than Or Equal To");
-		popupLessEqual.addActionListener(this);
-		panelPopup.add(popupLessEqual);
-		
-		JMenuItem popupGreaterEqual = new JMenuItem("Is Greater Than Or Equal To");
-		popupGreaterEqual.addActionListener(this);
-		panelPopup.add(popupGreaterEqual);
-		
-		JMenuItem popupItem = new JMenuItem("And");
-		popupItem.addActionListener(this);
-		panelPopup.add(popupItem);
-		
-		popupItem = new JMenuItem("Or");
-		popupItem.addActionListener(this);
-		panelPopup.add(popupItem);
-		
-		popupItem = new JMenuItem("Not");
-		popupItem.addActionListener(this);
-		panelPopup.add(popupItem);
-
-		panelPopup.addSeparator();
-		
-		popupItem = new JMenuItem("While");
-		popupItem.addActionListener(this);
-		panelPopup.add(popupItem);
-		
-		popupItem = new JMenuItem("Sequence");
-		popupItem.addActionListener(this);
-		panelPopup.add(popupItem);
-		
-		panelPopup.addSeparator();
-		
-		JMenuItem popupLog = new JMenuItem("Log To Console");
-		popupLog.addActionListener(this);
-		panelPopup.add(popupLog);
-		
-		JMenuItem popupGet = new JMenuItem("Get String From Console");
-		popupGet.addActionListener(this);
-		panelPopup.add(popupGet);
-		
-		JMenuItem popupGetNum = new JMenuItem("Get Number From Console");
-		popupGetNum.addActionListener(this);
-		panelPopup.add(popupGetNum);
-		
-		/*JMenuItem popupMath = new JMenuItem("Math");
-		popupMath.setEnabled(false);
-		popupMath.addActionListener(this);
-		panelPopup.add(popupMath);
-		
-		JMenuItem popupTimeline = new JMenuItem("Timeline");
-		popupTimeline.addActionListener(this);
-		popupTimeline.setEnabled(false);
-		panelPopup.add(popupTimeline);
-		
-		JMenuItem popupBlueprint = new JMenuItem("Blueprint");
-		popupBlueprint.addActionListener(this);
-		popupBlueprint.setEnabled(false);
-		panelPopup.add(popupBlueprint);*/
 	}
 	
 	@Override
@@ -346,67 +221,173 @@ import javax.swing.SwingConstants;
 		funcs.repaint();
 		funcs.revalidate();
 	}
-	
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		String c = e.getActionCommand();
-		Point p = Main.clickLocation;
-		if(c == "Add"){
-			new Arithmetic.Add(p,this);
-		}else if(c == "Subtract"){
-			new Arithmetic.Subtract(p,this);
-		}else if(c == "Multiply"){
-			new Arithmetic.Multiply(p, this);
-		}else if(c == "Divide"){
-			new Arithmetic.Divide(p, this);
-		}else if(c == "Random"){
-			new Arithmetic.Random(p, this);
-		}else if(c == "Round"){
-			new Arithmetic.Round(p, this);
-		}else if(c == "Concatenate"){
-			new Arithmetic.Concatinate(p, this);
-		}else if(c == "Branch"){
-			new FlowControl.Branch(p, this);
-		}else if(c == "While"){
-			new FlowControl.While(p, this);
-		}else if(c == "Sequence"){
-			new FlowControl.Sequence(p, this);
-		}else if(c == "Equals"){
-			new Logic.Equals(p, this);
-		}else if(c == "Is Less Than"){
-			new Logic.Less_Than(p, this);
-		}else if(c == "Is Greater Than"){
-			new Logic.Greater_Than(p, this);
-		}else if(c == "Is Less Than Or Equal To"){
-			new Logic.Less_Than_Or_Equal_To(p, this);
-		}else if(c == "Is Greater Than Or Equal To"){
-			new Logic.Greater_Than_Or_Equal_To(p, this);
-		}else if(c == "And"){
-			new Logic.And(p, this);
-		}else if(c == "Or"){
-			new Logic.Or(p, this);
-		}else if(c == "Not"){
-			new Logic.Not(p, this);
-		}else if(c == "Log To Console"){
-			if(Debug.console == null){
-				Debug.console = new Console();
-			}
-			new Console.Log_To_Console(p, (GraphEditor) this);
-		}else if(c == "Get String From Console"){
-			if(Debug.console == null){
-				Debug.console = new Console();
-			}
-			new Console.getStr(p, Variable.DataType.STRING, (GraphEditor) this);
-		}else if(c == "Get Number From Console"){
-			if(Debug.console == null){
-				Debug.console = new Console();
-			}
-			new Console.getStr(p, Variable.DataType.DOUBLE, (GraphEditor) this);
-		}else{
-			Out.println("null Action:"+c);
+	static class ContextualMenu extends JPopupMenu{
+		private static final long serialVersionUID = 1L;
+
+		ContextualMenu(GraphEditor ge){
+			ActionListener al =  new ContextualMenuListener(ge);
+			
+			JMenuItem popupAdd = new JMenuItem("Add");
+			popupAdd.addActionListener(al);
+			this.add(popupAdd);
+			
+			JMenuItem popupSubract = new JMenuItem("Subtract");
+			popupSubract.addActionListener(al);
+			this.add(popupSubract);
+			
+			JMenuItem popupMultiply = new JMenuItem("Multiply");
+			popupMultiply.addActionListener(al);
+			this.add(popupMultiply);
+			
+			JMenuItem popupDivide = new JMenuItem("Divide");
+			popupDivide.addActionListener(al);
+			this.add(popupDivide);
+			
+			JMenuItem popupRand = new JMenuItem("Random");
+			popupRand.addActionListener(al);
+			this.add(popupRand);
+			
+			JMenuItem popupRound = new JMenuItem("Round");
+			popupRound.addActionListener(al);
+			this.add(popupRound);
+			
+			JMenuItem popupConcat = new JMenuItem("Concatenate");
+			popupConcat.addActionListener(al);
+			this.add(popupConcat);
+			
+			this.addSeparator();
+			
+			JMenuItem popupLogic = new JMenuItem("Branch");
+			popupLogic.addActionListener(al);
+			this.add(popupLogic);
+			
+			JMenuItem popupEquals = new JMenuItem("Equals");
+			popupEquals.addActionListener(al);
+			this.add(popupEquals);
+			
+			JMenuItem popupLessThan = new JMenuItem("Is Less Than");
+			popupLessThan.addActionListener(al);
+			this.add(popupLessThan);
+			
+			JMenuItem popupGreaterThan = new JMenuItem("Is Greater Than");
+			popupGreaterThan.addActionListener(al);
+			this.add(popupGreaterThan);
+			
+			JMenuItem popupLessEqual = new JMenuItem("Is Less Than Or Equal To");
+			popupLessEqual.addActionListener(al);
+			this.add(popupLessEqual);
+			
+			JMenuItem popupGreaterEqual = new JMenuItem("Is Greater Than Or Equal To");
+			popupGreaterEqual.addActionListener(al);
+			this.add(popupGreaterEqual);
+			
+			JMenuItem popupItem = new JMenuItem("And");
+			popupItem.addActionListener(al);
+			this.add(popupItem);
+			
+			popupItem = new JMenuItem("Or");
+			popupItem.addActionListener(al);
+			this.add(popupItem);
+			
+			popupItem = new JMenuItem("Not");
+			popupItem.addActionListener(al);
+			this.add(popupItem);
+
+			this.addSeparator();
+			
+			popupItem = new JMenuItem("While");
+			popupItem.addActionListener(al);
+			this.add(popupItem);
+			
+			popupItem = new JMenuItem("Sequence");
+			popupItem.addActionListener(al);
+			this.add(popupItem);
+			
+			this.addSeparator();
+			
+			JMenuItem popupLog = new JMenuItem("Log To Console");
+			popupLog.addActionListener(al);
+			this.add(popupLog);
+			
+			JMenuItem popupGet = new JMenuItem("Get String From Console");
+			popupGet.addActionListener(al);
+			this.add(popupGet);
+			
+			JMenuItem popupGetNum = new JMenuItem("Get Number From Console");
+			popupGetNum.addActionListener(al);
+			this.add(popupGetNum);
+			
 		}
 	}
-	
+	static class ContextualMenuListener implements ActionListener{
+		
+		private GraphEditor editor;
+
+		ContextualMenuListener(GraphEditor ge){
+			this.editor = ge;
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String c = e.getActionCommand();
+			Point p = editor.getClickLocation();
+			
+			if(c == "Add"){
+				new Arithmetic.Add(p, editor);
+			}else if(c == "Subtract"){
+				new Arithmetic.Subtract(p, editor);
+			}else if(c == "Multiply"){
+				new Arithmetic.Multiply(p, editor);
+			}else if(c == "Divide"){
+				new Arithmetic.Divide(p, editor);
+			}else if(c == "Random"){
+				new Arithmetic.Random(p, editor);
+			}else if(c == "Round"){
+				new Arithmetic.Round(p, editor);
+			}else if(c == "Concatenate"){
+				new Arithmetic.Concatinate(p, editor);
+			}else if(c == "Branch"){
+				new FlowControl.Branch(p, editor);
+			}else if(c == "While"){
+				new FlowControl.While(p, editor);
+			}else if(c == "Sequence"){
+				new FlowControl.Sequence(p, editor);
+			}else if(c == "Equals"){
+				new Logic.Equals(p, editor);
+			}else if(c == "Is Less Than"){
+				new Logic.Less_Than(p, editor);
+			}else if(c == "Is Greater Than"){
+				new Logic.Greater_Than(p, editor);
+			}else if(c == "Is Less Than Or Equal To"){
+				new Logic.Less_Than_Or_Equal_To(p, editor);
+			}else if(c == "Is Greater Than Or Equal To"){
+				new Logic.Greater_Than_Or_Equal_To(p, editor);
+			}else if(c == "And"){
+				new Logic.And(p, editor);
+			}else if(c == "Or"){
+				new Logic.Or(p, editor);
+			}else if(c == "Not"){
+				new Logic.Not(p, editor);
+			}else if(c == "Log To Console"){
+				if(Debug.console == null){
+					Debug.console = new Console();
+				}
+				new Console.Log_To_Console(p, (GraphEditor) this);
+			}else if(c == "Get String From Console"){
+				if(Debug.console == null){
+					Debug.console = new Console();
+				}
+				new Console.getStr(p, Variable.DataType.STRING, (GraphEditor) this);
+			}else if(c == "Get Number From Console"){
+				if(Debug.console == null){
+					Debug.console = new Console();
+				}
+				new Console.getStr(p, Variable.DataType.DOUBLE, (GraphEditor) this);
+			}else{
+				Out.println("null Action: "+c);
+			}
+		}
+	}
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// Auto-generated method stub
@@ -434,7 +415,7 @@ import javax.swing.SwingConstants;
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON3){
-			Main.clickLocation = new Point(e.getX(), e.getY());
+			clickLocation = new Point(e.getX(), e.getY());
 			panelPopup.show(panel, e.getX(), e.getY());
 		}
 	}
@@ -458,5 +439,52 @@ import javax.swing.SwingConstants;
 		// Auto-generated method stub
 		
 	}
+	@Override
+	public Point getClickLocation() {
+		return clickLocation;
+	}
 	
+	public class AddVarListener implements ActionListener, Serializable {
+		private static final long serialVersionUID = 1L;
+		
+		GraphEditor owner;
+		AddVarListener(GraphEditor owner){
+			this.owner = owner;
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Variable v = new Variable(owner);
+			variables.add(0,v);
+			updateVars();
+			variables.get(0).fields.get(0).requestFocusInWindow();
+			scrollVars.getViewport().setViewPosition(new Point(0,0));
+		}
+
+	}
+	public class AddFuncListener implements ActionListener, Serializable {
+		private static final long serialVersionUID = 1L;
+		
+		Blueprint owner;
+		AddFuncListener(Blueprint owner){
+			this.owner = owner;
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			VFunction f = new VFunction(owner);
+			functions.add(0,f);
+			owner.updateFuncs();
+			functions.get(0).fields.get(1).requestFocusInWindow();
+			scrollFuncs.getViewport().setViewPosition(new Point(0,0));
+			if(owner instanceof InstantiableBlueprint){
+				for(Variable v : Main.mainBP.getVariables()){
+					if(v instanceof VInstance && ((VInstance) v).parentBlueprint == owner){
+						((VInstance) v).addChildFunction(f);
+					}
+				}
+			}
+		}
+
+	}
 }

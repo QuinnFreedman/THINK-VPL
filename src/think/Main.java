@@ -76,7 +76,6 @@ public class Main{
 	
 	static ComponentMover componentMover;
 	static JFrame window;
-	static Point clickLocation;
 	static EntryPoint entryPoint;
 	static Blueprint mainBP;
 	protected static JTabbedPane tabbedPane;
@@ -94,7 +93,12 @@ public class Main{
 	private static JMenuItem mntmSave;
 	
 	public static void main(String[] args){	
-		setupGUI(blueprints);
+		SwingUtilities.invokeLater(new Runnable() {
+	        @Override
+	        public void run() {
+	        	setupWindow();
+	        	setupGUI(blueprints);
+        }});
 		colors.put(Variable.DataType.BOOLEAN, new Color(20,210,20));
 		colors.put(Variable.DataType.INTEGER, Color.red);
 		colors.put(Variable.DataType.DOUBLE, new Color(196,0,167));
@@ -268,204 +272,209 @@ public class Main{
 	    method.invoke(ClassLoader.getSystemClassLoader(), new Object[]{file.toURI().toURL()});
 	}
 	
-	private static void setupGUI(ArrayList<Blueprint> loadedBlueprints){
+	private static void setupWindow(){
 		MenuListener listener = new MenuListener();
-		SwingUtilities.invokeLater(new Runnable() {
+		
+		window = new JFrame();
+		window.setTitle("Think - Main");//\u2148
+		window.setSize(800,500);
+		window.setMinimumSize(new Dimension(555,325));
+		//window.setLocationByPlatform(true);
+		window.setLocationRelativeTo(null);
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		icon = Toolkit.getDefaultToolkit().getImage(window.getClass().getResource("/images/icon.png"));
+		window.setIconImage(icon);
+		
+		
+		try {
+			UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceGraphiteLookAndFeel");
+		} catch (ClassNotFoundException | InstantiationException
+				| IllegalAccessException | UnsupportedLookAndFeelException e1) {
+			Out.printStackTrace(e1);
+		}
+		
+	//Menu Bar
+		JMenuBar menuBar = new JMenuBar();
+		
+		JMenu fileMenu = new JMenu("File");
+	    menuBar.add(fileMenu);
+	    
+	    JMenuItem mntmOpen = new JMenuItem("Open");
+	    mntmOpen.addActionListener(listener);
+	    mntmOpen.setAccelerator(KeyStroke.getKeyStroke(
+	            KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+	    fileMenu.add(mntmOpen);
+	    
+	    mntmSave = new JMenuItem("Save");
+	    mntmSave.setAccelerator(KeyStroke.getKeyStroke(
+	            KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+	    mntmSave.addActionListener(listener);
+	    mntmSave.setEnabled(lastSave != null);
+	    fileMenu.add(mntmSave);
+	    
+	    JMenuItem mntmSaveAs = new JMenuItem("Save As...");
+	    mntmSaveAs.addActionListener(listener);
+	    mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke("control shift S"));
+	    fileMenu.add(mntmSaveAs);
+	    
+		JMenu mnEdit = new JMenu("Edit");
+		menuBar.add(mnEdit);
+		
+		JMenuItem mntmEdit = new JMenuItem("Cut");
+		mntmEdit.addActionListener(listener);
+		mntmEdit.setEnabled(false);
+		mnEdit.add(mntmEdit);
+		
+		mntmEdit = new JMenuItem("Copy");
+		mntmEdit.addActionListener(listener);
+		mntmEdit.setEnabled(false);
+		mnEdit.add(mntmEdit);
+		
+		mntmEdit = new JMenuItem("Paste");
+		mntmEdit.addActionListener(listener);
+		mntmEdit.setEnabled(false);
+		mnEdit.add(mntmEdit);
+		
+		JMenu mnVariable = new JMenu("Variables");
+		menuBar.add(mnVariable);
+		
+		JMenuItem mntmNewInteger = new JMenuItem("New Integer");
+		mntmNewInteger.addActionListener(listener);
+		mnVariable.add(mntmNewInteger);
+		
+		JMenuItem mntmNewFloat = new JMenuItem("New Float");
+		mntmNewFloat.addActionListener(listener);
+		mnVariable.add(mntmNewFloat);
+		
+		JMenuItem mntmNewDouble = new JMenuItem("New Double");
+		mntmNewDouble.addActionListener(listener);
+		mnVariable.add(mntmNewDouble);
+		
+		JMenuItem mntmNewLong = new JMenuItem("New Long");
+		mntmNewLong.addActionListener(listener);
+		mntmNewLong.setEnabled(false);
+		mnVariable.add(mntmNewLong);
+		
+		JMenuItem mntmNewShort = new JMenuItem("New Short");
+		mntmNewShort.addActionListener(listener);
+		mntmNewShort.setEnabled(false);
+		mnVariable.add(mntmNewShort);
+		
+		JMenuItem mntmNewByte = new JMenuItem("New Byte");
+		mntmNewByte.addActionListener(listener);
+		mntmNewByte.setEnabled(false);
+		mnVariable.add(mntmNewByte);
+		
+		mnVariable.addSeparator();
+		
+		JMenuItem mntmNewBoolean = new JMenuItem("New Boolean");
+		mntmNewBoolean.addActionListener(listener);
+		mnVariable.add(mntmNewBoolean);
+		
+		mnVariable.addSeparator();
+		
+		JMenuItem mntmNewString = new JMenuItem("New String");
+		mntmNewString.addActionListener(listener);
+		mnVariable.add(mntmNewString);
+		
+		JMenuItem mntmNewCharacter = new JMenuItem("new Character");
+		mntmNewCharacter.addActionListener(listener);
+		mntmNewCharacter.setEnabled(false);
+		mnVariable.add(mntmNewCharacter);
+		
+		JMenu mnRun = new JMenu("Run");
+		menuBar.add(mnRun);
+		
+		JMenuItem mntmRun = new JMenuItem("Run");
+		mntmRun.addActionListener(listener);
+		mntmRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
+		mnRun.add(mntmRun);
+		
+		mntmRun = new JMenuItem("Fast Debug");
+		mntmRun.addActionListener(listener);
+		mntmRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0));
+		mnRun.add(mntmRun);
+		
+		mntmRun = new JMenuItem("Debug");
+		mntmRun.addActionListener(listener);
+		mntmRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0));
+		mnRun.add(mntmRun);
+		
+		JMenu mnHelp = new JMenu("Help");
+		menuBar.add(mnHelp);
+		
+		JMenuItem mntmHelp = new JMenuItem("Go to website");
+		mntmHelp.addActionListener(listener);
+		mnHelp.add(mntmHelp);
+		
+		window.setJMenuBar(menuBar);
 
-	        @Override
-	        public void run() {
-				window = new JFrame();
-				window.setTitle("Think - Main");//\u2148
-				window.setSize(800,500);
-				window.setMinimumSize(new Dimension(555,325));
-				//window.setLocationByPlatform(true);
-				window.setLocationRelativeTo(null);
-				window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				
-				icon = Toolkit.getDefaultToolkit().getImage(window.getClass().getResource("/images/icon.png"));
-				window.setIconImage(icon);
-				
-				
-				try {
-					UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceGraphiteLookAndFeel");
-				} catch (ClassNotFoundException | InstantiationException
-						| IllegalAccessException | UnsupportedLookAndFeelException e1) {
-					Out.printStackTrace(e1);
-				}
-				
-				blueprints = new ArrayList<Blueprint>();
-				if(loadedBlueprints != null){
-					blueprints.addAll(loadedBlueprints);
-				}else{
-					mainBP = new Blueprint();
-					mainBP.setName("Main");
-					blueprints.add(mainBP);
-				}
-				
-			//Menu Bar
-				JMenuBar menuBar = new JMenuBar();
-				
-				JMenu fileMenu = new JMenu("File");
-			    menuBar.add(fileMenu);
-			    
-			    JMenuItem mntmOpen = new JMenuItem("Open");
-			    mntmOpen.addActionListener(listener);
-			    mntmOpen.setAccelerator(KeyStroke.getKeyStroke(
-			            KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-			    fileMenu.add(mntmOpen);
-			    
-			    mntmSave = new JMenuItem("Save");
-			    mntmSave.setAccelerator(KeyStroke.getKeyStroke(
-			            KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-			    mntmSave.addActionListener(listener);
-			    mntmSave.setEnabled(lastSave != null);
-			    fileMenu.add(mntmSave);
-			    
-			    JMenuItem mntmSaveAs = new JMenuItem("Save As...");
-			    mntmSaveAs.addActionListener(listener);
-			    mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke("control shift S"));
-			    fileMenu.add(mntmSaveAs);
-			    
-				JMenu mnEdit = new JMenu("Edit");
-				menuBar.add(mnEdit);
-				
-				JMenuItem mntmEdit = new JMenuItem("Cut");
-				mntmEdit.addActionListener(listener);
-				mntmEdit.setEnabled(false);
-				mnEdit.add(mntmEdit);
-				
-				mntmEdit = new JMenuItem("Copy");
-				mntmEdit.addActionListener(listener);
-				mntmEdit.setEnabled(false);
-				mnEdit.add(mntmEdit);
-				
-				mntmEdit = new JMenuItem("Paste");
-				mntmEdit.addActionListener(listener);
-				mntmEdit.setEnabled(false);
-				mnEdit.add(mntmEdit);
-				
-				JMenu mnVariable = new JMenu("Variables");
-				menuBar.add(mnVariable);
-				
-				JMenuItem mntmNewInteger = new JMenuItem("New Integer");
-				mntmNewInteger.addActionListener(listener);
-				mnVariable.add(mntmNewInteger);
-				
-				JMenuItem mntmNewFloat = new JMenuItem("New Float");
-				mntmNewFloat.addActionListener(listener);
-				mnVariable.add(mntmNewFloat);
-				
-				JMenuItem mntmNewDouble = new JMenuItem("New Double");
-				mntmNewDouble.addActionListener(listener);
-				mnVariable.add(mntmNewDouble);
-				
-				JMenuItem mntmNewLong = new JMenuItem("New Long");
-				mntmNewLong.addActionListener(listener);
-				mntmNewLong.setEnabled(false);
-				mnVariable.add(mntmNewLong);
-				
-				JMenuItem mntmNewShort = new JMenuItem("New Short");
-				mntmNewShort.addActionListener(listener);
-				mntmNewShort.setEnabled(false);
-				mnVariable.add(mntmNewShort);
-				
-				JMenuItem mntmNewByte = new JMenuItem("New Byte");
-				mntmNewByte.addActionListener(listener);
-				mntmNewByte.setEnabled(false);
-				mnVariable.add(mntmNewByte);
-				
-				mnVariable.addSeparator();
-				
-				JMenuItem mntmNewBoolean = new JMenuItem("New Boolean");
-				mntmNewBoolean.addActionListener(listener);
-				mnVariable.add(mntmNewBoolean);
-				
-				mnVariable.addSeparator();
-				
-				JMenuItem mntmNewString = new JMenuItem("New String");
-				mntmNewString.addActionListener(listener);
-				mnVariable.add(mntmNewString);
-				
-				JMenuItem mntmNewCharacter = new JMenuItem("new Character");
-				mntmNewCharacter.addActionListener(listener);
-				mntmNewCharacter.setEnabled(false);
-				mnVariable.add(mntmNewCharacter);
-				
-				JMenu mnRun = new JMenu("Run");
-				menuBar.add(mnRun);
-				
-				JMenuItem mntmRun = new JMenuItem("Run");
-				mntmRun.addActionListener(listener);
-				mntmRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
-				mnRun.add(mntmRun);
-				
-				mntmRun = new JMenuItem("Fast Debug");
-				mntmRun.addActionListener(listener);
-				mntmRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0));
-				mnRun.add(mntmRun);
-				
-				mntmRun = new JMenuItem("Debug");
-				mntmRun.addActionListener(listener);
-				mntmRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0));
-				mnRun.add(mntmRun);
-				
-				JMenu mnHelp = new JMenu("Help");
-				menuBar.add(mnHelp);
-				
-				JMenuItem mntmHelp = new JMenuItem("Go to website");
-				mntmHelp.addActionListener(listener);
-				mnHelp.add(mntmHelp);
-				
-				tabbedPane = new JTabbedPane();
-				
-				for(Blueprint bp : blueprints){
-					tabbedPane.addTab(bp.getName(), bp.splitPane);
-				}
-				
-				for(Module m : modules){
-					m.setup();
-				}
-				
-				JPanel plus = null;
-				
-				tabbedPane.addTab("+", plus);
-				
-				tabbedPane.addChangeListener(new ChangeListener() {
-					public void stateChanged(ChangeEvent e) {
-			            if(tabbedPane.getSelectedComponent() == plus){
-			            	InstantiableBlueprint ibp = new InstantiableBlueprint();
-			            	blueprints.add(ibp);
-			            	tabbedPane.removeTabAt(tabbedPane.getTabCount()-1);
-			            	tabbedPane.addTab("new_Blueprint", ibp.splitPane);
-			            	tabbedPane.setSelectedIndex(tabbedPane.getTabCount()-1);
-			            	ibp.className.requestFocusInWindow();
-			            	tabbedPane.addTab("+", plus);
-			            }
-			            //window.setTitle(Main.blueprints.get(tabbedPane.getSelectedIndex()).getName());
-			        }
-			    });
-				
-				JPanel container = new JPanel();
-				container.setLayout(new BorderLayout());
-				container.add(tabbedPane, BorderLayout.CENTER);
-				
-				window.getContentPane().add(container);
-				
-				window.setJMenuBar(menuBar);
-				
-				window.setVisible(true);
-				
-				window.setFocusTraversalKeysEnabled(false);
+		window.setFocusTraversalKeysEnabled(false);
+		
+		componentMover = new ComponentMover();
+		componentMover.setEdgeInsets(new Insets(10, 10, 10, 10));
+		
+	}
+	
+	private static void setupGUI(ArrayList<Blueprint> loadedBlueprints){
+		
+		blueprints = new ArrayList<Blueprint>();
+		
+		if(loadedBlueprints != null){
+			blueprints.addAll(loadedBlueprints);
+		    for(Blueprint bp : Main.blueprints){
+		    	for(VObject o : bp.getObjects()){
+		    		componentMover.registerComponent(o);
+		    	}
+		    }
+		}else{
+			mainBP = new Blueprint();
+			mainBP.setName("Main");
+			blueprints.add(mainBP);
+		}
+		tabbedPane = new JTabbedPane();
+		
+		JPanel container = new JPanel();
+		container.setLayout(new BorderLayout());
+		container.add(tabbedPane, BorderLayout.CENTER);
+		window.getContentPane().add(container);
+		
+		for(Blueprint bp : blueprints){
+			tabbedPane.addTab(bp.getName(), bp.splitPane);
+		}
+		
+		for(Module m : modules){
+			m.setup();
+		}
 
-				componentMover = new ComponentMover();
-				componentMover.setEdgeInsets(new Insets(10, 10, 10, 10));
-				
-				entryPoint = new EntryPoint(getOpenClass());
-				getOpenClass().getPanel().add(entryPoint);
-				
-				getOpenClass().getPanel().requestFocusInWindow();
+		JPanel plus = null;
+		tabbedPane.addTab("+", plus);
+		
+		tabbedPane.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+	            if(tabbedPane.getSelectedComponent() == plus){
+	            	InstantiableBlueprint ibp = new InstantiableBlueprint();
+	            	blueprints.add(ibp);
+	            	tabbedPane.removeTabAt(tabbedPane.getTabCount()-1);
+	            	tabbedPane.addTab("new_Blueprint", ibp.splitPane);
+	            	tabbedPane.setSelectedIndex(tabbedPane.getTabCount()-1);
+	            	ibp.className.requestFocusInWindow();
+	            	tabbedPane.addTab("+", plus);
+	            }
+	            //window.setTitle(Main.blueprints.get(tabbedPane.getSelectedIndex()).getName());
 	        }
-		});
+	    });
+		window.setVisible(true);
+
+		if(loadedBlueprints == null){
+			entryPoint = new EntryPoint(mainBP);
+			mainBP.getPanel().add(entryPoint);
+		}
+		
+		if(mainBP != null)
+			mainBP.getPanel().requestFocusInWindow();
+
 	}
 	
 	 static Blueprint getOpenClass(){
@@ -549,7 +558,14 @@ public class Main{
 						is.close();
 						Out.println("loaded file");
 						window.dispose();
-						setupGUI(save.blueprints);
+						
+						SwingUtilities.invokeLater(new Runnable() {
+					        @Override
+					        public void run() {
+					        	window.getContentPane().removeAll();
+					        	setupGUI(save.blueprints);
+				        }});
+						
 						Out.println("restored save");
 						lastSave = selectedFile.getAbsolutePath();
 					} catch (Exception e1){
@@ -562,7 +578,7 @@ public class Main{
 			}else if(c == "Save"){
 				saveFile(lastSave);
 			}else{
-				Out.println("null Action:"+c);
+				Out.println("null Action: "+c);
 			}
 			
 	    }
