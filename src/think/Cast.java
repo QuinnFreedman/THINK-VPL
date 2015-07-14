@@ -24,8 +24,18 @@
 package think;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.io.File;
+import java.net.URL;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 
  class Cast extends Executable{
 	private static final long serialVersionUID = 1L;
@@ -51,6 +61,19 @@ import java.awt.Rectangle;
 		addOutputNode(outputNode);
 		input = inputNode.dataType;
 		output = outputNode.dataType;
+		
+		Out.println(UIManager.getDefaults( ).get("text").toString());
+		//headerLabel.setFont(headerLabel.getFont().deriveFont(Font.PLAIN, headerLabel.getFont().getSize()+20));
+		//headerLabel.setBorder(new EmptyBorder(new Insets(-10,-1,-1,-1)));
+		
+		URL url = null;
+		try{
+			url = Main.class.getResource("/images/white_diamond.png");
+		}catch (Exception e){
+			Out.printStackTrace(e);
+		}		
+		headerLabel.setIcon(new ImageIcon(url));
+		
 		setBounds(new Rectangle(
 				new Point(
 						((Node.getLocationOnPanel(recievingNode,owner.getPanel()).x+(recievingNode.getPreferredSize().width/2))+(Node.getLocationOnPanel(sendingNode,owner.getPanel()).x+(sendingNode.getPreferredSize().width/2)))/2 - getThis().getSize().width/2, 
@@ -60,6 +83,10 @@ import java.awt.Rectangle;
 
 		Node.connect(sendingNode, inputNode);
 		Node.connect(outputNode, recievingNode);
+	}
+	
+	public Dimension getSize(){
+		return new Dimension(45,super.getSize().height);
 	}
 	
 	private static boolean isNumber(Variable.DataType dt){

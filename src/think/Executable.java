@@ -244,13 +244,13 @@ public class Executable extends VObject{
 		this.add(outputNodeHolder,BorderLayout.PAGE_END);
 
 		if(!(this instanceof EntryPoint || this instanceof Constant
-				|| this instanceof Cast || this instanceof FunctionEditor.FunctionIO
+				|| this instanceof FunctionEditor.FunctionIO
 				|| this instanceof PrimitiveFunction)){
 			body.setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
 			body.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 			headerLabel = new JLabel();
-			if(!(this instanceof Arithmetic || this instanceof Logic || this instanceof Console.getStr))
+			if(!(this instanceof Arithmetic || this instanceof Logic || this instanceof Console.getStr || this instanceof Cast))
 				headerLabel.setText(getSimpleName());
 			body.add(headerLabel,gbc);
 		}
