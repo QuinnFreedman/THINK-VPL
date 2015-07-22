@@ -79,7 +79,7 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 		
 		className.addFocusListener(new SidebarItem.NoDuplicateNames(this,className));
 		
-		InstantiableBlueprint THIS = this;
+		final InstantiableBlueprint THIS = this;
 		className.getDocument().addDocumentListener(new DocumentListener(){{}
 
 			@Override

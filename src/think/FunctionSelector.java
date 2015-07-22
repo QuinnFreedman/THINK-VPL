@@ -118,7 +118,7 @@ import javax.swing.event.DocumentListener;
 		
 		Node.castOrConnect(parentNode, connectingNode);
 		
-		JTextField search = new JTextField();
+		final JTextField search = new JTextField();
 		search.setOpaque(false);
 		search.getDocument().addDocumentListener(new DocumentListener(){{}
 		

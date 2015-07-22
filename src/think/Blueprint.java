@@ -319,7 +319,8 @@ import javax.swing.SwingConstants;
 			
 		}
 	}
-	static class ContextualMenuListener implements ActionListener{
+	static class ContextualMenuListener implements ActionListener, Serializable{
+		private static final long serialVersionUID = 1L;
 		
 		private GraphEditor editor;
 

@@ -31,6 +31,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -55,7 +56,7 @@ class VFunction extends SidebarItem implements FunctionOverseer{
 	private VFunction originalFunc = null;
 	private VariableData.Instance workingInstance = null;
 	
-	 VFunction getOriginal(){
+	VFunction getOriginal(){
 		if(parentInstance != null){
 			return originalFunc;
 		}
@@ -98,7 +99,7 @@ class VFunction extends SidebarItem implements FunctionOverseer{
 	private VFunction getThis(){
 		return this;
 	}
-	VFunction(GraphEditor owner){
+	VFunction(final GraphEditor owner){
 		super(owner);
 		
 		this.type = Type.FUNCTION;
@@ -118,62 +119,69 @@ class VFunction extends SidebarItem implements FunctionOverseer{
 		JButton edit = new JButton("edit");
 		edit.setPreferredSize(new Dimension(65,edit.getPreferredSize().height));
 		header.add(edit);
-		edit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(editor == null){
-					editor = new FunctionEditor(getThis());
-				}else if(!editor.isVisible()){
-					editor.setVisible(true);
-				}else{
-					editor.requestFocus();
-				}
-			}
-		});
+		edit.addActionListener(new EditActionListener(editor));
 		
-		JLabel drag = new JLabel();
+		final JLabel drag = new JLabel();
 		ImageIcon image = new ImageIcon(bufferedImage);
 		drag.setIcon(image);
 		drag.setFocusable(false);
-		drag.addMouseListener(new MouseListener(){{
-			
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				// Auto-generated method stub
-				
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				// Auto-generated method stub
-				
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-				// Auto-generated method stub
-				
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				drag.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				drag.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				Point p = Node.getLocationOnPanel(e,owner.getPanel());
-				if(p.x > 0 && p.y > 0 && p.x < owner.getPanel().getWidth() && p.y < owner.getPanel().getHeight()){
-					new UserFunc(p,getOriginal(),getThis().getOwner());
-				}
-			}
-			
-		});
+		drag.addMouseListener(new DragMouseListener(drag, owner));
 		header.add(drag);
 		
+		editor = new FunctionEditor(getThis());
+	}
+	class DragMouseListener implements MouseListener, Serializable{
+		private static final long serialVersionUID = 1L;
+		
+		private JLabel drag;
+		private GraphEditor owner;
+		
+		DragMouseListener(JLabel drag, GraphEditor owner){
+			this.drag = drag;
+			this.owner = owner;
+		}
+		
+		@Override
+		public void mouseClicked(MouseEvent arg0) {}
+		@Override
+		public void mouseEntered(MouseEvent arg0) {}
+		@Override
+		public void mouseExited(MouseEvent arg0) {}
+	
+		@Override
+		public void mousePressed(MouseEvent arg0) {
+			drag.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			drag.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			Point p = Node.getLocationOnPanel(e,owner.getPanel());
+			if(p.x > 0 && p.y > 0 && p.x < owner.getPanel().getWidth() && p.y < owner.getPanel().getHeight()){
+				new UserFunc(p,getOriginal(),getThis().getOwner());
+			}
+		}
+		
+	}
+	
+	class EditActionListener implements ActionListener, Serializable {
+		private static final long serialVersionUID = 1L;
+		private FunctionEditor edt;
+		
+		EditActionListener(FunctionEditor edt){
+			this.edt = edt;
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			if(edt == null){//TODO
+				//edt = new FunctionEditor(getThis());
+			}else if(!edt.isVisible()){
+				edt.setVisible(true);
+			}else{
+				edt.requestFocus();
+			}
+		}
 	}
 	
 	@Override

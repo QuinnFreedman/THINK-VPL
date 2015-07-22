@@ -51,10 +51,8 @@ import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -506,8 +504,9 @@ class FunctionEditor extends JFrame implements MouseListener, GraphEditor, Compo
 		}
 		
 	}
-	class NodeAdderListener implements ActionListener{
-		
+	class NodeAdderListener implements ActionListener, Serializable{
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String s = ((JButton) e.getSource()).getText();

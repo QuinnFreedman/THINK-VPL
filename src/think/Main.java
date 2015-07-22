@@ -425,7 +425,15 @@ public class Main{
 			blueprints.addAll(loadedBlueprints);
 		    for(Blueprint bp : Main.blueprints){
 		    	for(VObject o : bp.getObjects()){
+		    		Out.println("registering "+o.getClass().getName());
 		    		componentMover.registerComponent(o);
+		    	}
+		    	for(VFunction vf : bp.getFunctions()){
+		    		Out.println("editor = "+vf.editor);
+		    		/*for(VObject o : vf.getEditor().getObjects()){
+		    			Out.println("registering "+o.getClass().getName());
+			    		componentMover.registerComponent(o);
+		    		}*/
 		    	}
 		    }
 		}else{
@@ -448,7 +456,7 @@ public class Main{
 			m.setup();
 		}
 
-		JPanel plus = null;
+		final JPanel plus = null;
 		tabbedPane.addTab("+", plus);
 		
 		tabbedPane.addChangeListener(new ChangeListener() {
@@ -554,7 +562,7 @@ public class Main{
 				    }
 				    try {
 						ObjectInputStream is = new ObjectInputStream(new FileInputStream(selectedFile.getAbsolutePath()));
-						SaveBundle save = (SaveBundle) is.readObject();
+						final SaveBundle save = (SaveBundle) is.readObject();
 						is.close();
 						Out.println("loaded file");
 						window.dispose();

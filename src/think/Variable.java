@@ -27,6 +27,7 @@ import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -77,7 +78,7 @@ public class Variable extends SidebarItem implements DocumentListener{
 	private Variable getThis(){
 		return this;
 	}
-	Variable(GraphEditor owner){
+	Variable(final GraphEditor owner){
 		super(owner);
 		
 		if(owner == null)
@@ -99,7 +100,7 @@ public class Variable extends SidebarItem implements DocumentListener{
 		header.add(valueField);
 		fields.add(valueField);
 		
-		JLabel drag = new JLabel();
+		final JLabel drag = new JLabel();
 		ImageIcon image = new ImageIcon(bufferedImage);
 		drag.setIcon(image);
 		drag.setFocusable(false);
@@ -209,9 +210,10 @@ public class Variable extends SidebarItem implements DocumentListener{
 			Out.printStackTrace(e1);
 		}
     }
-    static class NameDocListener implements DocumentListener{
-
-    	SidebarItem var;
+    static class NameDocListener implements DocumentListener, Serializable{
+		private static final long serialVersionUID = 1L;
+		
+		SidebarItem var;
     	
     	NameDocListener(SidebarItem var){
     		this.var = var;
