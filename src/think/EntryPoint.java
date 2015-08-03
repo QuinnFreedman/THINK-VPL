@@ -34,6 +34,8 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.RadialGradientPaint;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
@@ -41,9 +43,10 @@ import javax.swing.border.EmptyBorder;
  class EntryPoint extends Executable{
 	private static final long serialVersionUID = 1L;
 	
-	 Node startNode;
+	Node startNode;
 	EntryPoint(GraphEditor owner){
 		super(new Point(80,30), owner);
+		this.setUniqueID("10");
 		this.setOpaque(false);
 		this.body.setLayout(new FlowLayout());
 		((FlowLayout) this.body.getLayout()).setVgap(30);
@@ -56,6 +59,10 @@ import javax.swing.border.EmptyBorder;
 		this.body.add(text);
 		startNode = new StartNode(this);
 		this.add(startNode,BorderLayout.AFTER_LAST_LINE);
+	}
+	@Override
+	protected ArrayList<Node> getOutputNodes() {
+		return new ArrayList<Node>(Arrays.asList(startNode));
 	}
 	@Override
 	public Dimension getSize(){

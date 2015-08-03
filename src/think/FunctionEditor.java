@@ -359,6 +359,7 @@ class FunctionEditor extends JFrame implements MouseListener, GraphEditor, Compo
 		FunctionIO(GraphEditor owner, Mode mode){
 			super(null, owner);
 			this.mode = mode;
+			this.setUniqueID((mode == Mode.INPUT) ? "0" : "1");
 			Main.componentMover.deregisterComponent(this);
 			if(this.mode == Mode.INPUT){
 				this.remove(inputNodeHolder);

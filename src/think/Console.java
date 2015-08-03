@@ -198,7 +198,7 @@ class Console extends JFrame implements KeyListener{
 		}
 	}
 	
-	 static boolean isNumeric(String str)
+	static boolean isNumeric(String str)
 	{
 	  return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
 	}

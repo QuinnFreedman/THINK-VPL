@@ -561,7 +561,7 @@ public class Main{
 				    	return;
 				    }
 				    try {
-						ObjectInputStream is = new ObjectInputStream(new FileInputStream(selectedFile.getAbsolutePath()));
+						/*ObjectInputStream is = new ObjectInputStream(new FileInputStream(selectedFile.getAbsolutePath()));
 						final SaveBundle save = (SaveBundle) is.readObject();
 						is.close();
 						Out.println("loaded file");
@@ -574,7 +574,13 @@ public class Main{
 					        	setupGUI(save.blueprints);
 				        }});
 						
-						Out.println("restored save");
+						Out.println("restored save");*/
+				    	
+				    	window.getContentPane().removeAll();
+			        	setupGUI(null);
+			        	
+				    	SaveFileIO.read(selectedFile);
+				    	
 						lastSave = selectedFile.getAbsolutePath();
 					} catch (Exception e1){
 						e1.printStackTrace();
@@ -592,9 +598,10 @@ public class Main{
 	    }
 		private static void saveFile(String path){
 			try {
-				ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(path));
-				os.writeObject(new SaveBundle());
-				os.close();
+				//ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(path));
+				//os.writeObject(new SaveBundle());
+				//os.close();
+				SaveFileIO.write(new File(path));
 				Out.println("created file");
 			} catch (Exception e1){
 				e1.printStackTrace();

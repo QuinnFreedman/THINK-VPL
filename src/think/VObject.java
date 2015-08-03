@@ -32,6 +32,8 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.swing.JLabel;
@@ -40,6 +42,9 @@ import javax.swing.event.MouseInputListener;
 
  class VObject extends JPanel implements MouseInputListener{
 	private static final long serialVersionUID = 1L;
+
+	private String UNIQUE_ID;
+	private static final SimpleDateFormat ID_FORMAT = new SimpleDateFormat("yyyyMMddHHmmssSSSSSS");
 	
 	Boolean isDragged;
 	int width;
@@ -53,6 +58,7 @@ import javax.swing.event.MouseInputListener;
 		return new Point(10,10);
 	}
 	VObject(GraphEditor owner){
+		this.UNIQUE_ID = ID_FORMAT.format(new Date());
 		this.owner = owner;
 		this.addMouseListener(this);
 		this.setOpaque(false);
@@ -170,6 +176,13 @@ import javax.swing.event.MouseInputListener;
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
 		// Auto-generated method stub
+		
+	}
+	String getUniqueID() {
+		return UNIQUE_ID;
+	}
+	void setUniqueID(String id) {
+		UNIQUE_ID = id;
 		
 	}
 }

@@ -84,6 +84,10 @@ class Constant extends Executable implements DocumentListener{
 		setBounds(new Rectangle(pos,getSize()));
 	}
 	
+	String getText(){
+		return editor.getText();
+	}
+	
 	@Override
 	public VariableData execute(VariableData[] inputs){
 		return value;

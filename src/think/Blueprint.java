@@ -373,17 +373,17 @@ import javax.swing.SwingConstants;
 				if(Debug.console == null){
 					Debug.console = new Console();
 				}
-				new Console.Log_To_Console(p, (GraphEditor) this);
+				new Console.Log_To_Console(p, editor);
 			}else if(c == "Get String From Console"){
 				if(Debug.console == null){
 					Debug.console = new Console();
 				}
-				new Console.getStr(p, Variable.DataType.STRING, (GraphEditor) this);
+				new Console.getStr(p, Variable.DataType.STRING, editor);
 			}else if(c == "Get Number From Console"){
 				if(Debug.console == null){
 					Debug.console = new Console();
 				}
-				new Console.getStr(p, Variable.DataType.DOUBLE, (GraphEditor) this);
+				new Console.getStr(p, Variable.DataType.DOUBLE, editor);
 			}else{
 				Out.println("null Action: "+c);
 			}

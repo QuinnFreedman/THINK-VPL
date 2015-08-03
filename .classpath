@@ -3,7 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="substance-6.1.jar"/>
-	<classpathentry kind="lib" path="trident.jar"/>
+	<classpathentry kind="lib" path="lib/jdom-1.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/substance-6.1.jar"/>
+	<classpathentry kind="lib" path="lib/trident.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
