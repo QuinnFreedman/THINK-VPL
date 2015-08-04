@@ -46,7 +46,6 @@ import java.awt.event.MouseListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
@@ -256,7 +255,16 @@ class FunctionEditor extends JFrame implements MouseListener, GraphEditor, Compo
 		addVar.setPreferredSize(new Dimension(30,addVar.getPreferredSize().height));
 		//addVar.setFocusable(false);
 		varButtonHolder.add(addVar);
-		addVar.addActionListener(new AddVarListener(this));
+		FunctionEditor THIS = this;
+		addVar.addActionListener(new ActionListener() {		
+			public void actionPerformed(ActionEvent e) {		
+				Variable v = new Variable(THIS);		
+				variables.add(0,v);		
+				updateVars();		
+				variables.get(0).fields.get(0).requestFocusInWindow();		
+				scrollVars.getViewport().setViewPosition(new Point(0,0));		
+			}		
+		});
 		
 		scrollVars.setMinimumSize(minimumSize);
 		varsContainer.add(scrollVars);
@@ -269,7 +277,7 @@ class FunctionEditor extends JFrame implements MouseListener, GraphEditor, Compo
 		
 		this.getContentPane().add(splitPane, BorderLayout.CENTER);
 		
-		this.setVisible(true);
+		//this.setVisible(true);
 		
 		this.setFocusTraversalKeysEnabled(false);
 		vars.setFocusTraversalKeysEnabled(false);
@@ -409,10 +417,8 @@ class FunctionEditor extends JFrame implements MouseListener, GraphEditor, Compo
 		}
 	}
 	class removeableNode extends Node{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
+		
 		Node THIS = this;
 		
 		 removeableNode(NodeType type, VObject parentObj, Variable.DataType dt, boolean b) {
@@ -505,9 +511,8 @@ class FunctionEditor extends JFrame implements MouseListener, GraphEditor, Compo
 		}
 		
 	}
-	class NodeAdderListener implements ActionListener, Serializable{
-		private static final long serialVersionUID = 1L;
-
+	class NodeAdderListener implements ActionListener{
+		
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String s = ((JButton) e.getSource()).getText();
@@ -535,28 +540,35 @@ class FunctionEditor extends JFrame implements MouseListener, GraphEditor, Compo
 				dataType = null;
 			}
 			if(((JButton) e.getSource()).getParent() == addInputNode){
-				addGenericInput.setEnabled(false);
-				inputObject.addOutputNode(new removeableNode(Node.NodeType.SENDING, inputObject, dataType, (dataType == Variable.DataType.GENERIC) ? false : true));
-				inputObject.revalidate();
-				inputObject.repaint();
-				parent.addInput(dataType);
+				addInputNode(dataType);
 			}else{
-				addGenericInput.setEnabled(false);
-				outputObject.addInputNode(new removeableNode(Node.NodeType.RECIEVING, outputObject, dataType, (dataType == Variable.DataType.GENERIC) ? true : false));
-				outputObject.revalidate();
-				outputObject.repaint();
-				parent.addOutput(dataType);
-				if(outputObject.getInputNodes().size() == 1 && outputObject.getInputNodes().get(0).dataType != Variable.DataType.GENERIC){
-					enableOutput(false);
-				}
-				if(outputObject.getInputNodes().size() > 1){
-					parent.setExecuteOnce(true);
-					Out.println("setExecuteOnce (true)");
-				}
+				addOutputNode(dataType);
 			}
 			
-			repaintAll();
 		}
+	}
+	void addInputNode(Variable.DataType dataType){
+		addGenericInput.setEnabled(false);
+		inputObject.addOutputNode(new removeableNode(Node.NodeType.SENDING, inputObject, dataType, (dataType == Variable.DataType.GENERIC) ? false : true));
+		inputObject.revalidate();
+		inputObject.repaint();
+		parent.addInput(dataType);
+		repaintAll();
+	}
+	void addOutputNode(Variable.DataType dataType){
+		addGenericInput.setEnabled(false);
+		outputObject.addInputNode(new removeableNode(Node.NodeType.RECIEVING, outputObject, dataType, (dataType == Variable.DataType.GENERIC) ? true : false));
+		outputObject.revalidate();
+		outputObject.repaint();
+		parent.addOutput(dataType);
+		if(outputObject.getInputNodes().size() == 1 && outputObject.getInputNodes().get(0).dataType != Variable.DataType.GENERIC){
+			enableOutput(false);
+		}
+		if(outputObject.getInputNodes().size() > 1){
+			parent.setExecuteOnce(true);
+			Out.println("setExecuteOnce (true)");
+		}
+		repaintAll();
 	}
 	private void repaintAll(){
 		for(Blueprint c : Main.blueprints){
@@ -605,23 +617,5 @@ class FunctionEditor extends JFrame implements MouseListener, GraphEditor, Compo
 	@Override
 	public Point getClickLocation() {
 		return clickLocation;
-	}
-	public class AddVarListener implements ActionListener, Serializable {
-		private static final long serialVersionUID = 1L;
-		
-		GraphEditor owner;
-		AddVarListener(GraphEditor owner){
-			this.owner = owner;
-		}
-		
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			Variable v = new Variable(owner);
-			variables.add(0,v);
-			updateVars();
-			variables.get(0).fields.get(0).requestFocusInWindow();
-			scrollVars.getViewport().setViewPosition(new Point(0,0));
-		}
-
 	}
 }

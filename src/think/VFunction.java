@@ -27,11 +27,8 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -119,7 +116,15 @@ class VFunction extends SidebarItem implements FunctionOverseer{
 		JButton edit = new JButton("edit");
 		edit.setPreferredSize(new Dimension(65,edit.getPreferredSize().height));
 		header.add(edit);
-		edit.addActionListener(new EditActionListener(editor));
+		edit.addActionListener(e -> {
+			if(editor == null){//TODO
+				//edt = new FunctionEditor(getThis());
+			}else if(!editor.isVisible()){
+				editor.setVisible(true);
+			}else{
+				editor.requestFocus();
+			}
+		});
 		
 		final JLabel drag = new JLabel();
 		ImageIcon image = new ImageIcon(bufferedImage);
@@ -130,8 +135,7 @@ class VFunction extends SidebarItem implements FunctionOverseer{
 		
 		editor = new FunctionEditor(getThis());
 	}
-	class DragMouseListener implements MouseListener, Serializable{
-		private static final long serialVersionUID = 1L;
+	class DragMouseListener implements MouseListener{
 		
 		private JLabel drag;
 		private GraphEditor owner;
@@ -163,25 +167,6 @@ class VFunction extends SidebarItem implements FunctionOverseer{
 			}
 		}
 		
-	}
-	
-	class EditActionListener implements ActionListener, Serializable {
-		private static final long serialVersionUID = 1L;
-		private FunctionEditor edt;
-		
-		EditActionListener(FunctionEditor edt){
-			this.edt = edt;
-		}
-		
-		public void actionPerformed(ActionEvent e) {
-			if(edt == null){//TODO
-				//edt = new FunctionEditor(getThis());
-			}else if(!edt.isVisible()){
-				edt.setVisible(true);
-			}else{
-				edt.requestFocus();
-			}
-		}
 	}
 	
 	@Override

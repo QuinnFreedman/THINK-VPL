@@ -42,11 +42,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 class InstantiableBlueprint extends Blueprint implements FunctionOverseer, ComponentListener{
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	
 	private FunctionEditor.FunctionIO inputObject;
 	private FunctionEditor.FunctionIO outputObject;
 	private ArrayList<UserFunc> children = new ArrayList<UserFunc>();
@@ -59,7 +56,7 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 	
 	JTextField className;
 	
-	 void setWorkingInstance(VariableData.Instance instance) {
+	void setWorkingInstance(VariableData.Instance instance) {
 		this.workingInstance = instance;
 		
 	}
@@ -272,10 +269,8 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 	}
 	
 	private class NodeAdder implements ActionListener, Serializable{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
+		
 		private InstantiableBlueprint overseer;
 
 		@Override
@@ -297,9 +292,7 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 			}else{
 				dataType = null;
 			}
-			inputObject.addOutputNode(new removeableNode(Node.NodeType.SENDING, inputObject, dataType, overseer));
-			inputObject.revalidate();
-			inputObject.repaint();
+			addInputNode(dataType, overseer);
 		}
 		
 		NodeAdder(InstantiableBlueprint overseer){
@@ -307,10 +300,12 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 		}
 			
 	}
+	void addInputNode(Variable.DataType dataType, InstantiableBlueprint overseer){
+		inputObject.addOutputNode(new removeableNode(Node.NodeType.SENDING, inputObject, dataType, overseer));
+		inputObject.revalidate();
+		inputObject.repaint();
+	}
 	class removeableNode extends Node{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 		Node THIS = this;
 		private InstantiableBlueprint overseer;

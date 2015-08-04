@@ -141,7 +141,16 @@ import javax.swing.SwingConstants;
 		addVar.setPreferredSize(new Dimension(30,addVar.getPreferredSize().height));
 		//addVar.setFocusable(false);
 		varButtonHolder.add(addVar);
-		addVar.addActionListener(new AddVarListener(this));
+		final Blueprint THIS = this;
+		addVar.addActionListener(new ActionListener() {		
+			public void actionPerformed(ActionEvent e) {		
+				Variable v = new Variable(THIS);		
+				variables.add(0,v);		
+				updateVars();		
+				variables.get(0).fields.get(0).requestFocusInWindow();		
+				scrollVars.getViewport().setViewPosition(new Point(0,0));		
+			}		
+		});
 		
 		scrollVars.setMinimumSize(minimumSize);
 		varsContainer.add(scrollVars);
@@ -170,7 +179,22 @@ import javax.swing.SwingConstants;
 		addFunc = new JButton("+");
 		addFunc.setPreferredSize(new Dimension(30,addFunc.getPreferredSize().height));
 		funcsButtonHolder.add(addFunc);
-		addFunc.addActionListener(new AddFuncListener(this));
+		addFunc.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				VFunction f = new VFunction(THIS);
+				functions.add(0,f);
+				THIS.updateFuncs();
+				functions.get(0).fields.get(1).requestFocusInWindow();
+				scrollFuncs.getViewport().setViewPosition(new Point(0,0));
+				if(THIS instanceof InstantiableBlueprint){
+					for(Variable v : Main.mainBP.getVariables()){
+						if(v instanceof VInstance && ((VInstance) v).parentBlueprint == THIS){
+							((VInstance) v).addChildFunction(f);
+						}
+					}
+				}
+			}
+		});
 		
 		scrollFuncs.setMinimumSize(minimumSize);
 		funcsContainer.add(scrollFuncs);
@@ -443,49 +467,5 @@ import javax.swing.SwingConstants;
 	@Override
 	public Point getClickLocation() {
 		return clickLocation;
-	}
-	
-	public class AddVarListener implements ActionListener, Serializable {
-		private static final long serialVersionUID = 1L;
-		
-		GraphEditor owner;
-		AddVarListener(GraphEditor owner){
-			this.owner = owner;
-		}
-		
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			Variable v = new Variable(owner);
-			variables.add(0,v);
-			updateVars();
-			variables.get(0).fields.get(0).requestFocusInWindow();
-			scrollVars.getViewport().setViewPosition(new Point(0,0));
-		}
-
-	}
-	public class AddFuncListener implements ActionListener, Serializable {
-		private static final long serialVersionUID = 1L;
-		
-		Blueprint owner;
-		AddFuncListener(Blueprint owner){
-			this.owner = owner;
-		}
-		
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			VFunction f = new VFunction(owner);
-			functions.add(0,f);
-			owner.updateFuncs();
-			functions.get(0).fields.get(1).requestFocusInWindow();
-			scrollFuncs.getViewport().setViewPosition(new Point(0,0));
-			if(owner instanceof InstantiableBlueprint){
-				for(Variable v : Main.mainBP.getVariables()){
-					if(v instanceof VInstance && ((VInstance) v).parentBlueprint == owner){
-						((VInstance) v).addChildFunction(f);
-					}
-				}
-			}
-		}
-
 	}
 }

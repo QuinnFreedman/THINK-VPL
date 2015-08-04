@@ -26,31 +26,31 @@ package think;
 import java.util.ArrayList;
 
  interface FunctionOverseer{
-	 FunctionEditor.FunctionIO getInputObject();
-	 FunctionEditor.FunctionIO getOutputObject();
+	FunctionEditor.FunctionIO getInputObject();
+	FunctionEditor.FunctionIO getOutputObject();
 	
-	 void removeOutput(int i);
-	 void removeInput(int i);
-	 void addOutput(Variable.DataType dataType);
-	 void addInput(Variable.DataType dataType);
+	void removeOutput(int i);
+	void removeInput(int i);
+	void addOutput(Variable.DataType dataType);
+	void addInput(Variable.DataType dataType);
 	
-	 ArrayList<Variable.DataType> getInput();
-	 ArrayList<Variable.DataType> getOutput();
+	ArrayList<Variable.DataType> getInput();
+	ArrayList<Variable.DataType> getOutput();
 	
-	 void removeChild(UserFunc f);
-	 void addChild(UserFunc f);
-	 void clearChildren();
+	void removeChild(UserFunc f);
+	void addChild(UserFunc f);
+	void clearChildren();
 	
-	 void setCurrentlyExecuting(UserFunc f);
-	 UserFunc getCurrentlyExecuting();
+	void setCurrentlyExecuting(UserFunc f);
+	UserFunc getCurrentlyExecuting();
 	
-	 boolean isStatic();
+	boolean isStatic();
 	
 	void setInput(ArrayList<Variable.DataType> dt);
 	void setOutput(ArrayList<Variable.DataType> dt);
-	 boolean isEcexuteOnce();
+	boolean isEcexuteOnce();
 	
-	 GraphEditor getEditor();
+	GraphEditor getEditor();
 	
-	 VariableData.Instance getWorkingInstance();
+	VariableData.Instance getWorkingInstance();
 }

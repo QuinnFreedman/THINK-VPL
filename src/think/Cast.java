@@ -43,29 +43,69 @@ import javax.swing.border.EmptyBorder;
 	private Node recievingNode;
 	private Variable.DataType input;
 	private Variable.DataType output;
-	protected Cast getThis(){
-		return this;
-	}
+	
 	Cast(Node sendingNode, Node recievingNode){
 		super(null, sendingNode.parentObject.owner);
 		this.color = Color.BLACK;
 		
 		Out.println("CAST "+sendingNode.dataType+" > "+recievingNode.dataType);
 		
-    	getThis().sendingNode = sendingNode;
-    	getThis().recievingNode = recievingNode;
-    	owner.getPanel().add(getThis());
-		Node inputNode = new Node(Node.NodeType.RECIEVING, getThis(), sendingNode.dataType);
-		Node outputNode = new Node(Node.NodeType.SENDING, getThis(), recievingNode.dataType,true);
+    	this.sendingNode = sendingNode;
+    	this.recievingNode = recievingNode;
+    	owner.getPanel().add(this);
+		Node inputNode = new Node(Node.NodeType.RECIEVING, this, sendingNode.dataType);
+		Node outputNode = new Node(Node.NodeType.SENDING, this, recievingNode.dataType,true);
 		addInputNode(inputNode);
 		addOutputNode(outputNode);
 		input = inputNode.dataType;
 		output = outputNode.dataType;
 		
-		Out.println(UIManager.getDefaults( ).get("text").toString());
+		//Out.println(UIManager.getDefaults( ).get("text").toString());
 		//headerLabel.setFont(headerLabel.getFont().deriveFont(Font.PLAIN, headerLabel.getFont().getSize()+20));
 		//headerLabel.setBorder(new EmptyBorder(new Insets(-10,-1,-1,-1)));
 		
+		setDiamondText();
+		
+		setBounds(new Rectangle(
+				new Point(
+						((Node.getLocationOnPanel(recievingNode,owner.getPanel()).x+(recievingNode.getPreferredSize().width/2))+(Node.getLocationOnPanel(sendingNode,owner.getPanel()).x+(sendingNode.getPreferredSize().width/2)))/2 - this.getSize().width/2, 
+						((Node.getLocationOnPanel(recievingNode,owner.getPanel()).y+(recievingNode.getPreferredSize().height/2))+(Node.getLocationOnPanel(sendingNode,owner.getPanel()).y+(sendingNode.getPreferredSize().height/2)))/2 - this.getSize().height/2
+				),
+				getSize()));
+
+		Node.connect(sendingNode, inputNode);
+		Node.connect(outputNode, recievingNode);
+	}
+	private Cast getThis(){
+		return this;
+	}
+	Cast(Point pos, Variable.DataType inputType, Variable.DataType outputType, GraphEditor owner){
+		super(null, owner);
+		owner.getPanel().add(this);
+		Node inputNode = new Node(Node.NodeType.RECIEVING, getThis(), inputType){
+			@Override
+			void onConnect() {
+				getThis().sendingNode = this.parents.get(0);
+			}
+		};
+		Node outputNode = new Node(Node.NodeType.SENDING, this, outputType,true){
+			@Override
+			void onConnect() {
+				getThis().sendingNode = this.children.get(this.children.size()-1);
+			}
+		};
+		addInputNode(inputNode);
+		addOutputNode(outputNode);
+		input = inputType;
+		output = outputType;
+		
+		setDiamondText();
+		
+		setBounds(new Rectangle(
+				pos,
+				getSize()));
+	}
+	private void setDiamondText(){
 		URL url = null;
 		try{
 			url = Main.class.getResource("/images/white_diamond.png");
@@ -73,18 +113,7 @@ import javax.swing.border.EmptyBorder;
 			Out.printStackTrace(e);
 		}		
 		headerLabel.setIcon(new ImageIcon(url));
-		
-		setBounds(new Rectangle(
-				new Point(
-						((Node.getLocationOnPanel(recievingNode,owner.getPanel()).x+(recievingNode.getPreferredSize().width/2))+(Node.getLocationOnPanel(sendingNode,owner.getPanel()).x+(sendingNode.getPreferredSize().width/2)))/2 - getThis().getSize().width/2, 
-						((Node.getLocationOnPanel(recievingNode,owner.getPanel()).y+(recievingNode.getPreferredSize().height/2))+(Node.getLocationOnPanel(sendingNode,owner.getPanel()).y+(sendingNode.getPreferredSize().height/2)))/2 - getThis().getSize().height/2
-				),
-				getSize()));
-
-		Node.connect(sendingNode, inputNode);
-		Node.connect(outputNode, recievingNode);
 	}
-	
 	public Dimension getSize(){
 		return new Dimension(45,super.getSize().height);
 	}
@@ -95,7 +124,7 @@ import javax.swing.border.EmptyBorder;
 		}
 		return false;
 	}
-	 static boolean isCastable(Variable.DataType dataType, Variable.DataType dataType2) {
+	static boolean isCastable(Variable.DataType dataType, Variable.DataType dataType2) {
 		
 		if((isNumber(dataType) && isNumber(dataType2)) ||
 				(dataType == Variable.DataType.CHARACTER && dataType2 == Variable.DataType.STRING) ||
@@ -106,6 +135,12 @@ import javax.swing.border.EmptyBorder;
 		}
 		
 		return false;
+	}
+	Variable.DataType getInput(){
+		return input;
+	}
+	Variable.DataType getOutput(){
+		return output;
 	}
 	@Override
 	public VariableData execute(VariableData[] inputs){

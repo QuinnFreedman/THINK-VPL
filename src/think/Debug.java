@@ -416,6 +416,9 @@ import javax.swing.JLabel;
 				if(!remember.isEmpty()){
 					stack.add(remember.get(remember.size()-1));
 					getTop().hasExecuted = false;
+					if(getTop() instanceof FlowControl.For || getTop() instanceof FlowControl.AdvancedFor){
+						getTop().activeNode = 999;
+					}
 				}else{
 					exit();
 					return false;
