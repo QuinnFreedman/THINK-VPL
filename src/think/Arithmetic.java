@@ -269,8 +269,11 @@ class Arithmetic extends Executable{
 			return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE));
 		}
 		@Override
-		public VariableData execute(VariableData[] inputs){
-			return new VariableData.Double((inputs[0].getValueAsDouble() * inputs[1].getValueAsDouble()));
+		public VariableData execute(VariableData[] inputs) throws Exception{
+			if(inputs[1].getValueAsDouble() == 0){
+				throw new Exception("ERROR: Can't divide by zero");
+			}
+			return new VariableData.Double((inputs[0].getValueAsDouble() / inputs[1].getValueAsDouble()));
 		}
 		Divide(Point p, GraphEditor owner) {
 			super(p, owner);

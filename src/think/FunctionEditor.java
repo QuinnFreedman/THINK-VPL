@@ -69,7 +69,7 @@ class FunctionEditor extends JFrame implements MouseListener, GraphEditor, Compo
 	private DisplayPanel panel;
 	private JPanel vars;
 	private JPanel panelHolder;
-	private JScrollPane scrollVars;
+	JScrollPane scrollVars;
 	private Point clickLocation;
 	private ArrayList<Variable> variables = new ArrayList<Variable>();
 	private ArrayList<VObject> objects = new ArrayList<VObject>();

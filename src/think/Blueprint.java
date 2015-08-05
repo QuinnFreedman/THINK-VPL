@@ -65,7 +65,7 @@ import javax.swing.SwingConstants;
 	private JPanel vars;
 	private JPanel funcs;
 	JScrollPane scrollVars;
-	private JScrollPane scrollFuncs;
+	JScrollPane scrollFuncs;
 	JSplitPane splitPane;
 	private JPopupMenu panelPopup;
 	private String name = "";

@@ -220,147 +220,192 @@ class SaveFileIO{
 		
 		//LOAD VARIABLES
 		for(Element bp : blueprints){
-			
-			Blueprint owner = getBlueprintById(bp.getAttributeValue("id"));
-			
-			Element variables = bp.getChild("variables");
-			List<Element> varList = variables.getChildren();
-			for(Element var : varList){
-				Out.println(" > "+var.getAttributeValue("id"));
-				String className = var.getAttributeValue("type");
-				Class varClass = ClassLoader.getSystemClassLoader().loadClass(className);
-				Variable newVar;
-				if(varClass == VInstance.class){
-					Blueprint parentBlueprint = getBlueprintById(var.getAttributeValue("bp"));
-					
-					newVar = (Variable) varClass.getDeclaredConstructor(GraphEditor.class, Blueprint.class).newInstance(owner, parentBlueprint);//TODO
-				}else{
-					newVar = (Variable) varClass.getDeclaredConstructor(GraphEditor.class).newInstance(owner);
-					newVar.valueField.setText(var.getAttributeValue("value"));
-				}
-				newVar.nameField.setText(var.getAttributeValue("id"));
-				owner.getVariables().add(newVar);
-			}
-			owner.updateVars();
-			owner.scrollVars.getViewport().setViewPosition(new Point(0,0));
+			GraphEditor owner = getBlueprintById(bp.getAttributeValue("id"));
+			loadVariables(bp, owner);
 			
 		}
 		
 		//LOAD OBJECTS
 		for(Element bp : blueprints){
-			
+
 			GraphEditor owner = getBlueprintById(bp.getAttributeValue("id"));
 			
-			ArrayList<Element> casts = new ArrayList<Element>();//TODO handle casts
-			
-			Element objects = bp.getChild("objects");
-			List<Element> objList = objects.getChildren();
-			for(Element obj : objList){
-				String className = obj.getAttributeValue("class");
-				Out.println(className);
-				Class<? extends VObject> objClass= (Class<? extends VObject>) ClassLoader.getSystemClassLoader().loadClass(className);
-				VObject newObj;
-				Point p = new Point(Integer.parseInt(obj.getAttributeValue("x")), Integer.parseInt(obj.getAttribute("y").getValue()));
-				if(objClass == EntryPoint.class){
-					//do nothing
-					continue;
-				}else if(objClass == FunctionEditor.FunctionIO.class){
-					String[] dataTypes = obj.getAttributeValue("dataType").split(":");
-					
-					for(String s : dataTypes){
-						Variable.DataType dt = Variable.DataType.valueOf(s);
-						if(dt == null){
-							Out.println("!WARNING: data type is null");
-							continue;
-						}
-						
-						if(owner instanceof InstantiableBlueprint){
-							
-							if(obj.getAttributeValue("id").equals("0") && dt != Variable.DataType.GENERIC)
-								((InstantiableBlueprint) owner).addInputNode(dt, (InstantiableBlueprint) owner);
-							else
-								continue;
-							
-						}else if(owner instanceof FunctionEditor){
-							
-							if(obj.getAttributeValue("id").equals("0"))
-								((FunctionEditor) owner).addInputNode(dt);
-							else
-								((FunctionEditor) owner).addOutputNode(dt);
-						}
-					}
-					
-					continue;
-				}else if(PrimitiveFunction.class.isAssignableFrom(objClass)){
-					String[] parentVarStrs = obj.getAttributeValue("parentVar").split(":");
-					Blueprint parentBlueprint = getBlueprintById(parentVarStrs[0]);
-					Variable parentVar = getVariableById(parentBlueprint, parentVarStrs[1]);
-					
-					Constructor<?> constructor = objClass.getDeclaredConstructor(Point.class, Variable.class, GraphEditor.class);
-					newObj = (VObject) constructor.newInstance(
-							p, 
-							parentVar,
-							owner
-						);
-				}else if(objClass == Constant.class || objClass == Console.getStr.class){
-					Constructor<?> constructor = objClass.getDeclaredConstructor(Point.class, Variable.DataType.class, GraphEditor.class);
-					newObj = (VObject) constructor.newInstance(
-							p,
-							Variable.DataType.valueOf(obj.getAttributeValue("dataType")),
-							owner
-						);
-					if(objClass == Constant.class){
-						((Constant) newObj).editor.setText(obj.getText());
-					}
-				}else if(objClass == Cast.class){
-					String[] dataType = obj.getAttributeValue("dataType").split(":");
-					
-					Constructor<?> constructor = objClass.getDeclaredConstructor(Point.class, Variable.DataType.class, Variable.DataType.class, GraphEditor.class);
-					newObj = (Cast) constructor.newInstance(
-							new Point(Integer.parseInt(obj.getAttributeValue("x")), Integer.parseInt(obj.getAttribute("y").getValue())),
-							Variable.DataType.valueOf(dataType[0]),
-									Variable.DataType.valueOf(dataType[1]),
-							owner
-						);
-				}else{
-					Constructor<?> constructor = objClass.getDeclaredConstructor(Point.class, GraphEditor.class);
-					newObj = (VObject) constructor.newInstance(
-							new Point(Integer.parseInt(obj.getAttributeValue("x")), Integer.parseInt(obj.getAttribute("y").getValue())),
-							owner
-						);
-				}
-				newObj.setUniqueID(obj.getAttributeValue("id"));
-			}
+			loadObjects(bp, owner);
 			
 		}
 		
 		//LOAD WIRES
 		for(Element bp : blueprints){
+
+			GraphEditor owner = getBlueprintById(bp.getAttributeValue("id"));
 			
+			loadWires(bp, owner);
+			
+		}
+		
+		//LOAD FUNCTIONS
+		for(Element bp : blueprints){
+
 			Blueprint owner = getBlueprintById(bp.getAttributeValue("id"));
 			
-			Element wires = bp.getChild("wires");
-			List<Element> curveList = wires.getChildren();
-			for(Element curve : curveList){
-				VObject sendObj = getObjectById(owner, curve.getAttributeValue("objSend"));
-				VObject recObj = getObjectById(owner, curve.getAttributeValue("objRecieve"));
-				Executable sendEx;
-				Executable recEx;
-				if(!(sendObj instanceof Executable && recObj instanceof Executable)){
-					Out.println("ERROR : ");
-					Out.println("sendObj = "+sendObj);
-					Out.println("recObj = "+recObj);
-					continue;
-				}else{
-					sendEx = (Executable) sendObj;
-					recEx = (Executable) recObj;
-				}
-				Node.connect(
-						sendEx.getOutputNodes().get(Integer.parseInt(curve.getAttributeValue("nodeSend"))),
-						recEx.getInputNodes().get(Integer.parseInt(curve.getAttributeValue("nodeRecieve")))
-					);
+			List<Element> functions = bp.getChildren("func");
+			
+			for(Element func : functions){
+				VFunction function = new VFunction(owner);
+				function.nameField.setText(func.getAttributeValue("id"));
+				owner.getFunctions().add(function);
+				owner.updateFuncs();
+				owner.scrollFuncs.getViewport().setViewPosition(new Point(0,0));
+				
+				FunctionEditor editor = (FunctionEditor) function.getEditor();
+				
+				loadVariables(func, editor);
+				loadObjects(func, editor);
+				loadWires(func, editor);
+				
 			}
 			
+		}
+	}
+	
+	private static void loadVariables(Element element, GraphEditor owner) 
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, 
+			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException
+	{
+		
+		Element variables = element.getChild("variables");
+		
+		List<Element> varList = variables.getChildren();
+		for(Element var : varList){
+			Out.println(" > "+var.getAttributeValue("id"));
+			String className = var.getAttributeValue("type");
+			Class varClass = ClassLoader.getSystemClassLoader().loadClass(className);
+			Variable newVar;
+			if(varClass == VInstance.class){
+				Blueprint parentBlueprint = getBlueprintById(var.getAttributeValue("bp"));
+				
+				newVar = (Variable) varClass.getDeclaredConstructor(GraphEditor.class, Blueprint.class).newInstance(owner, parentBlueprint);
+			}else{
+				newVar = (Variable) varClass.getDeclaredConstructor(GraphEditor.class).newInstance(owner);
+				newVar.valueField.setText(var.getAttributeValue("value"));
+			}
+			newVar.nameField.setText(var.getAttributeValue("id"));
+			owner.getVariables().add(newVar);
+		}
+		owner.updateVars();
+		if(owner instanceof Blueprint)
+			((Blueprint) owner).scrollVars.getViewport().setViewPosition(new Point(0,0));
+		else if(owner instanceof FunctionEditor)
+			((FunctionEditor) owner).scrollVars.getViewport().setViewPosition(new Point(0,0));
+	}
+	
+	private static void loadObjects(Element element, GraphEditor owner) 
+			throws ClassNotFoundException, NoSuchMethodException, SecurityException, 
+			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+	{
+		
+		Element objects = element.getChild("objects");
+		List<Element> objList = objects.getChildren();
+		for(Element obj : objList){
+			String className = obj.getAttributeValue("class");
+			Out.println(className);
+			Class<? extends VObject> objClass= (Class<? extends VObject>) ClassLoader.getSystemClassLoader().loadClass(className);
+			VObject newObj;
+			Point p = new Point(Integer.parseInt(obj.getAttributeValue("x")), Integer.parseInt(obj.getAttribute("y").getValue()));
+			if(objClass == EntryPoint.class){
+				//do nothing
+				continue;
+			}else if(objClass == FunctionEditor.FunctionIO.class){
+				String[] dataTypes = obj.getAttributeValue("dataType").split(":");
+				
+				for(String s : dataTypes){
+					Variable.DataType dt = Variable.DataType.valueOf(s);
+					if(dt == null){
+						Out.println("!WARNING: data type is null");
+						continue;
+					}
+					
+					if(owner instanceof InstantiableBlueprint){
+						
+						if(obj.getAttributeValue("id").equals("0") && dt != Variable.DataType.GENERIC)
+							((InstantiableBlueprint) owner).addInputNode(dt, (InstantiableBlueprint) owner);
+						else
+							continue;
+						
+					}else if(owner instanceof FunctionEditor){
+						
+						if(obj.getAttributeValue("id").equals("0"))
+							((FunctionEditor) owner).addInputNode(dt);
+						else
+							((FunctionEditor) owner).addOutputNode(dt);
+					}
+				}
+				
+				continue;
+			}else if(PrimitiveFunction.class.isAssignableFrom(objClass)){
+				String[] parentVarStrs = obj.getAttributeValue("parentVar").split(":");
+				Blueprint parentBlueprint = getBlueprintById(parentVarStrs[0]);
+				Variable parentVar = getVariableById(parentBlueprint, parentVarStrs[1]);
+				
+				Constructor<?> constructor = objClass.getDeclaredConstructor(Point.class, Variable.class, GraphEditor.class);
+				newObj = (VObject) constructor.newInstance(
+						p, 
+						parentVar,
+						owner
+					);
+			}else if(objClass == Constant.class || objClass == Console.getStr.class){
+				Constructor<?> constructor = objClass.getDeclaredConstructor(Point.class, Variable.DataType.class, GraphEditor.class);
+				newObj = (VObject) constructor.newInstance(
+						p,
+						Variable.DataType.valueOf(obj.getAttributeValue("dataType")),
+						owner
+					);
+				if(objClass == Constant.class){
+					((Constant) newObj).editor.setText(obj.getText());
+				}
+			}else if(objClass == Cast.class){
+				String[] dataType = obj.getAttributeValue("dataType").split(":");
+				
+				Constructor<?> constructor = objClass.getDeclaredConstructor(Point.class, Variable.DataType.class, Variable.DataType.class, GraphEditor.class);
+				newObj = (Cast) constructor.newInstance(
+						new Point(Integer.parseInt(obj.getAttributeValue("x")), Integer.parseInt(obj.getAttribute("y").getValue())),
+						Variable.DataType.valueOf(dataType[0]),
+								Variable.DataType.valueOf(dataType[1]),
+						owner
+					);
+			}else{
+				Constructor<?> constructor = objClass.getDeclaredConstructor(Point.class, GraphEditor.class);
+				newObj = (VObject) constructor.newInstance(
+						new Point(Integer.parseInt(obj.getAttributeValue("x")), Integer.parseInt(obj.getAttribute("y").getValue())),
+						owner
+					);
+			}
+			newObj.setUniqueID(obj.getAttributeValue("id"));
+		}
+	}
+	
+	private static void loadWires(Element element, GraphEditor owner){
+		
+		Element wires = element.getChild("wires");
+		List<Element> curveList = wires.getChildren();
+		for(Element curve : curveList){
+			VObject sendObj = getObjectById(owner, curve.getAttributeValue("objSend"));
+			VObject recObj = getObjectById(owner, curve.getAttributeValue("objRecieve"));
+			Executable sendEx;
+			Executable recEx;
+			if(!(sendObj instanceof Executable && recObj instanceof Executable)){
+				Out.println("ERROR : ");
+				Out.println("sendObj = "+sendObj);
+				Out.println("recObj = "+recObj);
+				continue;
+			}else{
+				sendEx = (Executable) sendObj;
+				recEx = (Executable) recObj;
+			}
+			Node.connect(
+					sendEx.getOutputNodes().get(Integer.parseInt(curve.getAttributeValue("nodeSend"))),
+					recEx.getInputNodes().get(Integer.parseInt(curve.getAttributeValue("nodeRecieve")))
+				);
 		}
 	}
 	
