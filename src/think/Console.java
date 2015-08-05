@@ -104,7 +104,17 @@ class Console extends JFrame implements KeyListener{
 		@Override
 		public VariableData execute(VariableData[] input){
 			
-			newestConsole.post(input[0].getValueAsString());
+			String s;
+			
+			if(input.length == 0){
+				s = "undefined";
+			}else if(input[0] == null){
+				s = "undefined";
+			}else{
+				s = input[0].getValueAsString();
+			}
+			
+			newestConsole.post(s);
 			
 			return null;
 			

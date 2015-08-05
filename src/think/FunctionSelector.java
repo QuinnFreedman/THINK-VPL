@@ -204,7 +204,7 @@ import javax.swing.event.DocumentListener;
 					items.add(new MenuItem(Constant.class,"Constant Boolean",this,Variable.DataType.BOOLEAN));
 					items.add(new MenuItem(Constant.class,"Constant String",this,Variable.DataType.STRING));
 				}
-			}else if(parentNode.dataType != Variable.DataType.OBJECT &&
+			}else if(parentNode.dataType != Variable.DataType.GENERIC &&
 					parentNode.dataType != Variable.DataType.OBJECT &&
 					parentNode.dataType != Variable.DataType.ARRAY){
 				String str = parentNode.dataType.toString().toLowerCase();

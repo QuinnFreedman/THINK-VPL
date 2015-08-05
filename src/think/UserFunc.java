@@ -34,7 +34,7 @@ class UserFunc extends Executable{
 	private String text = "";
 	protected FunctionOverseer parentFunc;
 	
-	 FunctionOverseer getParentVar(){
+	FunctionOverseer getParentVar(){
 		return parentFunc;
 	}
 	protected UserFunc getThis(){
@@ -54,7 +54,7 @@ class UserFunc extends Executable{
 		
 		setBounds(new Rectangle(pos,getSize()));
 	}
-	 void setIO(){
+	void setIO(){
 		if(parentFunc.getInput() != null){
 			for(Variable.DataType dt : parentFunc.getInput()){
 				if(dt == Variable.DataType.GENERIC)
@@ -71,14 +71,14 @@ class UserFunc extends Executable{
 		}
 	}
 	
-	 void setText() {
+	void setText() {
 		this.text = Main.crop(this.getPathName(),20);
 		headerLabel.setText(text);
 		this.setSize(this.getSize());
 	}
 	
 
-	 void removeFromParent(){
+	void removeFromParent(){
 		parentFunc.removeChild(this);
 	}
 

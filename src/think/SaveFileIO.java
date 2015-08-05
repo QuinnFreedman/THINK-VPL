@@ -144,6 +144,14 @@ class SaveFileIO{
 				Cast cast = ((Cast) o);
 				dataType += cast.getInput().toString()+":"
 					+cast.getOutput().toString();
+			}else if(o instanceof UserFunc){
+				if(((UserFunc) o).getParentVar() instanceof InstantiableBlueprint){
+					parentVar = ((InstantiableBlueprint) ((UserFunc) o).getParentVar()).getName();
+				}else if(((UserFunc) o).getParentVar() instanceof VFunction){
+					VFunction overseer = (VFunction) ((UserFunc) o).getParentVar();
+					parentVar = ((Blueprint) overseer.getOwner()).getName()
+							+":"+overseer.getID();
+				}
 			}
 			
 			objects.addContent(
@@ -225,24 +233,6 @@ class SaveFileIO{
 			
 		}
 		
-		//LOAD OBJECTS
-		for(Element bp : blueprints){
-
-			GraphEditor owner = getBlueprintById(bp.getAttributeValue("id"));
-			
-			loadObjects(bp, owner);
-			
-		}
-		
-		//LOAD WIRES
-		for(Element bp : blueprints){
-
-			GraphEditor owner = getBlueprintById(bp.getAttributeValue("id"));
-			
-			loadWires(bp, owner);
-			
-		}
-		
 		//LOAD FUNCTIONS
 		for(Element bp : blueprints){
 
@@ -266,6 +256,25 @@ class SaveFileIO{
 			}
 			
 		}
+		
+		//LOAD OBJECTS
+		for(Element bp : blueprints){
+
+			GraphEditor owner = getBlueprintById(bp.getAttributeValue("id"));
+			
+			loadObjects(bp, owner);
+			
+		}
+		
+		//LOAD WIRES
+		for(Element bp : blueprints){
+
+			GraphEditor owner = getBlueprintById(bp.getAttributeValue("id"));
+			
+			loadWires(bp, owner);
+			
+		}
+		
 	}
 	
 	private static void loadVariables(Element element, GraphEditor owner) 
@@ -366,13 +375,25 @@ class SaveFileIO{
 			}else if(objClass == Cast.class){
 				String[] dataType = obj.getAttributeValue("dataType").split(":");
 				
-				Constructor<?> constructor = objClass.getDeclaredConstructor(Point.class, Variable.DataType.class, Variable.DataType.class, GraphEditor.class);
-				newObj = (Cast) constructor.newInstance(
+				//Constructor<?> constructor = objClass.getDeclaredConstructor(Point.class, Variable.DataType.class, Variable.DataType.class, GraphEditor.class);
+				//newObj = (Cast) constructor.newInstance(
+				newObj = new Cast(
 						new Point(Integer.parseInt(obj.getAttributeValue("x")), Integer.parseInt(obj.getAttribute("y").getValue())),
 						Variable.DataType.valueOf(dataType[0]),
-								Variable.DataType.valueOf(dataType[1]),
+						Variable.DataType.valueOf(dataType[1]),
 						owner
 					);
+			}else if(objClass == UserFunc.class){
+				String[] parentVar = obj.getAttributeValue("parentVar").split(":");
+				FunctionOverseer overseer;
+				if(parentVar.length == 1){
+					overseer = (InstantiableBlueprint) getBlueprintById(parentVar[0]);
+				}else{
+					Blueprint parentBlueprint = getBlueprintById(parentVar[0]);
+					overseer = getFunctionById(parentBlueprint, parentVar[1]);
+					Out.println(parentBlueprint);
+				}
+				newObj = new UserFunc(p, overseer, owner);
 			}else{
 				Constructor<?> constructor = objClass.getDeclaredConstructor(Point.class, GraphEditor.class);
 				newObj = (VObject) constructor.newInstance(
@@ -383,7 +404,7 @@ class SaveFileIO{
 			newObj.setUniqueID(obj.getAttributeValue("id"));
 		}
 	}
-	
+
 	private static void loadWires(Element element, GraphEditor owner){
 		
 		Element wires = element.getChild("wires");
@@ -419,9 +440,21 @@ class SaveFileIO{
 	}
 	
 	private static Variable getVariableById(Blueprint bp, String name) {
-		for(Variable v : bp.getVariables()){;
+		for(Variable v : bp.getVariables()){
 			if(v.getID().equals(name)){
 				return v;
+			}
+		}
+		return null;
+	}
+	
+	private static VFunction getFunctionById(Blueprint parentBlueprint,
+			String name) {
+		Out.println("looking for "+name+" in:");
+		for(VFunction f : parentBlueprint.getFunctions()){
+			Out.println(f.getID());
+			if(f.getID().equals(name)){
+				return f;
 			}
 		}
 		return null;

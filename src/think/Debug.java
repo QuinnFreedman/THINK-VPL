@@ -359,7 +359,7 @@ import javax.swing.JLabel;
 			((FunctionEditor.FunctionIO) getTop()).getOverseer().getCurrentlyExecuting().outputData = 
 					new ArrayList<VariableData>(Arrays.asList(execute));
 			
-			execute = null;
+			//execute = null;//TODO
 		}
 		
 		if(mode != RunMode.RUN){
@@ -431,8 +431,8 @@ import javax.swing.JLabel;
 				stack.add(f.getParentVar().getOutputObject());
 				f.getParentVar().getOutputObject().resetActiveNode();
 				f.getParentVar().getOutputObject().outputData = new ArrayList<VariableData>();
-				f.getParentVar().getOutputObject().workingData = new ArrayList<VariableData>();
 				f.getParentVar().getInputObject().outputData = new ArrayList<VariableData>(f.workingData);
+				f.getParentVar().getOutputObject().workingData = new ArrayList<VariableData>();
 				f.outputData = new ArrayList<VariableData>();
 			}else{
 				stack.remove(stack.size()-1);

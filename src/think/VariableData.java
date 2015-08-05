@@ -23,17 +23,12 @@
 
 package think;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Random;
 
- public class VariableData implements Serializable{
-	
-	 /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+ public class VariableData{
+ 	
 	public java.lang.String getValueAsString(){
 		return null;
 	}
