@@ -24,7 +24,7 @@
 package think;
 
 import java.awt.Point;
-import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -42,7 +42,7 @@ import javax.swing.text.DocumentFilter;
 	}
 	VInt(GraphEditor owner){
 		super(owner);
-		Out.println("new int "+type);
+		Out.pln("new int "+type);
 		this.dataType = DataType.INTEGER;
 		this.typeField.setText(getSymbol());
 		this.typeField.setBackground(Main.colors.get(this.dataType));
@@ -217,8 +217,7 @@ import javax.swing.text.DocumentFilter;
 		}
 		
 	}
-	static class IntDocumentFilter extends DocumentFilter implements Serializable{
-		private static final long serialVersionUID = 1L;
+	static class IntDocumentFilter extends DocumentFilter {
 		
 		AbstractDocument doc;
 		

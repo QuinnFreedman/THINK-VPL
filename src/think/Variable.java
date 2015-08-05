@@ -27,7 +27,7 @@ import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.Serializable;
+
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -210,8 +210,7 @@ public class Variable extends SidebarItem implements DocumentListener{
 			Out.printStackTrace(e1);
 		}
     }
-    static class NameDocListener implements DocumentListener, Serializable{
-		private static final long serialVersionUID = 1L;
+    static class NameDocListener implements DocumentListener{
 		
 		SidebarItem var;
     	

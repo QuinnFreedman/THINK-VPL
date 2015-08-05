@@ -43,14 +43,14 @@ import javax.swing.JLabel;
 	
 	private boolean isStatic = true;
 	
-	 VariableData getParentVarData(){
+	VariableData getParentVarData(){
 		return parentVarData;
 	}
-	 void setParentVarData(VariableData v) {
+	void setParentVarData(VariableData v) {
 		parentVarData = v;
 		
 	}
-	 boolean isStatic(){
+	boolean isStatic(){
 		return isStatic;
 	}
 	PrimitiveFunction(Point pos, Variable parent){

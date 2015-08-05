@@ -26,7 +26,7 @@ package think;
 import java.util.Arrays;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.Serializable;
+
 import java.util.ArrayList;
 
 import javax.swing.JTextArea;
@@ -79,8 +79,7 @@ import javax.swing.text.DocumentFilter;
 		
 	}
 	
-	static class NoBreakDocumentFilter extends DocumentFilter implements Serializable{
-		private static final long serialVersionUID = 1L;
+	static class NoBreakDocumentFilter extends DocumentFilter{
 		
 		private ArrayList<Character> illegalChars = new ArrayList<Character>(Arrays.asList('\n','\f','\r','\t'));
 		

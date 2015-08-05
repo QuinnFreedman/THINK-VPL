@@ -332,7 +332,7 @@ class FunctionEditor extends JFrame implements MouseListener, GraphEditor, Compo
 	public void mouseReleased(MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON3){
 			clickLocation = new Point(e.getX(), e.getY());
-			Out.println(clickLocation);
+			Out.pln(clickLocation);
 			panelPopup.show(panel, e.getX(), e.getY());
 		}
 	}
@@ -477,7 +477,7 @@ class FunctionEditor extends JFrame implements MouseListener, GraphEditor, Compo
 						}
 						if(outputObject.getInputNodes().size() <= 1){
 							parent.setExecuteOnce(false);
-							Out.println("setExecuteOnce (false)");
+							Out.pln("setExecuteOnce (false)");
 						}
 					}
 					
@@ -566,7 +566,7 @@ class FunctionEditor extends JFrame implements MouseListener, GraphEditor, Compo
 		}
 		if(outputObject.getInputNodes().size() > 1){
 			parent.setExecuteOnce(true);
-			Out.println("setExecuteOnce (true)");
+			Out.pln("setExecuteOnce (true)");
 		}
 		repaintAll();
 	}
@@ -579,9 +579,9 @@ class FunctionEditor extends JFrame implements MouseListener, GraphEditor, Compo
 					f.editor.getPanel().repaint();
 				}
 				else if(f == null){
-					Out.println("!WARNING: f is null");
+					Out.pln("!WARNING: f is null");
 				}else if (f.editor == null){
-					Out.println("!WARNING: f.editor is null");
+					Out.pln("!WARNING: f.editor is null");
 				}
 			}
 		}

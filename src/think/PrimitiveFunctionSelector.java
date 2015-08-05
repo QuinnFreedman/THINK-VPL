@@ -121,7 +121,7 @@ import javax.swing.JLabel;
 			public void mousePressed(MouseEvent arg0) {
 				PrimitiveFunction pf = null;
 				try {
-					Out.println(f.getClass());
+					Out.pln(f.getClass());
 					Constructor<?> constructor = f.getClass().getDeclaredConstructor(Point.class, Variable.class);
 					pf = (PrimitiveFunction) constructor.newInstance(
 							Node.getLocationOnPanel(this.childPicker, owner.getPanel()), 

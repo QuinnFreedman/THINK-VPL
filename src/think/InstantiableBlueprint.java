@@ -31,7 +31,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.Serializable;
+
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -268,8 +268,7 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 		return this;
 	}
 	
-	private class NodeAdder implements ActionListener, Serializable{
-		private static final long serialVersionUID = 1L;
+	private class NodeAdder implements ActionListener {
 		
 		private InstantiableBlueprint overseer;
 

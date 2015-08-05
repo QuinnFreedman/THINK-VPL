@@ -70,15 +70,15 @@ import javax.swing.JLabel;
 	private static void reset(Variable var){
 		var.setEditable(false);
 		var.resetVariableData();
-		Out.println(var.getID()+" "+var.varData.getValueAsString());
+		Out.pln(var.getID()+" "+var.varData.getValueAsString());
 		for(PrimitiveFunction child : var.getChildren()){//TODO: should be unnecessary??
 			child.setParentVarData(var.varData);
-			Out.println("	"+child.getSimpleName()+" "+child.getParentVarData().getValueAsString());
+			Out.pln("	"+child.getSimpleName()+" "+child.getParentVarData().getValueAsString());
 			
 		}
 	}
 	private static void startStep(){
-		Out.println("Start Stepping");
+		Out.pln("Start Stepping");
 		
 		for(Blueprint bp : Main.blueprints){
 			
@@ -125,29 +125,29 @@ import javax.swing.JLabel;
 		for(Blueprint bp : Main.blueprints){
 			for(VObject o : bp.getObjects()){
 				if(o instanceof Executable){
-					//Out.println(o);
+					//Out.pln(o);
 					Executable o2 = ((Executable) o);
 					o2.resetActiveNode();
 					o2.workingData = new ArrayList<VariableData>();
 					o2.outputData = new ArrayList<VariableData>();
 					o2.hasExecuted = false;
-					//Out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
+					//Out.pln(o.getClass().getName()+" : "+((Executable) o).workingData);
 					
 				}
 			}
 			for(VFunction f : bp.getFunctions()){
 				if(f == null || f.editor == null || f.editor.getObjects() == null){
-					Out.println("!WARNING: null Pointer");
+					Out.pln("!WARNING: null Pointer");
 				}
 				for(VObject o : f.editor.getObjects()){
 					if(o instanceof Executable){
-						//Out.println(o);
+						//Out.pln(o);
 						Executable o2 = ((Executable) o);
 						o2.resetActiveNode();
 						o2.workingData = new ArrayList<VariableData>();
 						o2.outputData = new ArrayList<VariableData>();
 						o2.hasExecuted = false;
-						//Out.println(o.getClass().getName()+" : "+((Executable) o).workingData);
+						//Out.pln(o.getClass().getName()+" : "+((Executable) o).workingData);
 						
 					}
 				}
@@ -168,7 +168,7 @@ import javax.swing.JLabel;
 	}
 	
 	protected static void exit() {
-		Out.println("exiting");
+		Out.pln("exiting");
 		isStepping = false;
 		for(Blueprint bp : Main.blueprints){
 			bp.addVar.setEnabled(true);
@@ -196,39 +196,39 @@ import javax.swing.JLabel;
 		}else if(getTop().getInputNodes().isEmpty()){
 			return false;
 		}
-		Out.println("try to go up from "+getTop());
-		Out.println("activeNode "+getTop().getActiveNode());
-		Out.println("inputs "+getTop().getInputNodes().size());
+		Out.pln("try to go up from "+getTop());
+		Out.pln("activeNode "+getTop().getActiveNode());
+		Out.pln("inputs "+getTop().getInputNodes().size());
 		if(getTop().getActiveNode() >= getTop().getInputNodes().size() || (getTop().executeOnce && getTop().hasExecuted)){
-			Out.println("failed: activeNode > input nodes");
+			Out.pln("failed: activeNode > input nodes");
 			return false;
 		}
 		
 		ArrayList<Node> parents = getTop().getInputNodes().get(getTop().getActiveNode()).parents;
-		Out.println("parents "+parents);
+		Out.pln("parents "+parents);
 		
 		if(parents.isEmpty()){
-			Out.println("falied: parents is empty; exiting...");
+			Out.pln("falied: parents is empty; exiting...");
 			exit();
 			return false;
 		}
 		
 		Executable next = (Executable) parents.get(0).parentObject;
-		Out.println("next = "+next);
+		Out.pln("next = "+next);
 		/*if(getTop() instanceof FunctionEditor.FunctionIO && !((FunctionEditor.FunctionIO) getTop()).getOverseer().isStatic()){
-			Out.println("next is non-static function :: changing all primitive funcs");
+			Out.pln("next is non-static function :: changing all primitive funcs");
 			FunctionOverseer fo = ((FunctionEditor.FunctionIO) getTop()).getOverseer();
 			for(VObject e : fo.getEditor().getObjects()){
 				if(e instanceof PrimitiveFunction &&
 						(((PrimitiveFunction) e).getParentVar().getOwner() == ((VFunction) fo).getOwner() ||
 						(((PrimitiveFunction) e).getParentVar().parentInstance != null && ((PrimitiveFunction) e).getParentVar().parentInstance.parentBlueprint == ((VFunction) fo).getOwner()))
 					){
-					Out.println(((PrimitiveFunction) e));
-					Out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
+					Out.pln(((PrimitiveFunction) e));
+					Out.pln("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
 					((PrimitiveFunction) e).setParentVar(
 							VFunction.getVariable( ((VFunction) ((VFunction) fo).getCurrentlyExecuting().getParentVar()).parentInstance.childVariables,((PrimitiveFunction) e).getParentVar().getID())
 						);
-					Out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
+					Out.pln("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
 				}
 			}
 		}*/
@@ -256,7 +256,7 @@ import javax.swing.JLabel;
 				next.repaint();
 			}
 		}else{
-			Out.println(next.getOutputNodes().indexOf(
+			Out.pln(next.getOutputNodes().indexOf(
 									parents.get(0)
 									));
 			getTop().workingData.add(
@@ -275,18 +275,18 @@ import javax.swing.JLabel;
 	
 	private static boolean moveDownStack(){
 		if(stack.isEmpty()){
-			Out.println("stack is empty; exiting...");
+			Out.pln("stack is empty; exiting...");
 			exit();
 			return false;
 		}
 	//EXECUTE
-		Out.println("executing "+getTop().getClass().getName());
+		Out.pln("executing "+getTop().getClass().getName());
 		Out.print(getTop().getClass().getName()+" workingData = ");
 		for(VariableData var : getTop().workingData){
 			Out.print(var.getValueAsString()+" ");
 		}
-		Out.println();
-		Out.println(getTop().getClass().getName()+" executeOnce = "+getTop().executeOnce+"; hasExecuted = "+getTop().hasExecuted);
+		Out.pln();
+		Out.pln(getTop().getClass().getName()+" executeOnce = "+getTop().executeOnce+"; hasExecuted = "+getTop().hasExecuted);
 		
 		if(getTop() instanceof PrimitiveFunction && !((PrimitiveFunction) getTop()).isStatic()){
 			if(getTop().workingData.get(0) instanceof VariableData.Instance){
@@ -303,7 +303,7 @@ import javax.swing.JLabel;
 		
 		VariableData execute;
 		if(getTop().executeOnce && getTop().hasExecuted){
-			Out.println("is executeOnce has executed.  Output = "+getTop().outputData);
+			Out.pln("is executeOnce has executed.  Output = "+getTop().outputData);
 			execute = null;
 		}else{
 			VariableData[] array = new VariableData[getTop().workingData.size()];
@@ -316,12 +316,12 @@ import javax.swing.JLabel;
 				Out.printStackTrace(e);
 				return false;
 			}
-			System.out.println("execute = "+execute);
+			Out.pln("execute = "+execute);
 		}
 		
 		if(getTop().getClass() == Console.getStr.class){
 			waitingForInput = ((Console.getStr) getTop()).getDataType();
-			Out.println("isWaitingForInput = "+waitingForInput);
+			Out.pln("isWaitingForInput = "+waitingForInput);
 			console.requestFocus();
 			console.input.requestFocusInWindow();
 			if(running != null)
@@ -340,17 +340,17 @@ import javax.swing.JLabel;
 		if(!(getTop() instanceof FunctionEditor.FunctionIO)){
 			if(execute != null){
 				getTop().outputData = new ArrayList<VariableData>(Arrays.asList(execute));
-				Out.println("outputData = "+getTop().outputData);
+				Out.pln("outputData = "+getTop().outputData);
 			}else{
 				//if(getTop() instanceof UserFunc){
-					Out.println("execute == null, getTop().outputData = "+getTop().outputData);
+					Out.pln("execute == null, getTop().outputData = "+getTop().outputData);
 					multiExecute = getTop().outputData;
 				//}
 			}
 		}else if(((FunctionEditor.FunctionIO) getTop()).mode == FunctionEditor.FunctionIO.Mode.OUTPUT){
 			FunctionOverseer overseer = ((FunctionEditor.FunctionIO) getTop()).getOverseer();
-			Out.println("overseer = "+overseer);
-			Out.println("currently executing = "+((FunctionEditor.FunctionIO) getTop()).getOverseer().getCurrentlyExecuting());
+			Out.pln("overseer = "+overseer);
+			Out.pln("currently executing = "+((FunctionEditor.FunctionIO) getTop()).getOverseer().getCurrentlyExecuting());
 			
 			if(overseer instanceof InstantiableBlueprint){
 				execute = ((InstantiableBlueprint) overseer).getWorkingInstance();//TODO clone or point?
@@ -373,26 +373,26 @@ import javax.swing.JLabel;
 		if(stack.size() == 1){
 			
 			Executable next = getNext(getTop());
-			Out.println("next = "+((next == null) ? "null" : next.getClass().getName()));
+			Out.pln("next = "+((next == null) ? "null" : next.getClass().getName()));
 			
 			if(next instanceof UserFunc){
 				((UserFunc) next).getParentVar().setCurrentlyExecuting(((UserFunc) next));
 			}
 			
 			/*else if(next instanceof FunctionEditor.FunctionIO && !((FunctionEditor.FunctionIO) next).getOverseer().isStatic()){
-				Out.println("next is non-static function :: changing all primitive funcs");
+				Out.pln("next is non-static function :: changing all primitive funcs");
 				FunctionOverseer fo = ((FunctionEditor.FunctionIO) next).getOverseer();
 				for(VObject e : fo.getEditor().getObjects()){
 					if(e instanceof PrimitiveFunction &&
 							(((PrimitiveFunction) e).getParentVar().getOwner() == ((VFunction) fo).getOwner() ||
 							(((PrimitiveFunction) e).getParentVar().parentInstance != null && ((PrimitiveFunction) e).getParentVar().parentInstance.parentBlueprint == ((VFunction) fo).getOwner()))
 						){
-						Out.println(((PrimitiveFunction) e));
-						Out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
+						Out.pln(((PrimitiveFunction) e));
+						Out.pln("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
 						((PrimitiveFunction) e).setParentVar(
 								VFunction.getVariable( ((VFunction) ((VFunction) fo).getCurrentlyExecuting().getParentVar()).parentInstance.childVariables,((PrimitiveFunction) e).getParentVar().getID())
 							);
-						Out.println("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
+						Out.pln("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
 					}
 				}
 			}*/
@@ -440,7 +440,7 @@ import javax.swing.JLabel;
 		}
 		
 		if(execute != null){ 
-			Out.println("add to "+getTop().workingData);
+			Out.pln("add to "+getTop().workingData);
 			getTop().workingData.add(execute);
 		}else if(multiExecute != null){
 			getTop().workingData = new ArrayList<VariableData>(multiExecute);
@@ -457,17 +457,17 @@ import javax.swing.JLabel;
 	private static boolean step(){
 		
 		if(!isStepping){
-			Out.println("ABORTED");
+			Out.pln("ABORTED");
 			Debug.console.post("ERROR: program aborted by user");
 			return false;
 		}
 		
-		Out.println();
-		Out.println("stack:");
+		Out.pln();
+		Out.pln("stack:");
 		for(VObject o : stack){
-			Out.println(o.getClass().getSimpleName());
+			Out.pln(o.getClass().getSimpleName());
 		}
-		Out.println();
+		Out.pln();
 		
 		try{
 			
@@ -516,7 +516,7 @@ import javax.swing.JLabel;
 	}
 	
 	private static Executable getNext(Executable o){
-		Out.println("getNext "+o.getClass().getName());
+		Out.pln("getNext "+o.getClass().getName());
 		ArrayList<Node> children;
 		if(o instanceof EntryPoint){
 			children = ((EntryPoint) o).startNode.children;
@@ -543,10 +543,10 @@ import javax.swing.JLabel;
 				removeFromEnd(remember,o);
 			}
 		}else if(o instanceof UserFunc){
-			Out.println("userfunc going to fIO");
+			Out.pln("userfunc going to fIO");
 			FunctionEditor.FunctionIO inputObj = ((UserFunc) o).getParentVar().getInputObject();
 			inputObj.outputData = new ArrayList<VariableData>(o.workingData);
-			Out.println("inputObj.outputData = "+inputObj.outputData);
+			Out.pln("inputObj.outputData = "+inputObj.outputData);
 			((UserFunc) o).getParentVar().setCurrentlyExecuting((UserFunc) o);
 			return inputObj;
 			

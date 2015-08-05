@@ -364,11 +364,11 @@ public class Executable extends VObject{
 	 String getPathName(){
 		String s = "";
 		if(this instanceof PrimitiveFunction && this.owner != ((PrimitiveFunction) this).getParentVariable().getOwner()){
-			Out.println("this instanceof PrimitiveFunction");
-			//Out.println(this.owner+" != "+((PrimitiveFunction) this).getParentVar().getOwner());
+			Out.pln("this instanceof PrimitiveFunction");
+			//Out.pln(this.owner+" != "+((PrimitiveFunction) this).getParentVar().getOwner());
 			if(((PrimitiveFunction) this).getParentVariable().getOwner() instanceof Blueprint){
 				s += (((Blueprint) ((PrimitiveFunction) this).getParentVariable().getOwner()).getName()+" > ");
-				Out.println(s);
+				Out.pln(s);
 			}else if(((PrimitiveFunction) this).getParentVariable().getOwner() instanceof FunctionEditor){
 				s += (((Blueprint) ((FunctionEditor) ((PrimitiveFunction) this).getParentVariable().getOwner()).getOverseer()).getName()+" > ");
 			}

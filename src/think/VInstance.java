@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 
 import think.Executable.Mode;
 import think.Variable.DataType;
+import think.VariableData.Instance;
 
  class VInstance extends Variable{
 	private static final long serialVersionUID = 1L;
@@ -78,7 +79,7 @@ import think.Variable.DataType;
 		}
 		
 		this.varData = new VariableData.Instance(this);
-		Out.println("varData = "+this.varData);
+		Out.pln("varData = "+this.varData);
 		
 		this.functions.add(new Get(this));
 		this.functions.add(new Set(this));
@@ -203,7 +204,10 @@ import think.Variable.DataType;
 		
 		@Override
 		public VariableData execute(VariableData[] input){
-			return getParentVarData();
+			VariableData.Instance instance = (Instance) getParentVarData();
+			//System.err.println("instance = "+instance);
+			//System.err.println("json = "+instance.getJSON());
+			return instance;
 			
 		}
 		Get(Point pos, Variable parent, GraphEditor owner) {
@@ -245,11 +249,18 @@ import think.Variable.DataType;
 				throw new Exception("ERROR: type missmatch at \""+(this.getParentVariable() == null ? "Anonymous" : getParentVariable().getID())+" > Set\";"
 							+" type mismatch: can't convert from <"+((VariableData.Instance) input[0]).parentBlueprint.getName()+"> to <"+((VariableData.Instance) getParentVarData()).parentBlueprint.getName()+">");
 			}else{
-				parentVarData = input[0];
+				//System.err.println("set");
+				//parentVarData = input[0];
+				//System.err.println("input = "+input[0].getValueAsString());
+				//System.err.println("        "+((VariableData.Instance) input[0]).getJSON());
+				//System.err.println("parent = "+getParentVarData().getValueAsString());
+				//System.err.println("        "+((VariableData.Instance) getParentVarData()).getJSON());
+				
 				for(int i = 0; i < ((VariableData.Instance) getParentVarData()).values.size(); i++){
-					VariableData v = ((VariableData.Instance) getParentVarData()).values.get(i);
 					VariableData v2 = ((VariableData.Instance) input[0]).values.get(i);
-					v = v2;
+				//	System.err.println(v2.getValueAsString()+" <- "+((VariableData.Instance) getParentVarData()).values.get(i).getValueAsString());
+					((VariableData.Instance) getParentVarData()).values.set(i, v2);
+					
 				}
 				
 			}

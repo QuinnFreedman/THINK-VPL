@@ -32,7 +32,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
@@ -45,9 +44,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
- class Blueprint implements GraphEditor,MouseListener,KeyListener,Serializable{
-	
-	private static final long serialVersionUID = 1L;
+ class Blueprint implements GraphEditor,MouseListener,KeyListener{
 	
 	private ArrayList<VObject> objects = new ArrayList<VObject>();
 	private ArrayList<Curve> curves = new ArrayList<Curve>();
@@ -343,8 +340,7 @@ import javax.swing.SwingConstants;
 			
 		}
 	}
-	static class ContextualMenuListener implements ActionListener, Serializable{
-		private static final long serialVersionUID = 1L;
+	static class ContextualMenuListener implements ActionListener{
 		
 		private GraphEditor editor;
 
@@ -409,7 +405,7 @@ import javax.swing.SwingConstants;
 				}
 				new Console.getStr(p, Variable.DataType.DOUBLE, editor);
 			}else{
-				Out.println("null Action: "+c);
+				Out.pln("null Action: "+c);
 			}
 		}
 	}

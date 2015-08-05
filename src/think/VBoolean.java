@@ -24,7 +24,7 @@
 package think;
 
 import java.awt.Point;
-import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -147,9 +147,7 @@ import javax.swing.text.DocumentFilter;
 		
 	}
 	
-	static class BooleanDocumentFilter extends DocumentFilter implements Serializable{
-		
-		private static final long serialVersionUID = 1L;
+	static class BooleanDocumentFilter extends DocumentFilter{
 		
 		AbstractDocument doc;
 		

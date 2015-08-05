@@ -29,9 +29,8 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.geom.CubicCurve2D;
-import java.io.Serializable;
 
-class Curve implements Serializable{
+class Curve{
 	private static final long serialVersionUID = -1435605905680673953L;
 	
 	CubicCurve2D c = new CubicCurve2D.Double();

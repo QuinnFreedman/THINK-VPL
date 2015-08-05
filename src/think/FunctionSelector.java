@@ -274,12 +274,12 @@ import javax.swing.event.DocumentListener;
 	private static boolean couldConnect(ArrayList<Variable.DataType> a, Variable.DataType b){
 		//Out.print("Could Connect ("+a+", "+b+") = ");
 		if(a.contains(b)){
-			//Out.println("true - contains");
+			//Out.pln("true - contains");
 			return true;
 		}else{
 			for(Variable.DataType d : a){
 				if(Cast.isCastable(d, b)){
-					//Out.println("true - castable");
+					//Out.pln("true - castable");
 					return true;
 				}else if((d == Variable.DataType.NUMBER && b.isNumber()) ||
 						(b == Variable.DataType.NUMBER && d.isNumber()) ||
@@ -289,19 +289,19 @@ import javax.swing.event.DocumentListener;
 					return true;
 				}
 			}
-			//Out.println("false");
+			//Out.pln("false");
 			return false;
 		}
 	}
 	private static boolean couldConnect(Variable.DataType a, ArrayList<Variable.DataType> b){
 		//Out.print("Could Connect ("+a+", "+b+") = ");
 		if(b.contains(a)){
-			//Out.println("true - contains");
+			//Out.pln("true - contains");
 			return true;
 		}else{
 			for(Variable.DataType d : b){
 				if(Cast.isCastable(a, d)){
-					//Out.println("true - castable");
+					//Out.pln("true - castable");
 					return true;
 				}else if((a == Variable.DataType.NUMBER && d.isNumber()) ||
 						(d == Variable.DataType.NUMBER && a.isNumber()) ||
@@ -311,7 +311,7 @@ import javax.swing.event.DocumentListener;
 					return true;
 				}
 			}
-			//Out.println("false");
+			//Out.pln("false");
 			return false;
 		}
 	}
@@ -448,7 +448,7 @@ import javax.swing.event.DocumentListener;
 							owner
 						);
 				}else if(f != null){
-					//Out.println(f.getClass().getConstructors()[1].getParameterTypes()[2]);
+					//Out.pln(f.getClass().getConstructors()[1].getParameterTypes()[2]);
 					Constructor<? extends Executable> constructor = f.getClass().getDeclaredConstructor(Point.class, GraphEditor.class);
 					ex = constructor.newInstance(
 							pos,
@@ -475,9 +475,9 @@ import javax.swing.event.DocumentListener;
 					ex = new VConstructor(pos, bp, owner);
 				}
 				if(parentNode.type == Node.NodeType.SENDING){
-					Out.println(ex.getInputNodes());
+					Out.pln(ex.getInputNodes());
 					for(Node n : ex.getInputNodes()){
-						Out.println(Node.canConnect(parentNode, n));
+						Out.pln(Node.canConnect(parentNode, n));
 						if(Node.canConnect(parentNode, n)){
 							Node.castOrConnect(parentNode, n);
 							break;

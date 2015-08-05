@@ -62,7 +62,7 @@ class SaveFileIO{
 		}
 		document.setRootElement(root);
 		XMLOutputter output = new XMLOutputter();
-		output.setFormat(Format.getPrettyFormat());
+		output.setFormat(Format.getCompactFormat()/*getPrettyFormat()*/);
 		output.output(document, new FileOutputStream(file));
 	}
 	
@@ -286,7 +286,7 @@ class SaveFileIO{
 		
 		List<Element> varList = variables.getChildren();
 		for(Element var : varList){
-			Out.println(" > "+var.getAttributeValue("id"));
+			Out.pln(" > "+var.getAttributeValue("id"));
 			String className = var.getAttributeValue("type");
 			Class varClass = ClassLoader.getSystemClassLoader().loadClass(className);
 			Variable newVar;
@@ -317,7 +317,7 @@ class SaveFileIO{
 		List<Element> objList = objects.getChildren();
 		for(Element obj : objList){
 			String className = obj.getAttributeValue("class");
-			Out.println(className);
+			Out.pln(className);
 			Class<? extends VObject> objClass= (Class<? extends VObject>) ClassLoader.getSystemClassLoader().loadClass(className);
 			VObject newObj;
 			Point p = new Point(Integer.parseInt(obj.getAttributeValue("x")), Integer.parseInt(obj.getAttribute("y").getValue()));
@@ -330,7 +330,7 @@ class SaveFileIO{
 				for(String s : dataTypes){
 					Variable.DataType dt = Variable.DataType.valueOf(s);
 					if(dt == null){
-						Out.println("!WARNING: data type is null");
+						Out.pln("!WARNING: data type is null");
 						continue;
 					}
 					
@@ -391,7 +391,7 @@ class SaveFileIO{
 				}else{
 					Blueprint parentBlueprint = getBlueprintById(parentVar[0]);
 					overseer = getFunctionById(parentBlueprint, parentVar[1]);
-					Out.println(parentBlueprint);
+					Out.pln(parentBlueprint);
 				}
 				newObj = new UserFunc(p, overseer, owner);
 			}else{
@@ -415,9 +415,9 @@ class SaveFileIO{
 			Executable sendEx;
 			Executable recEx;
 			if(!(sendObj instanceof Executable && recObj instanceof Executable)){
-				Out.println("ERROR : ");
-				Out.println("sendObj = "+sendObj);
-				Out.println("recObj = "+recObj);
+				Out.pln("ERROR : ");
+				Out.pln("sendObj = "+sendObj);
+				Out.pln("recObj = "+recObj);
 				continue;
 			}else{
 				sendEx = (Executable) sendObj;
@@ -450,9 +450,9 @@ class SaveFileIO{
 	
 	private static VFunction getFunctionById(Blueprint parentBlueprint,
 			String name) {
-		Out.println("looking for "+name+" in:");
+		Out.pln("looking for "+name+" in:");
 		for(VFunction f : parentBlueprint.getFunctions()){
-			Out.println(f.getID());
+			Out.pln(f.getID());
 			if(f.getID().equals(name)){
 				return f;
 			}
@@ -461,9 +461,9 @@ class SaveFileIO{
 	}
 	
 	private static VObject getObjectById(GraphEditor bp, String UID){
-		//Out.println("looking for "+UID+" in :");
+		//Out.pln("looking for "+UID+" in :");
 		for(VObject o : bp.getObjects()){
-			//Out.println(o.getUniqueID());
+			//Out.pln(o.getUniqueID());
 			if(o.getUniqueID().equals(UID)){
 				return o;
 			}

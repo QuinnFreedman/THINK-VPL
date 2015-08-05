@@ -23,7 +23,9 @@
 
 package think;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.Random;
 
@@ -61,10 +63,7 @@ import java.util.Random;
 		return newData;
 	}
 	public static class Integer extends VariableData{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+		
 		public int value = 0;
 		public Integer(VariableData variableData) {
 			if(variableData instanceof VariableData.Integer){
@@ -96,10 +95,7 @@ import java.util.Random;
 		}
 	}
 	public static class Double extends VariableData{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+		
 		public double value = 0;
 		public Double(VariableData variableData) {
 			if(variableData instanceof VariableData.Double){
@@ -128,10 +124,7 @@ import java.util.Random;
 		}
 	}
 	public static class Float extends VariableData{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+		
 		public float value = 0;
 		public Float(VariableData variableData) {
 			if(variableData instanceof VariableData.Float){
@@ -159,11 +152,8 @@ import java.util.Random;
 			return value;
 		}
 	}
-	 static class Long extends VariableData{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+	static class Long extends VariableData{
+		
 		public long value = 0;
 		public Long(VariableData variableData) {
 			if(variableData instanceof VariableData.Long){
@@ -192,10 +182,7 @@ import java.util.Random;
 		}
 	}
 	public static class Short extends VariableData{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+		
 		public short value = 0;
 		public Short(short input) {
 			this.value = input;
@@ -212,11 +199,8 @@ import java.util.Random;
 			return value;
 		}
 	}
-	 static class Byte extends VariableData{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+	static class Byte extends VariableData{
+		
 		public byte value = 0;
 		public Byte(byte input) {
 			this.value = input;
@@ -234,10 +218,7 @@ import java.util.Random;
 		}
 	}
 	public static class Boolean extends VariableData{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+		
 		public boolean value = false;
 		public Boolean(VariableData variableData) {
 			if(variableData instanceof VariableData.Boolean){
@@ -262,10 +243,7 @@ import java.util.Random;
 		}
 	}
 	public static class String extends VariableData{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+		
 		public java.lang.String value = "";
 		public String(VariableData variableData) {
 			if(variableData instanceof VariableData.String){
@@ -290,10 +268,7 @@ import java.util.Random;
 		}
 	}
 	public static class Character extends VariableData{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+		
 		public char value = ' ';
 		public Character(char input) {
 			this.value = input;
@@ -307,10 +282,6 @@ import java.util.Random;
 		}
 	}
 	public static class Instance extends VariableData{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 
 		static final Random rng = new Random();
 		
@@ -374,10 +345,7 @@ import java.util.Random;
 		}
 	}
 	public static class Array extends VariableData{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+		
 		public Variable.DataType dataType;
 		public ArrayList<VariableData> value;
 		

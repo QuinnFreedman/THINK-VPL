@@ -86,7 +86,7 @@ import javax.swing.JPopupMenu;
 		//override in subclass
 	}
 	protected static void clearChildren(Node nodeToClear){
-		//Out.println("clear children "+nodeToClear.type.toString()+" "+nodeToClear.getClass().getName()+" : curves: "+nodeToClear.parentObject.owner.getCurves().size());
+		//Out.pln("clear children "+nodeToClear.type.toString()+" "+nodeToClear.getClass().getName()+" : curves: "+nodeToClear.parentObject.owner.getCurves().size());
 		Iterator<Curve> itr = nodeToClear.parentObject.owner.getCurves().iterator();
 		Boolean hasDisconnected = false;
 		ArrayList<Node> haveDisconnected = new ArrayList<Node>();
@@ -125,10 +125,10 @@ import javax.swing.JPopupMenu;
 		ArrayList<Variable.DataType> sourceList = new ArrayList<Variable.DataType>(A);
 		ArrayList<Variable.DataType> destinationList = new ArrayList<Variable.DataType>(B);
 		
-		Out.println("A : "+A);
-		Out.println("B : "+B);
-		Out.println("sourceList : "+sourceList);
-		Out.println("destinationList : "+destinationList);
+		Out.pln("A : "+A);
+		Out.pln("B : "+B);
+		Out.pln("sourceList : "+sourceList);
+		Out.pln("destinationList : "+destinationList);
 		
 		sourceList.removeAll(B);
 		destinationList.removeAll(A);
@@ -389,7 +389,7 @@ import javax.swing.JPopupMenu;
 		try{
 			return new Point(c.getLocationOnScreen().x-p.getLocationOnScreen().x,c.getLocationOnScreen().y-p.getLocationOnScreen().y);
 		}catch(Exception e){
-			Out.println(c.getClass().getName()+", "+p.getClass().getName());
+			Out.pln(c.getClass().getName()+", "+p.getClass().getName());
 			Out.printStackTrace(e);
 			return null;
 		}

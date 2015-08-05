@@ -300,7 +300,7 @@ class FlowControl{
 		
 		@Override
 		public VariableData execute(VariableData[] inputs){
-			Out.println("executing for...");
+			Out.pln("executing for...");
 			if(index == -1){
 				index = 0;
 				max = ((VariableData.Integer) inputs[0]).value;
@@ -379,8 +379,8 @@ class FlowControl{
 					}
 				}
 				if(allConnected){
-					Out.println(parentObject.getPreferredSize().width);
-					Out.println(((Executable) parentObject).outputNodeHolder.getPreferredSize().width);
+					Out.pln(parentObject.getPreferredSize().width);
+					Out.pln(((Executable) parentObject).outputNodeHolder.getPreferredSize().width);
 					
 					((Executable) parentObject).addOutputNode(new ReplicatingNode(Node.NodeType.SENDING, ((Executable) parentObject), Variable.DataType.GENERIC));
 

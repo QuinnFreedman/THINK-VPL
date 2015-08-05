@@ -24,7 +24,7 @@
 package think;
 
 import java.awt.Point;
-import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -179,13 +179,11 @@ import javax.swing.text.DocumentFilter;
 		}
 		
 	}
-	static class DoubleDocumentFilter extends DocumentFilter implements Serializable{
-		
-		private static final long serialVersionUID = 1L;
+	static class DoubleDocumentFilter extends DocumentFilter {
 		
 		AbstractDocument doc;
 		
-		 DoubleDocumentFilter(AbstractDocument doc) {
+		DoubleDocumentFilter(AbstractDocument doc) {
 			this.doc = doc;
 			this.doc.setDocumentFilter(this);
 		}

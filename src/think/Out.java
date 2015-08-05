@@ -26,16 +26,16 @@ package think;
  class Out{
 	 static final boolean isCommandLine = true;
 	
-	 static void println(String s){
+	 static void pln(String s){
 		if(isCommandLine)
 			System.out.println(s);
 	}
-	 static void println(Object s){
+	 static void pln(Object s){
 		if(isCommandLine)
 			System.out.println(s);
 	}
 	
-	 static void println() {
+	 static void pln() {
 		if(isCommandLine)
 			System.out.println();
 	}

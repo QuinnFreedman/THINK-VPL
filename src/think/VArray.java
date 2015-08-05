@@ -25,7 +25,7 @@ package think;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -452,9 +452,7 @@ import javax.swing.text.DocumentFilter;
 		resetVariableData();
 	}
 	
-	static class ArrayDocumentFilter extends DocumentFilter implements Serializable{
-		
-		private static final long serialVersionUID = 1L;
+	static class ArrayDocumentFilter extends DocumentFilter {
 		
 		AbstractDocument doc;
 		VArray parent;

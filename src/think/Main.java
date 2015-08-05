@@ -182,17 +182,17 @@ public class Main{
                         }else if (ke.getKeyCode() == KeyEvent.VK_BACK_QUOTE){
                         	for(Variable v : mainBP.getVariables()){
                         		if(!(v instanceof VInstance)){
-                        			Out.println("\""+v.getID()+"\" : "+v.varData.getValueAsString());
+                        			Out.pln("\""+v.getID()+"\" : "+v.varData.getValueAsString());
                         		}else{
-                        			Out.println("\""+v.getID()+"\" : ");
+                        			Out.pln("\""+v.getID()+"\" : ");
                         			for(Variable v2 : ((VInstance) v).childVariables){
-                        				Out.println("	\""+v2.getID()+"\" : "+v2.varData.getValueAsString());
+                        				Out.pln("	\""+v2.getID()+"\" : "+v2.varData.getValueAsString());
                         			}
                         		}
                         	}
                         	for(Variable v : mainBP.getVariables()){
                         		for(PrimitiveFunction pf : v.getChildren()){
-                        			Out.println(v.varData.getValueAsString()+" "+pf.getParentVarData().getValueAsString()+" "+(v.varData == pf.getParentVarData()));
+                        			Out.pln(v.varData.getValueAsString()+" "+pf.getParentVarData().getValueAsString()+" "+(v.varData == pf.getParentVarData()));
                         		}
                         	}
                         }
@@ -213,7 +213,7 @@ public class Main{
 		new File(MODULE_DIR).mkdirs();
 		
 		File folder = new File(path);
-		Out.println("Looking for files in "+path);
+		Out.pln("Looking for files in "+path);
 		File[] listOfFiles = folder.listFiles();
 		
 		ArrayList<Module> modules = new ArrayList<Module>();
@@ -222,7 +222,7 @@ public class Main{
 		
 		for(int i = 0; i < listOfFiles.length; i++) {
 			if(listOfFiles[i].isFile()){
-				Out.println("opening file " + listOfFiles[i].getName());
+				Out.pln("opening file " + listOfFiles[i].getName());
 				modules.add(loadJar(path,listOfFiles[i].getName()));
 			}else if(listOfFiles[i].isDirectory()) {
 				ArrayList<Module> jars = getAllJars(path+"/"+listOfFiles[i].getName());
@@ -244,10 +244,10 @@ public class Main{
 			        className = className.substring(0, className.length() - ".class".length());
 			        String[] classNameParts = className.replace('$', ':').split(":");
 			        if(classNameParts.length == 1){
-			        	Out.println("trying to load classes from "+jar);
+			        	Out.pln("trying to load classes from "+jar);
 			        	addLibrary(path+"/"+jar);
 			        	Class classToLoad = Class.forName(className);
-			        	Out.println("loaded "+classToLoad);
+			        	Out.pln("loaded "+classToLoad);
 			        	if(classToLoad.getSuperclass() == Module.class){
 			    			zip.close();
 			        		return (Module) classToLoad.newInstance();
@@ -425,13 +425,13 @@ public class Main{
 			blueprints.addAll(loadedBlueprints);
 		    for(Blueprint bp : Main.blueprints){
 		    	for(VObject o : bp.getObjects()){
-		    		Out.println("registering "+o.getClass().getName());
+		    		Out.pln("registering "+o.getClass().getName());
 		    		componentMover.registerComponent(o);
 		    	}
 		    	for(VFunction vf : bp.getFunctions()){
-		    		Out.println("editor = "+vf.editor);
+		    		Out.pln("editor = "+vf.editor);
 		    		/*for(VObject o : vf.getEditor().getObjects()){
-		    			Out.println("registering "+o.getClass().getName());
+		    			Out.pln("registering "+o.getClass().getName());
 			    		componentMover.registerComponent(o);
 		    		}*/
 		    	}
@@ -539,7 +539,7 @@ public class Main{
 				int result = jfc.showSaveDialog(window);
 				if (result == JFileChooser.APPROVE_OPTION) {
 				    File selectedFile = jfc.getSelectedFile();
-				    System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+				    Out.pln("Selected file: " + selectedFile.getAbsolutePath());
 				    if(!selectedFile.getName().endsWith(".graph")){
 				    	selectedFile = new File(selectedFile.getAbsolutePath()+".graph");
 				    }
@@ -555,16 +555,16 @@ public class Main{
 				int result = jfc.showOpenDialog(window);
 				if (result == JFileChooser.APPROVE_OPTION) {
 				    File selectedFile = jfc.getSelectedFile();
-				    System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+				    Out.pln("Selected file: " + selectedFile.getAbsolutePath());
 					if(!selectedFile.exists() || !selectedFile.isFile()){
-				    	Out.println("no such file");
+				    	Out.pln("no such file");
 				    	return;
 				    }
 				    try {
 						/*ObjectInputStream is = new ObjectInputStream(new FileInputStream(selectedFile.getAbsolutePath()));
 						final SaveBundle save = (SaveBundle) is.readObject();
 						is.close();
-						Out.println("loaded file");
+						Out.pln("loaded file");
 						window.dispose();
 						
 						SwingUtilities.invokeLater(new Runnable() {
@@ -574,7 +574,7 @@ public class Main{
 					        	setupGUI(save.blueprints);
 				        }});
 						
-						Out.println("restored save");*/
+						Out.pln("restored save");*/
 				    	
 				    	window.getContentPane().removeAll();
 			        	setupGUI(null);
@@ -592,7 +592,7 @@ public class Main{
 			}else if(c == "Save"){
 				saveFile(lastSave);
 			}else{
-				Out.println("null Action: "+c);
+				Out.pln("null Action: "+c);
 			}
 			
 	    }
@@ -602,7 +602,7 @@ public class Main{
 				//os.writeObject(new SaveBundle());
 				//os.close();
 				SaveFileIO.write(new File(path));
-				Out.println("created file");
+				Out.pln("created file");
 			} catch (Exception e1){
 				e1.printStackTrace();
 				String message = "Error saving file "+path;
