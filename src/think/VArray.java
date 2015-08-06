@@ -493,7 +493,7 @@ import javax.swing.text.DocumentFilter;
 							sb += c;
 						}
 					}else{
-						if(sb.charAt(sb.length()) != ','){
+						if(sb.charAt(sb.length()-1) != ','){
 							sb += c;
 						}
 					}

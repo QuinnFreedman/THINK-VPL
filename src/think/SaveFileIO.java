@@ -102,6 +102,9 @@ class SaveFileIO{
 			e.setAttribute("id", v.getID());
 			if(!(v instanceof VInstance)){
 				e.setAttribute("value", v.valueField.getText());
+				if(v instanceof VArray){
+					e.setAttribute("dataType", ((VArray) v).dataType.toString());
+				}
 			}else{
 				e.setAttribute("bp", ((VInstance) v).parentBlueprint.getName());
 			}
@@ -284,20 +287,24 @@ class SaveFileIO{
 		
 		Element variables = element.getChild("variables");
 		
+		@SuppressWarnings("unchecked")
 		List<Element> varList = variables.getChildren();
 		for(Element var : varList){
 			Out.pln(" > "+var.getAttributeValue("id"));
 			String className = var.getAttributeValue("type");
-			Class varClass = ClassLoader.getSystemClassLoader().loadClass(className);
+			Class<?> varClass = ClassLoader.getSystemClassLoader().loadClass(className);
 			Variable newVar;
 			if(varClass == VInstance.class){
 				Blueprint parentBlueprint = getBlueprintById(var.getAttributeValue("bp"));
 				
-				newVar = (Variable) varClass.getDeclaredConstructor(GraphEditor.class, Blueprint.class).newInstance(owner, parentBlueprint);
+				newVar = new VInstance(owner, parentBlueprint);
+			}else if(varClass == VArray.class){
+				Variable.DataType dt = Variable.DataType.valueOf(var.getAttributeValue("dataType"));
+				
+				newVar = new VArray(dt,owner);
+				Out.pln("value = "+var.getAttributeValue("value"));
+				newVar.valueField.setText(var.getAttributeValue("value"));
 			}else{
-				for(Constructor c : varClass.getDeclaredConstructors()){
-					Out.pln(c);
-				}
 				newVar = (Variable) varClass.getDeclaredConstructor(GraphEditor.class).newInstance(owner);
 				newVar.valueField.setText(var.getAttributeValue("value"));
 			}
