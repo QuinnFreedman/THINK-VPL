@@ -295,6 +295,9 @@ class SaveFileIO{
 				
 				newVar = (Variable) varClass.getDeclaredConstructor(GraphEditor.class, Blueprint.class).newInstance(owner, parentBlueprint);
 			}else{
+				for(Constructor c : varClass.getDeclaredConstructors()){
+					Out.pln(c);
+				}
 				newVar = (Variable) varClass.getDeclaredConstructor(GraphEditor.class).newInstance(owner);
 				newVar.valueField.setText(var.getAttributeValue("value"));
 			}
@@ -319,6 +322,7 @@ class SaveFileIO{
 			String className = obj.getAttributeValue("class");
 			Out.pln(className);
 			Class<? extends VObject> objClass= (Class<? extends VObject>) ClassLoader.getSystemClassLoader().loadClass(className);
+			Out.pln("class = "+objClass);
 			VObject newObj;
 			Point p = new Point(Integer.parseInt(obj.getAttributeValue("x")), Integer.parseInt(obj.getAttribute("y").getValue()));
 			if(objClass == EntryPoint.class){

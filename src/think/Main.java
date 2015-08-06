@@ -41,6 +41,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -79,6 +80,7 @@ public class Main{
 	static EntryPoint entryPoint;
 	static Blueprint mainBP;
 	protected static JTabbedPane tabbedPane;
+	static JPanel container;
 	
 	static ArrayList<Blueprint> blueprints;
 	static ArrayList<Module> modules;
@@ -93,12 +95,6 @@ public class Main{
 	private static JMenuItem mntmSave;
 	
 	public static void main(String[] args){	
-		SwingUtilities.invokeLater(new Runnable() {
-	        @Override
-	        public void run() {
-	        	setupWindow();
-	        	setupGUI(blueprints);
-        }});
 		colors.put(Variable.DataType.BOOLEAN, new Color(20,210,20));
 		colors.put(Variable.DataType.INTEGER, Color.red);
 		colors.put(Variable.DataType.DOUBLE, new Color(196,0,167));
@@ -117,49 +113,65 @@ public class Main{
 		}
 		
 		defaultLibrairy = new ArrayList<Executable>();
-		defaultLibrairy.add(new Arithmetic.Add());
-		defaultLibrairy.add(new Arithmetic.Subtract());
-		defaultLibrairy.add(new Arithmetic.Multiply());
-		defaultLibrairy.add(new Arithmetic.Divide());
-		defaultLibrairy.add(new Arithmetic.Round());
-		defaultLibrairy.add(new Arithmetic.Random());
-		defaultLibrairy.add(new Arithmetic.Concatinate());
-		defaultLibrairy.add(new Logic.Equals());
-		defaultLibrairy.add(new Logic.Less_Than());
-		defaultLibrairy.add(new Logic.Greater_Than());
-		defaultLibrairy.add(new Logic.Less_Than_Or_Equal_To());
-		defaultLibrairy.add(new Logic.Greater_Than_Or_Equal_To());
-		defaultLibrairy.add(new Logic.And());
-		defaultLibrairy.add(new Logic.Not());
-		defaultLibrairy.add(new Logic.Or());
-		defaultLibrairy.add(new FlowControl.Branch());
-		defaultLibrairy.add(new FlowControl.While());
-		defaultLibrairy.add(new FlowControl.Sequence());
-		defaultLibrairy.add(new FlowControl.Wait());
-		defaultLibrairy.add(new FlowControl.For());
-		defaultLibrairy.add(new FlowControl.AdvancedFor());
-		
-		for(Class c : SystemLib.class.getDeclaredClasses()){
-			if(Executable.class.isAssignableFrom(c)){
-				try {
-					defaultLibrairy.add((Executable) c.newInstance());
-				} catch (Exception e){
-					e.printStackTrace();
+		try {
+			SwingUtilities.invokeAndWait(() -> {
+				defaultLibrairy.add(new Arithmetic.Add());
+				defaultLibrairy.add(new Arithmetic.Subtract());
+				defaultLibrairy.add(new Arithmetic.Multiply());
+				defaultLibrairy.add(new Arithmetic.Divide());
+				defaultLibrairy.add(new Arithmetic.Round());
+				defaultLibrairy.add(new Arithmetic.Random());
+				defaultLibrairy.add(new Arithmetic.Concatinate());
+				defaultLibrairy.add(new Logic.Equals());
+				defaultLibrairy.add(new Logic.Less_Than());
+				defaultLibrairy.add(new Logic.Greater_Than());
+				defaultLibrairy.add(new Logic.Less_Than_Or_Equal_To());
+				defaultLibrairy.add(new Logic.Greater_Than_Or_Equal_To());
+				defaultLibrairy.add(new Logic.And());
+				defaultLibrairy.add(new Logic.Not());
+				defaultLibrairy.add(new Logic.Or());
+				defaultLibrairy.add(new FlowControl.Branch());
+				defaultLibrairy.add(new FlowControl.While());
+				defaultLibrairy.add(new FlowControl.Sequence());
+				defaultLibrairy.add(new FlowControl.Wait());
+				defaultLibrairy.add(new FlowControl.For());
+				defaultLibrairy.add(new FlowControl.AdvancedFor());
+			
+				for(Class c : SystemLib.class.getDeclaredClasses()){
+					if(Executable.class.isAssignableFrom(c)){
+						try {
+							defaultLibrairy.add((Executable) c.newInstance());
+						} catch (Exception e){
+							e.printStackTrace();
+						}
+					}
 				}
-			}
+				
+				modules = new ArrayList<Module>();
+				
+				ArrayList<Module> loadedModules = getAllJars(MODULE_DIR);
+				if(loadedModules != null){
+					loadedModules.removeAll(Collections.singleton(null));
+				
+					modules.addAll(loadedModules);
+				}
+				//modules.add(new modules.FileIO());
+				//modules.add(new modules.CanvasModule());
+			});
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		modules = new ArrayList<Module>();
-		
-		ArrayList<Module> loadedModules = getAllJars(MODULE_DIR);
-		if(loadedModules != null){
-			loadedModules.removeAll(Collections.singleton(null));
-		
-			//modules.addAll(loadedModules);
-		}
-		//modules.add(new modules.FileIO());
-		//modules.add(new modules.CanvasModule());
-		
+		SwingUtilities.invokeLater(() -> {
+	        	setupWindow();
+	        	setupGUI();
+        });
 		new File(SAVE_DIR).mkdirs();
 		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
@@ -417,33 +429,17 @@ public class Main{
 		
 	}
 	
-	private static void setupGUI(ArrayList<Blueprint> loadedBlueprints){
+	private static void setupGUI(){
 		
 		blueprints = new ArrayList<Blueprint>();
 		
-		if(loadedBlueprints != null){
-			blueprints.addAll(loadedBlueprints);
-		    for(Blueprint bp : Main.blueprints){
-		    	for(VObject o : bp.getObjects()){
-		    		Out.pln("registering "+o.getClass().getName());
-		    		componentMover.registerComponent(o);
-		    	}
-		    	for(VFunction vf : bp.getFunctions()){
-		    		Out.pln("editor = "+vf.editor);
-		    		/*for(VObject o : vf.getEditor().getObjects()){
-		    			Out.pln("registering "+o.getClass().getName());
-			    		componentMover.registerComponent(o);
-		    		}*/
-		    	}
-		    }
-		}else{
-			mainBP = new Blueprint();
-			mainBP.setName("Main");
-			blueprints.add(mainBP);
-		}
+		mainBP = new Blueprint();
+		mainBP.setName("Main");
+		blueprints.add(mainBP);
+		
 		tabbedPane = new JTabbedPane();
 		
-		JPanel container = new JPanel();
+		container = new JPanel();
 		container.setLayout(new BorderLayout());
 		container.add(tabbedPane, BorderLayout.CENTER);
 		window.getContentPane().add(container);
@@ -475,10 +471,10 @@ public class Main{
 	    });
 		window.setVisible(true);
 
-		if(loadedBlueprints == null){
-			entryPoint = new EntryPoint(mainBP);
-			mainBP.getPanel().add(entryPoint);
-		}
+		
+		entryPoint = new EntryPoint(mainBP);
+		mainBP.getPanel().add(entryPoint);
+		
 		
 		if(mainBP != null)
 			mainBP.getPanel().requestFocusInWindow();
@@ -577,7 +573,7 @@ public class Main{
 						Out.pln("restored save");*/
 				    	
 				    	window.getContentPane().removeAll();
-			        	setupGUI(null);
+			        	setupGUI();
 			        	
 				    	SaveFileIO.read(selectedFile);
 				    	

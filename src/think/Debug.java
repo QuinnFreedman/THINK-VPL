@@ -295,7 +295,7 @@ import javax.swing.JLabel;
 						);
 				getTop().workingData.remove(0);
 			}else{
-				Debug.console.post("ERROR: internal error");
+				Debug.console.postError("ERROR: internal error");
 				exit();
 				return false;
 			}
@@ -312,7 +312,7 @@ import javax.swing.JLabel;
 				execute = getTop().execute(array);
 			} catch (Exception e) {
 				exit();
-				console.post(e.getMessage());
+				console.postError(e.getMessage());
 				Out.printStackTrace(e);
 				return false;
 			}
@@ -458,7 +458,7 @@ import javax.swing.JLabel;
 		
 		if(!isStepping){
 			Out.pln("ABORTED");
-			Debug.console.post("ERROR: program aborted by user");
+			Debug.console.postError("ERROR: program aborted by user");
 			return false;
 		}
 		
@@ -502,7 +502,7 @@ import javax.swing.JLabel;
 				s += " when executing \""+stack.get(stack.size()-1).headerLabel.getText()+"\"";
 			}
 			s += ". The program will now exit.";
-			console.post(s);
+			console.postError(s);
 			Out.printStackTrace(e);
 			exit();
 			return false;

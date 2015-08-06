@@ -24,24 +24,58 @@
 package think;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+
+
+
+
+
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.OverlayLayout;
+import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
-class Console extends JFrame implements KeyListener{
-	private static final long serialVersionUID = 1L;
+
+class Console implements KeyListener{
 	
-	private JTextArea output;
-	 JTextField input;
+	private JFrame consoleWindow;
+	private JPanel container;
+	
+	DisplayMode display = DisplayMode.WINDOW;
+	JSplitPane splitPane;
+	
+	private static enum DisplayMode{
+		WINDOW,RIGHT,BOTTOM
+	}
+	
+	private JTextPane output;
+	JTextField input;
 	
 	protected Console getThis(){
 		return this;
@@ -55,42 +89,160 @@ class Console extends JFrame implements KeyListener{
 		
 		newestConsole = this;
 		
-    	setSize(500,300);
-    	setMinimumSize(new Dimension(200,150));
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		this.setIconImage(Main.icon);
+		consoleWindow = new JFrame();
 		
-		getContentPane().setLayout(new BorderLayout(0, 0));
+		consoleWindow.setSize(500,300);
+		consoleWindow.setMinimumSize(new Dimension(200,150));
+		consoleWindow.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		consoleWindow.setIconImage(Main.icon);
 		
-		JPanel container = new JPanel();
-		getContentPane().add(container, BorderLayout.CENTER);
+		consoleWindow.getContentPane().setLayout(new BorderLayout(0, 0));
+		
+		container = new JPanel();
+		consoleWindow.getContentPane().add(container, BorderLayout.CENTER);
 		container.setLayout(new BorderLayout(0, 0));
 
-		output = new JTextArea();
+		output = new JTextPane();//JTextArea();
 		output.setOpaque(false);
 		output.setEditable(false);
 		output.setFocusable(false);
-		output.setWrapStyleWord(true);
-		output.setLineWrap(true);
+		//output.setWrapStyleWord(true);
+		//output.setLineWrap(true);
+		output.setEditable(false);
+		//output.set
 		
 		JScrollPane scrollPane = new JScrollPane(output);
 		
-		container.add(scrollPane,BorderLayout.CENTER);
+		JPanel layerdPanel = new JPanel(new BorderLayout());
+		
+		JPanel buttonHolder = new JPanel();
+		buttonHolder.setLayout(new FlowLayout(FlowLayout.RIGHT,1,1));
+		layerdPanel.add(buttonHolder, BorderLayout.BEFORE_FIRST_LINE);
+		layerdPanel.add(scrollPane, BorderLayout.CENTER);
+		
+		layerdPanel.setBorder(BorderFactory.createLineBorder(new Color(59,59,59)));
+		scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 0));
+		
+		JButton popout = new JButton("[ ]");
+		JButton bottom = new JButton("V");
+		JButton side = new JButton(">");
+		
+		popout.setFocusable(false);
+		popout.setPreferredSize(new Dimension(popout.getPreferredSize().height+8,popout.getPreferredSize().height));
+		popout.setEnabled(false);
+		popout.addActionListener(e -> {
+			if(display != DisplayMode.WINDOW){
+				consoleWindow.setVisible(true);
+				consoleWindow.add(container);
+				consoleWindow.repaint();
+				consoleWindow.revalidate();
+				
+				Main.container.remove(splitPane);
+				splitPane = null;
+				Main.container.add(Main.tabbedPane);
+				Main.container.repaint();
+				Main.container.revalidate();
+			}
+			display = DisplayMode.WINDOW;
+			popout.setEnabled(false);
+			bottom.setEnabled(true);
+			side.setEnabled(true);
+		});
+		buttonHolder.add(popout);
+		
+		bottom.setFocusable(false);
+		bottom.setPreferredSize(new Dimension(bottom.getPreferredSize().height+8,bottom.getPreferredSize().height));
+		bottom.addActionListener(e -> {
+			postError("error");
+			if(display == DisplayMode.WINDOW){
+				consoleWindow.setVisible(false);
+				consoleWindow.remove(container);
+				
+				Main.container.remove(Main.tabbedPane);
+				splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, Main.tabbedPane, container);
+				splitPane.setResizeWeight(1);
+				
+				Main.container.add(splitPane);
+				Main.container.repaint();
+				Main.container.revalidate();
+			}else{
+				splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+			}
+			splitPane.setDividerLocation(Main.container.getHeight()-150);
+			display = DisplayMode.BOTTOM;
+			popout.setEnabled(true);
+			bottom.setEnabled(false);
+			side.setEnabled(true);
+		});
+		buttonHolder.add(bottom);
+		
+		side.setFocusable(false);
+		side.setPreferredSize(new Dimension(side.getPreferredSize().height+8,side.getPreferredSize().height));
+		side.addActionListener(e -> {
+			if(display == DisplayMode.WINDOW){
+				consoleWindow.setVisible(false);
+				consoleWindow.remove(container);
+				
+				Main.container.remove(Main.tabbedPane);
+				splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, Main.tabbedPane, container);
+				splitPane.setResizeWeight(1);
+				
+				Main.container.add(splitPane);
+				Main.container.repaint();
+				Main.container.revalidate();
+			}else{
+				splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+			}
+			splitPane.setDividerLocation(Main.container.getWidth()-220);
+			display = DisplayMode.RIGHT;
+			popout.setEnabled(true);
+			bottom.setEnabled(true);
+			side.setEnabled(false);
+		});
+		buttonHolder.add(side);
+		
+		container.add(layerdPanel,BorderLayout.CENTER);
+		
+		JPanel bottomBar = new JPanel(new BorderLayout());
+		container.add(bottomBar, BorderLayout.SOUTH);
 		
 		input = new JTextField();
-		container.add(input, BorderLayout.SOUTH);
 		input.addKeyListener(getThis());
+		bottomBar.add(input, BorderLayout.CENTER);
+		JButton submit = new JButton(">");
+		submit.setFocusable(false);
+		submit.setPreferredSize(new Dimension(submit.getPreferredSize().height+5,submit.getPreferredSize().height));
+		submit.addActionListener(e -> submit());
+		bottomBar.add(submit, BorderLayout.LINE_END);
 		
 	}
 	
 	public void post(final String s){
-		SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
+		SwingUtilities.invokeLater(() -> {
         	Out.pln("POST: "+s);
-        	output.append(s+"\n\n");
+        	try {
+        		Document doc = output.getDocument();
+        		doc.insertString(doc.getLength(), s+"\n", null);
+        	} catch(BadLocationException exc) {
+        		exc.printStackTrace();
+        	}
         	
-        }});
+        });
+	}
+	public void postError(final String s){
+		SwingUtilities.invokeLater(() -> {
+        	Out.pln("POST ERROR: "+s);
+        	StyledDocument doc = output.getStyledDocument();
+        	
+        	SimpleAttributeSet keyWord = new SimpleAttributeSet();
+        	StyleConstants.setForeground(keyWord, new Color(193,43,43));
+        	StyleConstants.setBold(keyWord, true);
+        	
+        	try {
+        		doc.insertString(doc.getLength(), s+"\n", keyWord );
+        	} catch(Exception e) { System.out.println(e); }
+        	
+        });
 	}
 	public void clear(){
 		if(output != null)
@@ -167,44 +319,49 @@ class Console extends JFrame implements KeyListener{
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if(e.getKeyCode() == KeyEvent.VK_ENTER){
-			if(Debug.isStepping() && Debug.waitingForInput() != null){
-				
-				String s = input.getText();
-				input.setText("");
-				
-				if(Debug.waitingForInput() == Variable.DataType.STRING){
+			submit();
+		}
+	}
+	
+	private void submit(){
 
+		if(Debug.isStepping() && Debug.waitingForInput() != null){
+			
+			String s = input.getText();
+			input.setText("");
+			
+			if(Debug.waitingForInput() == Variable.DataType.STRING){
+
+				Main.window.requestFocus();
+				Main.getOpenClass().getPanel().requestFocusInWindow();
+				
+				post("> "+s);
+				
+				Debug.running.unpause();
+				Debug.moveDownStack2(new VariableData.String(s));
+				Debug.stepForever();
+				if(!consoleWindow.isShowing())
+					Debug.tab();
+				
+			}else if(Debug.waitingForInput() == Variable.DataType.DOUBLE){
+				if(isNumeric(s)){
+					post("> "+s);
+					
 					Main.window.requestFocus();
 					Main.getOpenClass().getPanel().requestFocusInWindow();
 					
-					post("> "+s);
-					
+					if(Debug.running != null)
 					Debug.running.unpause();
-					Debug.moveDownStack2(new VariableData.String(s));
+					Debug.moveDownStack2(new VariableData.Double(Double.parseDouble(s)));
 					Debug.stepForever();
-					if(!this.isShowing())
+					if(!consoleWindow.isShowing())
 						Debug.tab();
+				}else{
 					
-				}else if(Debug.waitingForInput() == Variable.DataType.DOUBLE){
-					if(isNumeric(s)){
-						post("> "+s);
-						
-						Main.window.requestFocus();
-						Main.getOpenClass().getPanel().requestFocusInWindow();
-						
-						if(Debug.running != null)
-						Debug.running.unpause();
-						Debug.moveDownStack2(new VariableData.Double(Double.parseDouble(s)));
-						Debug.stepForever();
-						if(!this.isShowing())
-							Debug.tab();
-					}else{
-						
-						post("> INVALID INPUT \""+s+"\" please input a number");
-					}
+					post("> INVALID INPUT \""+s+"\" please input a number");
 				}
-				
 			}
+			
 		}
 	}
 	
@@ -223,5 +380,22 @@ class Console extends JFrame implements KeyListener{
 	public void keyTyped(KeyEvent e) {
 		// Auto-generated method stub
 		
+	}
+
+	public void requestFocus() {
+		if(consoleWindow.isShowing())
+			consoleWindow.requestFocus();
+		
+	}
+
+	public void setAlwaysOnTop(boolean b) {
+		if(consoleWindow.isShowing())
+			consoleWindow.setAlwaysOnTop(b);
+		
+	}
+
+	public void setVisible(boolean b) {
+		if(display == DisplayMode.WINDOW)
+			consoleWindow.setVisible(b);
 	}
 }
