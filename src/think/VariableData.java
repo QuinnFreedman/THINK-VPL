@@ -354,7 +354,7 @@ import java.util.Random;
 			this.value = value;
 		}
 
-		Array(Variable.DataType dataType) {
+		public Array(Variable.DataType dataType) {
 			this.dataType = dataType;
 			this.value = new ArrayList<VariableData>();
 		}

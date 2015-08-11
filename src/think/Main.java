@@ -157,15 +157,21 @@ public class Main{
 				}
 				//modules.add(new modules.FileIO());
 				//modules.add(new modules.CanvasModule());
+				
+
+				for(Module m : modules){
+					m.setup();
+				}
+				
 			});
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 		SwingUtilities.invokeLater(() -> {
@@ -447,10 +453,6 @@ public class Main{
 		for(Blueprint bp : blueprints){
 			tabbedPane.addTab(bp.getName(), bp.splitPane);
 		}
-		
-		for(Module m : modules){
-			m.setup();
-		}
 
 		final JPanel plus = null;
 		tabbedPane.addTab("+", plus);
@@ -578,6 +580,7 @@ public class Main{
 				    	SaveFileIO.read(selectedFile);
 				    	
 						lastSave = selectedFile.getAbsolutePath();
+						mntmSave.setEnabled(true);
 					} catch (Exception e1){
 						e1.printStackTrace();
 						String message = "Error loading file "+selectedFile.getAbsolutePath();

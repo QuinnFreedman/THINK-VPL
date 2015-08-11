@@ -32,30 +32,16 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-
-
-
-
-
-
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.OverlayLayout;
-import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;import javax.swing.text.BadLocationException;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -148,12 +134,12 @@ class Console implements KeyListener{
 			bottom.setEnabled(true);
 			side.setEnabled(true);
 		});
+		popout.setToolTipText("Popout");
 		buttonHolder.add(popout);
 		
 		bottom.setFocusable(false);
 		bottom.setPreferredSize(new Dimension(bottom.getPreferredSize().height+8,bottom.getPreferredSize().height));
 		bottom.addActionListener(e -> {
-			postError("error");
 			if(display == DisplayMode.WINDOW){
 				consoleWindow.setVisible(false);
 				consoleWindow.remove(container);
@@ -174,6 +160,7 @@ class Console implements KeyListener{
 			bottom.setEnabled(false);
 			side.setEnabled(true);
 		});
+		bottom.setToolTipText("Dock bottom");
 		buttonHolder.add(bottom);
 		
 		side.setFocusable(false);
@@ -199,6 +186,7 @@ class Console implements KeyListener{
 			bottom.setEnabled(true);
 			side.setEnabled(false);
 		});
+		side.setToolTipText("Dock right");
 		buttonHolder.add(side);
 		
 		container.add(layerdPanel,BorderLayout.CENTER);

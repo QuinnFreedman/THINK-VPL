@@ -33,7 +33,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
- class VInt extends Variable{
+class VInt extends Variable{
 	private static final long serialVersionUID = 1L;
 	static int idCounter = 0;
 	int value = 0;

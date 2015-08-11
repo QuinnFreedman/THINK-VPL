@@ -164,7 +164,7 @@ class Logic extends Executable{
 		}
 		@Override
 		public String getMenuName() {
-			return"Greater Than Or Equal To (\u2264)";
+			return"Less Than Or Equal To (\u2264)";
 		}
 		
 		@Override
@@ -196,7 +196,7 @@ class Logic extends Executable{
 		}
 		@Override
 		public String getMenuName() {
-			return"Less Than Or Equal To (\u2265)";
+			return"Greater Than Or Equal To (\u2265)";
 		}
 		
 		@Override

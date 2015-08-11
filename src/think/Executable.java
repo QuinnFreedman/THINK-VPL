@@ -289,6 +289,12 @@ public class Executable extends VObject{
 		
 		if(pos != null)
 			setBounds(new Rectangle(pos,getSize()));
+		try{
+			if(!(this instanceof PrimitiveFunction) && getOutputs() != null && this.getOutputs().size() > 1 && 
+					this.getOutputs().get(0) == Variable.DataType.GENERIC){
+				this.executeOnce = true;
+			}
+		}catch(Exception e){};
 	}
 	
 	protected Executable() {

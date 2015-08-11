@@ -287,12 +287,13 @@ class SaveFileIO{
 		
 		Element variables = element.getChild("variables");
 		
-		@SuppressWarnings("unchecked")
 		List<Element> varList = variables.getChildren();
 		for(Element var : varList){
 			Out.pln(" > "+var.getAttributeValue("id"));
 			String className = var.getAttributeValue("type");
+			Out.pln("classname = "+className);
 			Class<?> varClass = ClassLoader.getSystemClassLoader().loadClass(className);
+			Out.pln("varClass = "+varClass);
 			Variable newVar;
 			if(varClass == VInstance.class){
 				Blueprint parentBlueprint = getBlueprintById(var.getAttributeValue("bp"));
@@ -333,7 +334,7 @@ class SaveFileIO{
 			VObject newObj;
 			Point p = new Point(Integer.parseInt(obj.getAttributeValue("x")), Integer.parseInt(obj.getAttribute("y").getValue()));
 			if(objClass == EntryPoint.class){
-				//do nothing
+				Main.entryPoint.setLocation(p);
 				continue;
 			}else if(objClass == FunctionEditor.FunctionIO.class){
 				String[] dataTypes = obj.getAttributeValue("dataType").split(":");

@@ -210,11 +210,13 @@ import javax.swing.SwingConstants;
 		JSplitPane sidebar = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 				varsContainer, funcsContainer);
 				sidebar.setDividerLocation(300);
+				sidebar.setResizeWeight(0.5);
 				//TODO sidebar.setMaximumSize(new Dimension(300,Integer.MAX_VALUE));
 		
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 sidebar, scrollPane);
 				splitPane.setDividerLocation(253);
+				scrollPane.setMinimumSize(new Dimension(300,300));
 		
 		panel.addKeyListener(this);
 		
