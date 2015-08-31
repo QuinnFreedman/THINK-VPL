@@ -250,9 +250,9 @@ public class Variable extends SidebarItem implements DocumentListener{
     	
     }
     public enum DataType{
-    	BOOLEAN,BYTE,SHORT,INTEGER,FLOAT,DOUBLE,LONG,CHARACTER,STRING,GENERIC,NUMBER,FLEX,OBJECT, ARRAY;
+    	BOOLEAN,BYTE,SHORT,INTEGER,FLOAT,DOUBLE,LONG,CHARACTER,STRING,GENERIC,NUMBER,FLEX,OBJECT,ARRAY;
 
-		 boolean isNumber() {
+    	boolean isNumber() {
 			if(this == BYTE || this == SHORT || this == INTEGER || this == FLOAT || this == DOUBLE || this == LONG)
 				return true;
 			else
@@ -260,13 +260,14 @@ public class Variable extends SidebarItem implements DocumentListener{
 		}
     	
     }
-	 ArrayList<PrimitiveFunction> getFunctions() {
+    
+	ArrayList<PrimitiveFunction> getFunctions() {
 		return functions;
 	}
-	 ArrayList<PrimitiveFunction> getChildren() {
+	ArrayList<PrimitiveFunction> getChildren() {
 		return children;
 	}
-	 static Variable create(DataType varType, GraphEditor owner) {
+	static Variable create(DataType varType, GraphEditor owner) {
 		switch(varType){
 		case BOOLEAN:
 			return new VBoolean(owner);

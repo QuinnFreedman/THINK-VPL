@@ -44,12 +44,11 @@ import org.jdom.output.XMLOutputter;
 import think.Node.NodeType;
 
 class SaveFileIO{
-	private static final String VERSION_ID = "0.1.3";
 	
 	static void write(File file) throws FileNotFoundException, IOException{
 		Document document = new Document();
 		Element root = new Element("document");
-		root.setAttribute("version", VERSION_ID);
+		root.setAttribute("version", Main.VERSION_ID);
 		for(Blueprint bp : Main.blueprints){
 			
 			Element blueprint = writeGraphEditor(bp);

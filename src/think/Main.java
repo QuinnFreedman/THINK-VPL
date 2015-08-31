@@ -37,10 +37,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -89,7 +86,8 @@ public class Main{
 	static Image icon;
 	
 	private static final String MODULE_DIR = System.getProperty("user.home")+"/Documents/THINK VPL/Modules";
-	private static final String SAVE_DIR = System.getProperty("user.home")+"/Documents/THINK VPL/My Projects";
+	static final String SAVE_DIR = System.getProperty("user.home")+"/Documents/THINK VPL/My Projects";
+	static final String VERSION_ID = "0.1.4";
 	
 	private static String lastSave;
 	private static JMenuItem mntmSave;
@@ -119,6 +117,7 @@ public class Main{
 				defaultLibrairy.add(new Arithmetic.Subtract());
 				defaultLibrairy.add(new Arithmetic.Multiply());
 				defaultLibrairy.add(new Arithmetic.Divide());
+				defaultLibrairy.add(new Arithmetic.Mod());
 				defaultLibrairy.add(new Arithmetic.Round());
 				defaultLibrairy.add(new Arithmetic.Random());
 				defaultLibrairy.add(new Arithmetic.Concatinate());
@@ -318,6 +317,12 @@ public class Main{
 		JMenu fileMenu = new JMenu("File");
 	    menuBar.add(fileMenu);
 	    
+	    JMenuItem mntmNew = new JMenuItem("New");
+	    mntmNew.addActionListener(listener);
+	    mntmNew.setAccelerator(KeyStroke.getKeyStroke(
+	            KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+	    fileMenu.add(mntmNew);
+	    
 	    JMenuItem mntmOpen = new JMenuItem("Open");
 	    mntmOpen.addActionListener(listener);
 	    mntmOpen.setAccelerator(KeyStroke.getKeyStroke(
@@ -335,6 +340,13 @@ public class Main{
 	    mntmSaveAs.addActionListener(listener);
 	    mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke("control shift S"));
 	    fileMenu.add(mntmSaveAs);
+	    
+	    fileMenu.addSeparator();
+	    
+	    JMenuItem mntmCompile = new JMenuItem("Compile...");
+	    mntmCompile.addActionListener(listener);
+	    mntmCompile.setAccelerator(KeyStroke.getKeyStroke("control shift E"));
+	    fileMenu.add(mntmCompile);
 	    
 		JMenu mnEdit = new JMenu("Edit");
 		menuBar.add(mnEdit);
@@ -545,6 +557,9 @@ public class Main{
 					mntmSave.setEnabled(true);
 					saveFile(selectedFile.getAbsolutePath());
 				}
+			}else if(c == "New"){
+				window.getContentPane().removeAll();
+				setupGUI();
 			}else if(c == "Open"){
 				JFileChooser jfc = new JFileChooser();
 				jfc.setCurrentDirectory(new File(SAVE_DIR));
@@ -590,6 +605,14 @@ public class Main{
 				}
 			}else if(c == "Save"){
 				saveFile(lastSave);
+			}else if(c == "Compile..."){
+				try{
+					Compiler.compile();
+				}catch(Exception e1){
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(new JFrame(), e1.getMessage(), "Dialog",
+					        JOptionPane.ERROR_MESSAGE);
+				}
 			}else{
 				Out.pln("null Action: "+c);
 			}

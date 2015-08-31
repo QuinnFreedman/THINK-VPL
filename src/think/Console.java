@@ -236,7 +236,7 @@ class Console implements KeyListener{
 		if(output != null)
 			output.setText("");
 	}
-	static class Log_To_Console extends Executable{
+	static class Log_To_Console extends Executable implements JavaKeyword{
 		private static final long serialVersionUID = 1L;
 		@Override
 		public Mode getPrimairyMode(){return Mode.IN;};
@@ -261,13 +261,18 @@ class Console implements KeyListener{
 		}
 		Log_To_Console(Point pos, GraphEditor owner) {
 			super(pos, owner);
-
+			
 			addInputNode(new Node(Node.NodeType.RECIEVING,this,Variable.DataType.GENERIC,true));
 			addInputNode(new Node(Node.NodeType.RECIEVING,this,Variable.DataType.STRING));
 			
 			addOutputNode(new Node(Node.NodeType.SENDING,this,Variable.DataType.GENERIC));
 			
 			setBounds(new Rectangle(pos,getSize()));
+		}
+
+		@Override
+		public String getJavaKeyword() {
+			return "System.out.println";
 		}
 		
 		
@@ -277,6 +282,11 @@ class Console implements KeyListener{
 		private static final long serialVersionUID = 1L;
 		
 		private Variable.DataType dt;
+		
+		Variable.DataType getDataType() {
+			return dt;
+		}
+		
 		@Override
 		public Mode getPrimairyMode(){return Mode.OUT;};
 		
@@ -286,10 +296,6 @@ class Console implements KeyListener{
 			headerLabel.setText(getSimpleName());
 			this.setBounds(new Rectangle(pos,getSize()));
 			addOutputNode(new Node(Node.NodeType.SENDING,this,dt));
-		}
-
-		 Variable.DataType getDataType() {
-			return dt;
 		}
 		
 		@Override

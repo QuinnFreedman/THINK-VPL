@@ -33,7 +33,7 @@ import java.util.Arrays;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-class Logic extends Executable{
+class Logic extends Executable implements Binop{
 	private static final long serialVersionUID = 1L;
 	
 	
@@ -60,12 +60,27 @@ class Logic extends Executable{
 		
 	}
 	
-	static class Equals extends Logic{
+	@Override
+	public String getJavaBinop(){
+		return getID();
+	}
+	
+	static class Equals extends Logic implements Binop{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
 		protected String getID(){
 			return "=";
+		}
+		
+		@Override
+		public String getJavaBinop() {
+			return "==";
+		}
+		
+		@Override
+		public String getMenuName() {
+			return "Equals (=)";
 		}
 		
 		@Override
@@ -163,6 +178,10 @@ class Logic extends Executable{
 			return "\u2264";
 		}
 		@Override
+		public String getJavaBinop(){
+			return "<=";
+		}
+		@Override
 		public String getMenuName() {
 			return"Less Than Or Equal To (\u2264)";
 		}
@@ -195,6 +214,10 @@ class Logic extends Executable{
 			return "\u2265";
 		}
 		@Override
+		public String getJavaBinop(){
+			return ">=";
+		}
+		@Override
 		public String getMenuName() {
 			return"Greater Than Or Equal To (\u2265)";
 		}
@@ -225,6 +248,10 @@ class Logic extends Executable{
 		@Override
 		protected String getID(){
 			return "&";
+		}
+		@Override
+		public String getJavaBinop(){
+			return "&&";
 		}
 		@Override
 		public VariableData execute(VariableData[] inputs){
@@ -287,6 +314,11 @@ class Logic extends Executable{
 		@Override
 		protected String getID(){
 			return "!";
+		}
+		
+		@Override
+		public String getMenuName() {
+			return "Not (!)";
 		}
 		
 		@Override

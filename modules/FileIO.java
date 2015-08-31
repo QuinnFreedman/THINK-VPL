@@ -50,6 +50,7 @@ public class FileIO extends Module{
 	
 	@Override
 	public void setup(){
+		addFunction(new Set_Echo());
 		addFunction(new Get_User_Home());
 		addFunction(new Get_Working_Directory());
 		addFunction(new Get_Line_Separator());
@@ -59,9 +60,46 @@ public class FileIO extends Module{
 		addFunction(new Make_File());
 		addFunction(new Read_File());
 		addFunction(new Get_Files_In_Directory());
+		addFunction(new File_Exists());
 		addFunction(new Is_File());
 		addFunction(new Is_Directory());
 		addFunction(new Move_File());
+		addFunction(new Delete_File());
+	}
+	
+	public static class Set_Echo extends Executable{
+		private static final long serialVersionUID = 1L;
+		
+		@Override
+		public Mode getPrimairyMode(){return Mode.IN;};
+		
+		@Override
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC,
+					DataType.BOOLEAN));
+		}
+		
+		@Override
+		public ArrayList<DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC));
+		}
+		
+		@Override
+		public VariableData execute(VariableData[] input){
+			
+			echo = ((VariableData.Boolean) input[0]).value;
+			
+			return null;
+		}
+		
+		public Set_Echo(Point pos, GraphEditor owner) {
+			super(pos,owner);
+		}
+		Set_Echo(){
+			
+		}
 	}
 	
 	public static class Get_User_Home extends Executable{
@@ -221,7 +259,7 @@ public class FileIO extends Module{
 		public VariableData execute(VariableData[] input){
 			log("Creating directory "+((VariableData.String) input[0]).value+"...");
 			boolean success = new File(((VariableData.String) input[0]).value).mkdirs();
-			log(success ? "succeeded" : "failed");
+			log(success ? "Succeeded" : "FAILED");
 			return new VariableData.Boolean(success);
 		}
 		
@@ -275,13 +313,13 @@ public class FileIO extends Module{
 				for(VariableData d : ((VariableData.Array) input[1]).value){
 					if(d instanceof VariableData.String){
 						writer.println(((VariableData.String) d).value);
-						log("SUCCEEDED");
 					}else{
 						writer.close();
 						throw new Exception("ERROR: type missmatch in \"FunctionIO > Make_File\": expected an array of type String but got an array of a different type");
 					}
 				}
 				writer.close();
+				log("Succeeded");
 			} catch (FileNotFoundException e) {
 				log("FAILED: File not found: "+e.getMessage());
 				return new VariableData.Boolean(false);
@@ -412,6 +450,48 @@ public class FileIO extends Module{
 		}
 	}
 
+	public static class File_Exists extends Executable{
+		private static final long serialVersionUID = 1L;
+		
+		@Override
+		public Mode getPrimairyMode(){return Mode.OUT;};
+		
+		@Override
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC,
+					DataType.STRING));
+		}
+		@Override
+		public ArrayList<DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC,
+					DataType.BOOLEAN));
+		}
+		@Override
+		public ArrayList<String> getInputTooltips() {
+			return new ArrayList<String>(Arrays.asList(
+					"File Path"
+				));
+		}
+		
+		@Override
+		public VariableData execute(VariableData[] input) throws Exception{
+			String fileName = ((VariableData.String) input[0]).value;
+			
+			File file = new File(fileName);
+			return new VariableData.Boolean(file.exists());
+		}
+		
+		public File_Exists(Point pos, GraphEditor owner) {
+			super(pos,owner);
+			this.executeOnce = true;
+		}
+		File_Exists(){
+			
+		}
+	}
+	
 	public static class Is_File extends Executable{
 		private static final long serialVersionUID = 1L;
 		
@@ -535,6 +615,8 @@ public class FileIO extends Module{
 
 			Boolean b = (new File(((VariableData.String) input[0]).value)).renameTo(new File(((VariableData.String) input[1]).value));
 			
+			log(b ? "Succeeded" : "FAILED");
+			
 			return new VariableData.Boolean(b);
 		}
 		
@@ -542,6 +624,67 @@ public class FileIO extends Module{
 			super(pos,owner);
 		}
 		Move_File(){
+			
+		}
+	}
+	public static class Delete_File extends Executable{
+		private static final long serialVersionUID = 1L;
+		
+		@Override
+		public Mode getPrimairyMode(){return Mode.IN;};
+		
+		@Override
+		public ArrayList<DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC,
+					DataType.STRING));
+		}
+		@Override
+		public ArrayList<DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(
+					DataType.GENERIC, DataType.BOOLEAN));
+		}
+		@Override
+		public ArrayList<String> getInputTooltips() {
+			return new ArrayList<String>(Arrays.asList(
+					"File Path"
+				));
+		}
+		
+		@Override
+		public ArrayList<String> getOutputTooltips() {
+			return new ArrayList<String>(Arrays.asList(
+					"Completed Successfully"
+				));
+		}
+		
+		@Override
+		public VariableData execute(VariableData[] input) throws Exception{
+			String fileName = ((VariableData.String) input[0]).value;
+			
+			log("Deleting file "+fileName+"...");
+			
+			File file = new File(fileName);
+			
+			if(!file.exists()){
+				log("FAILED: file does not exist");
+				return new VariableData.Boolean(false);
+			}else if(!file.canWrite()){
+				log("FAILED: do not have permission to write to this file");
+				return new VariableData.Boolean(false);
+			}
+			
+			Boolean b = file.delete();
+			
+			log(b ? "Succeeded" : "FAILED");
+			
+			return new VariableData.Boolean(b);
+		}
+		
+		public Delete_File(Point pos, GraphEditor owner) {
+			super(pos,owner);
+		}
+		Delete_File(){
 			
 		}
 	}

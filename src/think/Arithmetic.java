@@ -1,7 +1,7 @@
 /**
  * 
  *  THINK VPL is a visual programming language and integrated development environment for that language
- *  Copyright (C) 2015  Quinn Freedman
+ *  Copyright (C) 2015 Quinn Freedman
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General  License as published by
@@ -33,7 +33,7 @@ import java.util.Arrays;
 
 import javax.swing.border.EmptyBorder;
 
-class Arithmetic extends Executable{
+class Arithmetic extends Executable implements Binop{
 	private static final long serialVersionUID = 1L;
 	
 	protected String getID(){
@@ -63,11 +63,17 @@ class Arithmetic extends Executable{
 	
 	Arithmetic(){};
 	
+
+	@Override
+	public String getJavaBinop() {
+		return getID();
+	}
+	
 	static class NumberNode extends Node{
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		 void onConnect(){
+		void onConnect(){
 			if(this.dataType == Variable.DataType.NUMBER){
 				Node connectingNode = (this.type == NodeType.RECIEVING) ? this.parents.get(this.parents.size()-1) : this.children.get(this.children.size()-1);
 				this.dataType = connectingNode.dataType;
@@ -93,7 +99,7 @@ class Arithmetic extends Executable{
 			}
 		}
 		@Override
-		 void onDisconnect(){
+		void onDisconnect(){
 			ArrayList<Node> nodeList = (this.type == NodeType.RECIEVING) ? this.parents : this.children;
 			if(nodeList.isEmpty()){
 				if(this.type == NodeType.RECIEVING){
@@ -145,7 +151,7 @@ class Arithmetic extends Executable{
 			super(type, parentObj,Variable.DataType.NUMBER);
 		}
 
-		 NumberNode(NodeType type, VObject parentObj, boolean b) {
+		NumberNode(NodeType type, VObject parentObj, boolean b) {
 			super(type, parentObj,Variable.DataType.NUMBER,b);
 		}
 		
@@ -227,6 +233,10 @@ class Arithmetic extends Executable{
 			return "\u00D7";
 		}
 		@Override
+		public String getJavaBinop() {
+			return "*";
+		}
+		@Override
 		public String getMenuName() {
 			return "Multiply (\u00D7)";
 		}
@@ -260,6 +270,10 @@ class Arithmetic extends Executable{
 			return "\u00F7";
 		}
 		@Override
+		public String getJavaBinop() {
+			return "/";
+		}
+		@Override
 		public String getMenuName() {
 			return "Divide (\u00F7)";
 		}
@@ -280,6 +294,41 @@ class Arithmetic extends Executable{
 		}
 		
 		Divide(){};
+		
+	}
+	static class Mod extends Arithmetic{
+		private static final long serialVersionUID = 1L;
+		
+		@Override
+		protected String getID(){
+			return "%";
+		}
+		
+		@Override
+		public String getMenuName() {
+			return "Modulo (%)";
+		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.NUMBER));
+		}
+		
+		@Override
+		public VariableData execute(VariableData[] inputs){
+			if(this.getOutputNodes().get(0).dataType == Variable.DataType.INTEGER)
+				return new VariableData.Integer((int) (inputs[0].getValueAsDouble() % inputs[1].getValueAsDouble()));
+			else if(this.getOutputNodes().get(0).dataType == Variable.DataType.FLOAT)
+				return new VariableData.Float((float) (inputs[0].getValueAsDouble() % inputs[1].getValueAsDouble()));
+			else
+				return new VariableData.Double((inputs[0].getValueAsDouble() % inputs[1].getValueAsDouble()));
+		}
+		Mod(Point p, GraphEditor owner) {
+			super(p, owner);
+			addOutputNode(new NumberNode(Node.NodeType.SENDING, this, true));
+		}
+		
+		Mod(){};
 		
 	}
 	static class Concatinate extends Executable{
