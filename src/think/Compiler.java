@@ -34,6 +34,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import think.FunctionEditor.FunctionIO;
 import think.Variable.DataType;
 
 class Compiler{
@@ -96,14 +97,17 @@ class Compiler{
 		ArrayList<String> lines = new ArrayList<String>();
 		indent = 0;
 		
+		//COMMENT
 		lines.add("/**");
 		lines.add(" *  Created with THINK version "+Main.VERSION_ID);
 		lines.add(" *  ThinkVPL.org");
 		lines.add(" */");
+		//CLASS
 		lines.add("class "+name+" {");
 		
 		indent++;
 		
+		//CLASS VARIABLES
 		for(Variable v : Main.mainBP.getVariables()){
 			if(v instanceof VArray){
 				
@@ -115,6 +119,7 @@ class Compiler{
 			}
 		}
 		
+		//MAIN
 		lines.add(getIndent()+"public static void main(String[] args) {");
 		
 		lines.addAll(getContinuousWireText(Main.entryPoint.getOutputNodes().get(0)));
@@ -123,6 +128,34 @@ class Compiler{
 		
 		indent--;
 		
+		//FUNCTION DECLARATIONS
+		for(VFunction function : Main.mainBP.getFunctions()){
+			
+			String declarationLine = getIndent()+"static ";
+			
+			assert function.getOutput().size() == 1;
+			
+			declarationLine += getJavaName(function.getOutput().get(0))
+					+" "+function.getID()+" (";
+			int id = 0;
+			for(Variable.DataType dataType : function.getOutput()){
+				if(dataType != Variable.DataType.GENERIC)
+					declarationLine += getJavaName(dataType)+" arg"+id;
+			}
+			
+			declarationLine += ") {";
+			
+			lines.add(declarationLine);
+			
+			assert function.getInputObject().getOutputNodes().size() >= 1;
+			
+			lines.addAll(getContinuousWireText(function.getInputObject().getOutputNodes().get(0)));
+			
+			lines.add("}");
+			
+		}
+		
+		//END CLASS
 		lines.add("}");
 		return lines;
 	}
@@ -131,12 +164,12 @@ class Compiler{
 		return getContinuousWireText(n, true);
 	}
 	
-	private static ArrayList<String> getContinuousWireText(Node n, boolean indented){
+	private static ArrayList<String> getContinuousWireText(Node node, boolean indented){
 		if(indented)
 			indent++;
 		ArrayList<String> lines = new ArrayList<String>();
 		
-		Executable current = n.children.isEmpty() ? null : (Executable) n.children.get(0).parentObject;
+		Node current = node.children.isEmpty() ? null : node.children.get(0);
 		
 		while(current != null){
 			String line = getIndent()+getFunctionCall(current,false);
@@ -146,7 +179,13 @@ class Compiler{
 			if(line.endsWith("}") || line.endsWith(ln)){
 				break;
 			}
-			current = getNext(current);
+			
+			Executable next = getNext((Executable) current.parentObject);
+			if(next == null)
+				break;
+			Out.pln(" > "+next);
+			Out.pln(" > SIZE: "+next.getOutputNodes().size());
+			current = next.getOutputNodes().get(0);
 		}
 		
 		if(indented)
@@ -154,11 +193,12 @@ class Compiler{
 		return lines;
 	}
 	
-	private static String getFunctionCall(Executable ex) {
-		return getFunctionCall(ex,true);
+	private static String getFunctionCall(Node n) {
+		return getFunctionCall(n,true);
 	}
 	
-	private static String getFunctionCall(Executable ex, boolean isCalledAsArguement) {
+	private static String getFunctionCall(Node node, boolean isCalledAsArguement) {
+		Executable ex = (Executable) node.parentObject;
 		String output = null;
 		
 		if(ex instanceof Constant){
@@ -197,13 +237,13 @@ class Compiler{
 				output = ((PrimitiveFunction) ex).parentVariable.getID();
 			}else if(ex.getClass().getSimpleName().equals("Set")){
 				output = ((PrimitiveFunction) ex).parentVariable.getID()+" = "
-						+getFunctionCall((Executable) ex.getInputNodes().get(1).parents.get(0).parentObject);
+						+getFunctionCall(ex.getInputNodes().get(1).parents.get(0));
 			}else if(ex.getClass().getSimpleName().equals("Multiply_By")){
 				output = ((PrimitiveFunction) ex).parentVariable.getID()+" *= "
-						+getFunctionCall((Executable) ex.getInputNodes().get(1).parents.get(0).parentObject);
+						+getFunctionCall(ex.getInputNodes().get(1).parents.get(0));
 			}else if(ex.getClass().getSimpleName().equals("Add_To")){
 				output = ((PrimitiveFunction) ex).parentVariable.getID()+" = "
-						+getFunctionCall((Executable) ex.getInputNodes().get(1).parents.get(0).parentObject);
+						+getFunctionCall(ex.getInputNodes().get(1).parents.get(0));
 			}else if(ex.getClass().getSimpleName().equals("Increment")){
 				output = ((PrimitiveFunction) ex).parentVariable.getID()+"++";
 			}else{
@@ -211,10 +251,10 @@ class Compiler{
 			}
 		}else if(ex instanceof Binop){
 			if(ex instanceof Logic.Not){
-				output = "!("+getFunctionCall((Executable) ex.getInputNodes().get(0).parents.get(0).parentObject)+")";
+				output = "!("+getFunctionCall(ex.getInputNodes().get(0).parents.get(0))+")";
 			}else{
-				Executable input1 = (Executable) ex.getInputNodes().get(0).parents.get(0).parentObject;
-				Executable input2 = (Executable) ex.getInputNodes().get(1).parents.get(0).parentObject;
+				Node input1 = ex.getInputNodes().get(0).parents.get(0);
+				Node input2 = ex.getInputNodes().get(1).parents.get(0);
 				
 				String str1 = getFunctionCall(input1);
 				String str2 = getFunctionCall(input2);
@@ -229,13 +269,13 @@ class Compiler{
 			
 		}else if(ex instanceof Cast){
 			
-			String functionCall = getFunctionCall((Executable) ex.getInputNodes().get(0).parents.get(0).parentObject);
+			String functionCall = getFunctionCall(ex.getInputNodes().get(0).parents.get(0));
 			
 			output = "("+getJavaName(((Cast) ex).getOutput())+") "+(functionCall.contains(" ") ? "(" : "")+functionCall+(functionCall.contains(" ") ? ")" : "");
 			
 		}else if(ex instanceof FlowControl.Branch){
 			output = "if ("
-					+getFunctionCall((Executable) ex.getInputNodes().get(1).parents.get(0).parentObject)
+					+getFunctionCall(ex.getInputNodes().get(1).parents.get(0))
 					+") {"+ln;
 			for(String s : getContinuousWireText(ex.getOutputNodes().get(0))){
 				output += s+ln;
@@ -252,7 +292,7 @@ class Compiler{
 				output = "i";
 			}else{
 				output = "for (int i = 0; i < "//TODO add index property to each for object
-						+getFunctionCall((Executable) ex.getInputNodes().get(1).parents.get(0).parentObject)
+						+getFunctionCall(ex.getInputNodes().get(1).parents.get(0))
 						+"; i++) {"+ln;
 				for(String s : getContinuousWireText(ex.getOutputNodes().get(0))){
 					output += s+ln;
@@ -269,13 +309,12 @@ class Compiler{
 			
 		}else if(ex instanceof FlowControl.While){
 			output = "while ("
-					+getFunctionCall((Executable) ex.getInputNodes().get(1).parents.get(0).parentObject)
+					+getFunctionCall(ex.getInputNodes().get(1).parents.get(0))
 					+") {"+ln;
 			for(String s : getContinuousWireText(ex.getOutputNodes().get(0))){
 				output += s+ln;
 			}
 			output += getIndent()+"}"+ln;
-			//indent--;
 			ArrayList<String> lines2 = getContinuousWireText(ex.getOutputNodes().get(1), false);
 			for(String s : lines2){
 				output += s+ln;
@@ -284,7 +323,7 @@ class Compiler{
 			output = getIndent()+"try {"+ln;
 			indent++;
 			output += getIndent()+"Thread.sleep((long)("
-				+ getFunctionCall((Executable) ex.getInputNodes().get(1).parents.get(0).parentObject)
+				+ getFunctionCall(ex.getInputNodes().get(1).parents.get(0))
 				+ ");"+ln;
 			indent--;
 			output += "} catch (InterruptedException e) {e.printStackTrace();}";
@@ -295,13 +334,52 @@ class Compiler{
 			}else{
 				output = "(new Scanner(System.in)).nextLine()";
 			}
+		}else if(ex instanceof FunctionIO){
+			if(((FunctionIO) ex).mode == FunctionIO.Mode.INPUT){
+				assert isCalledAsArguement;
+				
+				int i = 0;
+				
+				for(Node n : ex.getOutputNodes()){
+					if(n.dataType == Variable.DataType.GENERIC)
+						continue;
+					if(node == n)
+						output = "arg"+i;
+					i++;
+				}
+			}else{
+				assert ex.getInputNodes().size() <= ((ex.getInputNodes().get(0).dataType == Variable.DataType.GENERIC) ? 2 : 1); 
+				//TODO handle multi-output funcs
+				
+				output = "return";
+				/*
+				boolean hasGeneric = ex.getInputNodes().contains(Variable.DataType.GENERIC);
+				if(ex.getInputNodes().size() >= (hasGeneric ? 2 : 1)){
+					output += " "+getFunctionCall(ex.getInputNodes().get(
+							(hasGeneric ? 1 : 0)
+						));
+				}*/
+						
+			}
+			
 		}else{
 			
-			output = ((ex instanceof JavaKeyword) ? ((JavaKeyword) ex).getJavaKeyword() : ex.getClass().getSimpleName())+"(";//TODO handle other classes
+			if(ex instanceof JavaKeyword){
+				output = ((JavaKeyword) ex).getJavaKeyword();
+			}else if(ex instanceof UserFunc){
+				FunctionOverseer overseer = ((UserFunc) ex).getParentVar();
+				if(overseer instanceof VFunction)
+					output = ((VFunction) overseer).getID();
+				else
+					output = ((InstantiableBlueprint) overseer).getName();
+			}else{
+				output = ex.getSimpleName();
+			}
+			output += "(";
 			
 			for(Node n : ex.getInputNodes()){
 				if(!n.parents.isEmpty() && n.dataType != Variable.DataType.GENERIC){
-					output += getFunctionCall((Executable) n.parents.get(0).parentObject)+", ";
+					output += getFunctionCall(n.parents.get(0))+", ";
 				}
 			}
 			
@@ -312,10 +390,8 @@ class Compiler{
 			output += ")";
 		}
 		
-		Out.pln(output);
-		if(output.contains(ln)){
-			//output += getIndent()+"}";
-		}
+		if(!isCalledAsArguement)
+			Out.pln(output);
 		return output;
 	}
 
