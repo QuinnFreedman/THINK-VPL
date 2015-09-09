@@ -126,13 +126,12 @@ class Compiler{
 		
 		lines.add(getIndent()+"}");
 		
-		indent--;
-		
 		//FUNCTION DECLARATIONS
 		for(VFunction function : Main.mainBP.getFunctions()){
 			
 			String declarationLine = getIndent()+"static ";
 			
+			assert function.getInput().size() >= 1;
 			assert function.getOutput().size() == 1;
 			
 			declarationLine += getJavaName(function.getOutput().get(0))
@@ -151,9 +150,11 @@ class Compiler{
 			
 			lines.addAll(getContinuousWireText(function.getInputObject().getOutputNodes().get(0)));
 			
-			lines.add("}");
+			lines.add(getIndent()+"}");
 			
 		}
+		
+		indent--;
 		
 		//END CLASS
 		lines.add("}");
@@ -348,17 +349,20 @@ class Compiler{
 					i++;
 				}
 			}else{
-				assert ex.getInputNodes().size() <= ((ex.getInputNodes().get(0).dataType == Variable.DataType.GENERIC) ? 2 : 1); 
+
+				boolean hasGeneric = (ex.getInputNodes().get(0).dataType == Variable.DataType.GENERIC);//contains(Variable.DataType.GENERIC);
+				assert ex.getInputNodes().size() <= (hasGeneric ? 2 : 1); 
 				//TODO handle multi-output funcs
 				
+				assert !isCalledAsArguement;
+				
 				output = "return";
-				/*
-				boolean hasGeneric = ex.getInputNodes().contains(Variable.DataType.GENERIC);
+				
 				if(ex.getInputNodes().size() >= (hasGeneric ? 2 : 1)){
-					output += " "+getFunctionCall(ex.getInputNodes().get(
-							(hasGeneric ? 1 : 0)
-						));
-				}*/
+					output += " "+getFunctionCall(
+							ex.getInputNodes().get((hasGeneric ? 1 : 0)).parents.get(0)
+						);
+				}
 						
 			}
 			
@@ -414,6 +418,8 @@ class Compiler{
 			return "int";
 		case STRING:
 			return "String";
+		case GENERIC:
+			return "void";
 		default:
 			return dt.toString().toLowerCase();
 		}
