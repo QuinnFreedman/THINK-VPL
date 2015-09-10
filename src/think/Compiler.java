@@ -28,13 +28,13 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import think.FunctionEditor.FunctionIO;
+import think.FunctionEditor.FunctionIO.Mode;
 import think.Variable.DataType;
 
 class Compiler{
@@ -93,7 +93,7 @@ class Compiler{
 		
 	}
 
-	private static ArrayList<String> getText(String name) {
+	private static ArrayList<String> getText(String name) throws Exception {
 		ArrayList<String> lines = new ArrayList<String>();
 		indent = 0;
 		
@@ -102,6 +102,10 @@ class Compiler{
 		lines.add(" *  Created with THINK version "+Main.VERSION_ID);
 		lines.add(" *  ThinkVPL.org");
 		lines.add(" */");
+		
+		if(Main.blueprints.size() > 1)
+			throw new Exception("Compiling does not handle multi-class programs yet.  I'm working on it I promise.");
+		
 		//CLASS
 		lines.add("class "+name+" {");
 		
@@ -110,9 +114,9 @@ class Compiler{
 		//CLASS VARIABLES
 		for(Variable v : Main.mainBP.getVariables()){
 			if(v instanceof VArray){
-				
+				//TODO
 			}else if(v instanceof VInstance){
-				
+				//TODO
 			}else{
 				String quote = ((v.dataType == Variable.DataType.STRING) ? "\"" : ((v.dataType == Variable.DataType.CHARACTER) ? "\'" : ""));
 				lines.add(getIndent()+getJavaName(v.dataType)+" "+v.getID()+" = "+quote+v.valueField.getText()+quote);
@@ -124,7 +128,7 @@ class Compiler{
 		
 		lines.addAll(getContinuousWireText(Main.entryPoint.getOutputNodes().get(0)));
 		
-		lines.add(getIndent()+"}");
+		//lines.add(getIndent()+"}");
 		
 		//FUNCTION DECLARATIONS
 		for(VFunction function : Main.mainBP.getFunctions()){
@@ -150,8 +154,6 @@ class Compiler{
 			
 			lines.addAll(getContinuousWireText(function.getInputObject().getOutputNodes().get(0)));
 			
-			lines.add(getIndent()+"}");
-			
 		}
 		
 		indent--;
@@ -161,11 +163,11 @@ class Compiler{
 		return lines;
 	}
 	
-	private static ArrayList<String> getContinuousWireText(Node n){
-		return getContinuousWireText(n, true);
+	private static ArrayList<String> getContinuousWireText(Node n) throws Exception{
+		return getContinuousWireText(n, true, true);
 	}
 	
-	private static ArrayList<String> getContinuousWireText(Node node, boolean indented){
+	private static ArrayList<String> getContinuousWireText(Node node, boolean indented, boolean closed) throws Exception{
 		if(indented)
 			indent++;
 		ArrayList<String> lines = new ArrayList<String>();
@@ -184,6 +186,9 @@ class Compiler{
 			Executable next = getNext((Executable) current.parentObject);
 			if(next == null)
 				break;
+			if(next instanceof FunctionEditor.FunctionIO && ((FunctionEditor.FunctionIO) next).mode == Mode.OUTPUT){
+				break;
+			}
 			Out.pln(" > "+next);
 			Out.pln(" > SIZE: "+next.getOutputNodes().size());
 			current = next.getOutputNodes().get(0);
@@ -191,14 +196,18 @@ class Compiler{
 		
 		if(indented)
 			indent --;
+			
+		if(closed)
+			lines.add(getIndent()+"}");
+		
 		return lines;
 	}
 	
-	private static String getFunctionCall(Node n) {
+	private static String getFunctionCall(Node n) throws Exception {
 		return getFunctionCall(n,true);
 	}
 	
-	private static String getFunctionCall(Node node, boolean isCalledAsArguement) {
+	private static String getFunctionCall(Node node, boolean isCalledAsArguement) throws Exception {
 		Executable ex = (Executable) node.parentObject;
 		String output = null;
 		
@@ -207,7 +216,7 @@ class Compiler{
 			String suffix = "";
 			switch (((Constant) ex).dt) {
 			case ARRAY:
-				return "ERROR";//TODO
+				throw new Exception("Compiling does not support arrays/lists yet");
 			case BYTE:
 				break;
 			case CHARACTER:
@@ -278,11 +287,11 @@ class Compiler{
 			output = "if ("
 					+getFunctionCall(ex.getInputNodes().get(1).parents.get(0))
 					+") {"+ln;
-			for(String s : getContinuousWireText(ex.getOutputNodes().get(0))){
+			for(String s : getContinuousWireText(ex.getOutputNodes().get(0), true, false)){
 				output += s+ln;
 			}
 			ArrayList<String> lines2 = getContinuousWireText(ex.getOutputNodes().get(1));
-			if(!lines2.isEmpty()){
+			if(lines2.size() > 1){
 				output += (getIndent()+"} else {"+ln);
 			}
 			for(String s : lines2){
@@ -298,15 +307,22 @@ class Compiler{
 				for(String s : getContinuousWireText(ex.getOutputNodes().get(0))){
 					output += s+ln;
 				}
-				output += getIndent()+"}"+ln;
-				ArrayList<String> lines2 = getContinuousWireText(ex.getOutputNodes().get(2), false);
+				//output += getIndent()+"}"+ln;
+				ArrayList<String> lines2 = getContinuousWireText(ex.getOutputNodes().get(2), false, false);
 				for(String s : lines2){
 					output += s+ln;
 				}
 			}
 		}else if(ex instanceof FlowControl.AdvancedFor){
-			
+			throw new Exception("Compiling does not support advanced for loops yet");
 		}else if(ex instanceof FlowControl.Sequence){
+			output += "//SEQUENCE\n"
+					+getIndent()+"{";
+			for(Node n : ex.getOutputNodes()){
+				for(String s : getContinuousWireText(n)){
+					output += s+"\n";
+				}
+			}
 			
 		}else if(ex instanceof FlowControl.While){
 			output = "while ("
@@ -315,8 +331,8 @@ class Compiler{
 			for(String s : getContinuousWireText(ex.getOutputNodes().get(0))){
 				output += s+ln;
 			}
-			output += getIndent()+"}"+ln;
-			ArrayList<String> lines2 = getContinuousWireText(ex.getOutputNodes().get(1), false);
+			//output += getIndent()+"}"+ln;
+			ArrayList<String> lines2 = getContinuousWireText(ex.getOutputNodes().get(1), false, false);
 			for(String s : lines2){
 				output += s+ln;
 			}
@@ -331,9 +347,9 @@ class Compiler{
 		}else if(ex instanceof Console.getStr){
 			addImport("java.util.Scanner");
 			if(((Console.getStr) ex).getDataType() == Variable.DataType.DOUBLE){
-				output = "(new Scanner(System.in)).nextDouble()";
+				output = "(new Scanner(System.in)).nextDouble() /*TODO: anon scanner is never closed*/";
 			}else{
-				output = "(new Scanner(System.in)).nextLine()";
+				output = "(new Scanner(System.in)).nextLine() /*TODO: anon scanner is never closed*/";
 			}
 		}else if(ex instanceof FunctionIO){
 			if(((FunctionIO) ex).mode == FunctionIO.Mode.INPUT){
@@ -351,7 +367,9 @@ class Compiler{
 			}else{
 
 				boolean hasGeneric = (ex.getInputNodes().get(0).dataType == Variable.DataType.GENERIC);//contains(Variable.DataType.GENERIC);
-				assert ex.getInputNodes().size() <= (hasGeneric ? 2 : 1); 
+				//assert ex.getInputNodes().size() <= (hasGeneric ? 2 : 1); 
+				if(!(ex.getInputNodes().size() <= (hasGeneric ? 2 : 1)))
+					throw new Exception("Compiling does not handle multi-output functions yet ("+((FunctionIO) ex).getOverseer().getID()+")");
 				//TODO handle multi-output funcs
 				
 				assert !isCalledAsArguement;
@@ -363,7 +381,7 @@ class Compiler{
 							ex.getInputNodes().get((hasGeneric ? 1 : 0)).parents.get(0)
 						);
 				}
-						
+				
 			}
 			
 		}else{

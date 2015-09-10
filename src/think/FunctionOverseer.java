@@ -53,4 +53,5 @@ import java.util.ArrayList;
 	GraphEditor getEditor();
 	
 	VariableData.Instance getWorkingInstance();
+	String getID();
 }

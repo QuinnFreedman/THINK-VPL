@@ -53,8 +53,8 @@ import javax.swing.text.JTextComponent;
 	private GraphEditor owner;
 	private String name;
 	protected Type type;
-	 boolean isStatic = true;
-	 VInstance parentInstance = null;
+	boolean isStatic = true;
+	VInstance parentInstance = null;
 	protected JPanel header;
 	protected InputPane nameField;
 	protected InputPane typeField;
@@ -62,22 +62,22 @@ import javax.swing.text.JTextComponent;
 	protected ArrayList<InputPane> fields = new ArrayList<InputPane>();
 	static protected BufferedImage bufferedImage = null;
 	
-	 void setID(String name){
+	void setID(String name){
 		this.name = name;
 	}
-	 String getID(){
+	String getID(){
 		return name;
 	}
-	 String getFullName(){
+	String getFullName(){
 		return ((!isStatic && parentInstance != null) ? parentInstance.parentBlueprint.getName()+" > " : "")+name;
 	}
-	 GraphEditor getOwner(){
+	GraphEditor getOwner(){
 		return owner;
 	}
 	private SidebarItem getThis(){
 		return this;
 	}
-	 enum Type{
+	enum Type{
     	VARIABLE,FUNCTION,CLASS
     }
 	

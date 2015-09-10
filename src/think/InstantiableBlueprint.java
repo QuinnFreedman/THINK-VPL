@@ -31,7 +31,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -354,5 +353,9 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 			}
 		}
 		
+	}
+	@Override
+	public String getID() {
+		return this.getName();
 	}
 }

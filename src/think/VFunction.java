@@ -59,11 +59,14 @@ class VFunction extends SidebarItem implements FunctionOverseer{
 		}
 		return this;
 	}
-	 void setOriginalFunc(VFunction f) {
+	void setOriginalFunc(VFunction f) {
 		originalFunc = f;
 		
 	}
-	
+	@Override
+	public String getID(){
+		return super.getID();
+	}
 	@Override
 	public void removeChild(UserFunc f){
 		children.remove(f);

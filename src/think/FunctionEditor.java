@@ -357,7 +357,7 @@ class FunctionEditor extends JFrame implements MouseListener, GraphEditor, Compo
 			else
 				return null;
 		}
-		 FunctionOverseer getOverseer(){
+		FunctionOverseer getOverseer(){
 			if(owner instanceof FunctionEditor)
 				return ((FunctionEditor) owner).parent;
 			else if(owner instanceof FunctionOverseer)
