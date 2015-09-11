@@ -38,33 +38,33 @@ import java.util.Collections;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
- class Debug{
+class Debug{
 	
 	private static ArrayList<Executable> stack;
 	private static ArrayList<Executable> remember;
 	private static boolean isStepping = false;
 	private static Variable.DataType waitingForInput = null;
-	 static Console console;
+	static Console console;
 	private static RunMode mode;
 	
 	static Status running;
 	
-	 static enum RunMode{
+	static enum RunMode{
 		RUN,FAST,SLOW
 	}
 	
-	 static void setRunMode(RunMode rm){
+	static void setRunMode(RunMode rm){
 		mode = rm;
 	}
 	
-	 static RunMode getRunMode(){
+	static RunMode getRunMode(){
 		return mode;
 	}
 	
-	 static boolean isStepping() {
+	static boolean isStepping() {
 		return isStepping;
 	}
-	 static Variable.DataType waitingForInput() {
+	static Variable.DataType waitingForInput() {
 		return waitingForInput;
 	}
 	private static void reset(Variable var){
@@ -189,7 +189,7 @@ import javax.swing.JLabel;
 	}
 	
 	
-	private static boolean moveUpStack(){
+	private static boolean moveUpStack() throws Exception{
 		
 		if(stack.isEmpty()){
 			return false;
@@ -207,6 +207,17 @@ import javax.swing.JLabel;
 		ArrayList<Node> parents = getTop().getInputNodes().get(getTop().getActiveNode()).parents;
 		Out.pln("parents "+parents);
 		
+		boolean hasGeneric = (getTop().getInputNodes().get(0).dataType == Variable.DataType.GENERIC);
+		/*for(Node n : getTop().getInputNodes()){
+			if(n.dataType == Variable.DataType.GENERIC)
+				numberOfGeneric++;
+		}*/
+		if((parents.size() < getTop().getInputNodes().size() - (hasGeneric ? 1 : 0)) && !getTop().inputsOptional){
+			Out.pln("failed: parents are missing; exiting...");
+			throw new BadInputException("Error: Missing inputs ("+getTop().getFunctionName()+").");
+			
+		}
+		
 		if(parents.isEmpty()){
 			Out.pln("falied: parents is empty; exiting...");
 			exit();
@@ -215,23 +226,7 @@ import javax.swing.JLabel;
 		
 		Executable next = (Executable) parents.get(0).parentObject;
 		Out.pln("next = "+next);
-		/*if(getTop() instanceof FunctionEditor.FunctionIO && !((FunctionEditor.FunctionIO) getTop()).getOverseer().isStatic()){
-			Out.pln("next is non-static function :: changing all primitive funcs");
-			FunctionOverseer fo = ((FunctionEditor.FunctionIO) getTop()).getOverseer();
-			for(VObject e : fo.getEditor().getObjects()){
-				if(e instanceof PrimitiveFunction &&
-						(((PrimitiveFunction) e).getParentVar().getOwner() == ((VFunction) fo).getOwner() ||
-						(((PrimitiveFunction) e).getParentVar().parentInstance != null && ((PrimitiveFunction) e).getParentVar().parentInstance.parentBlueprint == ((VFunction) fo).getOwner()))
-					){
-					Out.pln(((PrimitiveFunction) e));
-					Out.pln("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
-					((PrimitiveFunction) e).setParentVar(
-							VFunction.getVariable( ((VFunction) ((VFunction) fo).getCurrentlyExecuting().getParentVar()).parentInstance.childVariables,((PrimitiveFunction) e).getParentVar().getID())
-						);
-					Out.pln("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
-				}
-			}
-		}*/
+		
 		if(!(next instanceof FunctionEditor.FunctionIO && ((FunctionEditor.FunctionIO) next).mode == FunctionEditor.FunctionIO.Mode.INPUT)){
 			getTop().incrementActiveNode();
 			
@@ -373,29 +368,16 @@ import javax.swing.JLabel;
 		if(stack.size() == 1){
 			
 			Executable next = getNext(getTop());
+			
+			while(next instanceof Rerout){
+				next = getNext(next);
+			}
+			
 			Out.pln("next = "+((next == null) ? "null" : next.getClass().getName()));
 			
 			if(next instanceof UserFunc){
 				((UserFunc) next).getParentVar().setCurrentlyExecuting(((UserFunc) next));
 			}
-			
-			/*else if(next instanceof FunctionEditor.FunctionIO && !((FunctionEditor.FunctionIO) next).getOverseer().isStatic()){
-				Out.pln("next is non-static function :: changing all primitive funcs");
-				FunctionOverseer fo = ((FunctionEditor.FunctionIO) next).getOverseer();
-				for(VObject e : fo.getEditor().getObjects()){
-					if(e instanceof PrimitiveFunction &&
-							(((PrimitiveFunction) e).getParentVar().getOwner() == ((VFunction) fo).getOwner() ||
-							(((PrimitiveFunction) e).getParentVar().parentInstance != null && ((PrimitiveFunction) e).getParentVar().parentInstance.parentBlueprint == ((VFunction) fo).getOwner()))
-						){
-						Out.pln(((PrimitiveFunction) e));
-						Out.pln("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
-						((PrimitiveFunction) e).setParentVar(
-								VFunction.getVariable( ((VFunction) ((VFunction) fo).getCurrentlyExecuting().getParentVar()).parentInstance.childVariables,((PrimitiveFunction) e).getParentVar().getID())
-							);
-						Out.pln("	parentInstance = "+((PrimitiveFunction) e).getParentVar().parentInstance);
-					}
-				}
-			}*/
 			
 			stack.remove(stack.size()-1);
 			if(next != null){
@@ -497,11 +479,17 @@ import javax.swing.JLabel;
 			}
 			
 		}catch(Exception e){
-			String s = "ERROR: an unexpected error occured";
-			if(stack != null && !stack.isEmpty() && stack.get(stack.size()-1) != null && stack.get(stack.size()-1).headerLabel != null){
-				s += " when executing \""+stack.get(stack.size()-1).headerLabel.getText()+"\"";
+			String s;
+			if(e instanceof BadInputException){
+				s = e.getMessage();
+			}else{
+				s = "ERROR: An unexpected error occured";
+				if(stack != null && !stack.isEmpty() && stack.get(stack.size()-1) != null && stack.get(stack.size()-1).headerLabel != null){
+					s += " when executing \""+stack.get(stack.size()-1).headerLabel.getText()+"\"";
+				}
+				s += ".";
 			}
-			s += ". The program will now exit.";
+			s += "  The program will now exit.";
 			console.postError(s);
 			Out.printStackTrace(e);
 			exit();
@@ -567,7 +555,7 @@ import javax.swing.JLabel;
 		if(isStepping && waitingForInput == null && mode != RunMode.RUN){
 			do{
 				step();
-			}while(getTop() != null && !getTop().isShowing());
+			}while(getTop() != null && (!getTop().isShowing() || (getTop() instanceof Rerout)));
 		}
 	}
 	 static void f1() {
@@ -667,5 +655,13 @@ import javax.swing.JLabel;
 				this.removeMouseListener(listener);
 			}
 		}
-	};
+	}
+	private static class BadInputException extends Exception {
+		private static final long serialVersionUID = 1L;
+		
+		public BadInputException(String string) {
+			super(string);
+		}
+		
+	}
 }

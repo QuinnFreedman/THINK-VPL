@@ -178,10 +178,7 @@ import javax.swing.JPopupMenu;
 		}
 			
 	}
-	/*@Override
-	 Dimension getSize(){
-		return new Dimension(300,300);
-	}*/
+	
 	@Override
 	public Dimension getPreferredSize(){
 		return size;
@@ -302,9 +299,23 @@ import javax.swing.JPopupMenu;
 		if(this.childPicker != null){
 			childPicker.delete();
 		}
-		if(mouse.x > 0 && mouse.y > 0 && mouse.x < parentObject.owner.getPanel().getWidth() && mouse.y < parentObject.owner.getPanel().getHeight()){
-			FunctionSelector childPicker = new FunctionSelector(this, mouse, parentObject.owner);
-			this.childPicker = childPicker;
+		if(
+				mouse.x > 0 && mouse.y > 0
+				&& mouse.x < parentObject.owner.getPanel().getWidth() && mouse.y < parentObject.owner.getPanel().getHeight()
+				&& this.dataType != Variable.DataType.ALL
+		){
+			Rerout rerout;
+			if(Main.ctrlPressed){
+				if(this.type == NodeType.SENDING){
+					rerout = new Rerout(new Point(mouse.x - (Rerout.diameter/2), mouse.y), parentObject.owner);
+					Node.connect(this, rerout.getInputNodes().get(0));
+				}else{
+					rerout = new Rerout(new Point(mouse.x - (Rerout.diameter/2), mouse.y - Rerout.diameter), parentObject.owner);
+					Node.connect(rerout.getOutputNodes().get(0), this);
+				}
+			}else{
+				this.childPicker = new FunctionSelector(this, mouse, parentObject.owner);
+			}
 		}
 	}
 	
@@ -318,12 +329,7 @@ import javax.swing.JPopupMenu;
 			A = node1;
 			B = node2;
 		}
-		if(A.dataType == B.dataType || 
-				((A.dataType == Variable.DataType.NUMBER && B.dataType.isNumber()) || 
-				(B.dataType == Variable.DataType.NUMBER && A.dataType.isNumber()) ||
-				(A.dataType == Variable.DataType.FLEX && B.dataType != Variable.DataType.NUMBER) ||
-				(B.dataType == Variable.DataType.FLEX && A.dataType != Variable.DataType.NUMBER)
-				)){
+		if(canConnect(node1,node2)){
 			connect(A,B);
 		}else if(Cast.isCastable(A.dataType,B.dataType)){
 			new Cast(A,B);
@@ -335,10 +341,16 @@ import javax.swing.JPopupMenu;
 		if(node1.parentObject == node2.parentObject){
 			return false;
 		}
+		if(!((node1.type == NodeType.SENDING && node2.type == NodeType.RECIEVING) || (node1.type == NodeType.RECIEVING && node2.type == NodeType.SENDING)))
+			return false;
+		
 		if((node1.dataType == Variable.DataType.FLEX && node2.dataType != Variable.DataType.NUMBER && node2.dataType != Variable.DataType.GENERIC) || 
 				(node2.dataType == Variable.DataType.FLEX  && node1.dataType != Variable.DataType.NUMBER && node1.dataType != Variable.DataType.GENERIC)){
 			return true;
 		}
+		if(node1.dataType == Variable.DataType.ALL || node2.dataType == Variable.DataType.ALL)
+			return true;
+		
 		Node A;
 		Node B;
 		if(node1.type == NodeType.SENDING && node2.type == NodeType.RECIEVING){

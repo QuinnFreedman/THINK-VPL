@@ -250,6 +250,12 @@ import javax.swing.SwingConstants;
 		ContextualMenu(GraphEditor ge){
 			ActionListener al =  new ContextualMenuListener(ge);
 			
+			JMenuItem popupRerout = new JMenuItem("Rerout");
+			popupRerout.addActionListener(al);
+			this.add(popupRerout);
+			
+			this.addSeparator();
+			
 			JMenuItem popupAdd = new JMenuItem("Add");
 			popupAdd.addActionListener(al);
 			this.add(popupAdd);
@@ -265,14 +271,6 @@ import javax.swing.SwingConstants;
 			JMenuItem popupDivide = new JMenuItem("Divide");
 			popupDivide.addActionListener(al);
 			this.add(popupDivide);
-			
-			JMenuItem popupRand = new JMenuItem("Random");
-			popupRand.addActionListener(al);
-			this.add(popupRand);
-			
-			JMenuItem popupRound = new JMenuItem("Round");
-			popupRound.addActionListener(al);
-			this.add(popupRound);
 			
 			JMenuItem popupConcat = new JMenuItem("Concatenate");
 			popupConcat.addActionListener(al);
@@ -322,7 +320,7 @@ import javax.swing.SwingConstants;
 			popupItem.addActionListener(al);
 			this.add(popupItem);
 			
-			popupItem = new JMenuItem("Sequence");
+			popupItem = new JMenuItem("For");
 			popupItem.addActionListener(al);
 			this.add(popupItem);
 			
@@ -355,7 +353,9 @@ import javax.swing.SwingConstants;
 			String c = e.getActionCommand();
 			Point p = editor.getClickLocation();
 			
-			if(c == "Add"){
+			if(c == "Rerout"){
+				new Rerout(p, editor);
+			}else if(c == "Add"){
 				new Arithmetic.Add(p, editor);
 			}else if(c == "Subtract"){
 				new Arithmetic.Subtract(p, editor);
@@ -373,8 +373,8 @@ import javax.swing.SwingConstants;
 				new FlowControl.Branch(p, editor);
 			}else if(c == "While"){
 				new FlowControl.While(p, editor);
-			}else if(c == "Sequence"){
-				new FlowControl.Sequence(p, editor);
+			}else if(c == "For"){
+				new FlowControl.For(p, editor);
 			}else if(c == "Equals"){
 				new Logic.Equals(p, editor);
 			}else if(c == "Is Less Than"){

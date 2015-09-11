@@ -71,6 +71,7 @@ public class Main{
 	static Point mousePos = new Point();
 	static HashMap<Variable.DataType,Color> colors = new HashMap<Variable.DataType,Color>();
 	static boolean altPressed = false;
+	static boolean ctrlPressed = false;
 	
 	static ComponentMover componentMover;
 	static JFrame window;
@@ -190,6 +191,8 @@ public class Main{
                     case KeyEvent.KEY_PRESSED:
                         if (ke.getKeyCode() == KeyEvent.VK_ALT) {
                             altPressed = true;
+                        }else if (ke.getKeyCode() == KeyEvent.VK_CONTROL) {
+                            ctrlPressed = true;
                         }else if (ke.getKeyCode() == KeyEvent.VK_ESCAPE){
                         	if(Debug.isStepping()){
                         		Debug.exit();
@@ -218,6 +221,8 @@ public class Main{
                     case KeyEvent.KEY_RELEASED:
                         if (ke.getKeyCode() == KeyEvent.VK_ALT) {
                         	altPressed = false;
+                        } else if (ke.getKeyCode() == KeyEvent.VK_CONTROL) {
+                        	ctrlPressed = false;
                         }
                         break;
                     }
