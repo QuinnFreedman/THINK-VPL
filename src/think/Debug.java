@@ -208,19 +208,16 @@ class Debug{
 		Out.pln("parents "+parents);
 		
 		boolean hasGeneric = (getTop().getInputNodes().get(0).dataType == Variable.DataType.GENERIC);
-		/*for(Node n : getTop().getInputNodes()){
-			if(n.dataType == Variable.DataType.GENERIC)
-				numberOfGeneric++;
-		}*/
-		if((parents.size() < getTop().getInputNodes().size() - (hasGeneric ? 1 : 0)) && !getTop().inputsOptional){
+		
+		if((getTop().getInputNodes().size() - (hasGeneric ? 1 : 0) > 0) && parents.isEmpty() && !getTop().inputsOptional(getTop().activeNode)){
 			Out.pln("failed: parents are missing; exiting...");
 			throw new BadInputException("Error: Missing inputs ("+getTop().getFunctionName()+").");
 			
 		}
 		
 		if(parents.isEmpty()){
-			Out.pln("falied: parents is empty; exiting...");
-			exit();
+			Out.pln("falied: parents is empty");
+			//exit();
 			return false;
 		}
 		

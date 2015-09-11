@@ -63,8 +63,11 @@ public class Executable extends VObject{
 	protected boolean selected = false;
 	protected boolean executeOnce;
 	protected boolean hasExecuted = false;
-	protected boolean inputsOptional = false;
 	ArrayList<VariableData> outputData;
+
+	protected boolean inputsOptional(int i){
+		return false;
+	}
 	
 	//protected boolean isExecuteOnce(){
 	//	return false;

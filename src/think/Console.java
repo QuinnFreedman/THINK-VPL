@@ -275,6 +275,11 @@ class Console implements KeyListener{
 			return "System.out.println";
 		}
 		
+		@Override
+		protected boolean inputsOptional(int i) {
+			return true;
+		}
+		
 		
 	}
 	

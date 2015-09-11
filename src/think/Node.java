@@ -42,6 +42,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
+import think.Variable.DataType;
+
  class Node extends JPanel implements MouseListener, MouseMotionListener{
 	private static final long serialVersionUID = 1L;
 	
@@ -319,7 +321,7 @@ import javax.swing.JPopupMenu;
 		}
 	}
 	
-	 static void castOrConnect(Node node1, Node node2){
+	static void castOrConnect(Node node1, Node node2){
 		Node A;
 		Node B;
 		if(node1.type == NodeType.RECIEVING && node2.type == NodeType.SENDING){
@@ -329,7 +331,13 @@ import javax.swing.JPopupMenu;
 			A = node1;
 			B = node2;
 		}
-		if(canConnect(node1,node2)){
+		if(A.dataType == B.dataType || 
+				((A.dataType == Variable.DataType.NUMBER && B.dataType.isNumber()) || 
+				(B.dataType == Variable.DataType.NUMBER && A.dataType.isNumber()) ||
+				(A.dataType == Variable.DataType.FLEX && B.dataType != Variable.DataType.NUMBER) ||
+				(B.dataType == Variable.DataType.FLEX && A.dataType != Variable.DataType.NUMBER) ||
+				A.dataType == DataType.ALL || B.dataType == DataType.ALL
+		)){
 			connect(A,B);
 		}else if(Cast.isCastable(A.dataType,B.dataType)){
 			new Cast(A,B);
@@ -337,7 +345,7 @@ import javax.swing.JPopupMenu;
 		node2.parentObject.owner.getPanel().repaint();
 	}
 	
-	 static boolean canConnect(Node node1, Node node2){
+	static boolean canConnect(Node node1, Node node2){
 		if(node1.parentObject == node2.parentObject){
 			return false;
 		}

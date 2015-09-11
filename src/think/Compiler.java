@@ -124,7 +124,7 @@ class Compiler{
 		}
 		
 		//MAIN
-		lines.add(getIndent()+"public static void main(String[] args) {");
+		lines.add(getIndent()+"public static void main(String args[]) {");
 		
 		lines.addAll(getContinuousWireText(Main.entryPoint.getOutputNodes().get(0)));
 		

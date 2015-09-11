@@ -93,7 +93,7 @@ public class Main{
 	private static String lastSave;
 	private static JMenuItem mntmSave;
 	
-	public static void main(String[] args){	
+	public static void main(String args[]){	
 		colors.put(Variable.DataType.BOOLEAN, new Color(20,210,20));
 		colors.put(Variable.DataType.INTEGER, Color.red);
 		colors.put(Variable.DataType.DOUBLE, new Color(196,0,167));
@@ -136,6 +136,9 @@ public class Main{
 				defaultLibrairy.add(new FlowControl.Wait());
 				defaultLibrairy.add(new FlowControl.For());
 				defaultLibrairy.add(new FlowControl.AdvancedFor());
+				defaultLibrairy.add(new StringFuncs.Parse_Int());
+				defaultLibrairy.add(new StringFuncs.Parse_Float());
+				defaultLibrairy.add(new StringFuncs.Parse_Double());
 			
 				for(Class c : SystemLib.class.getDeclaredClasses()){
 					if(Executable.class.isAssignableFrom(c)){
