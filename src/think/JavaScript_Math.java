@@ -197,6 +197,7 @@ class JavaScript_Math extends Executable implements DocumentListener {
 			throw new Exception("In JavaScript Math: Internal Error");
 		}
 		
+		Out.pln("test");
 		
 		return output;
 	}
