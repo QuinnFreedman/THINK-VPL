@@ -139,6 +139,7 @@ public class Main{
 				defaultLibrairy.add(new StringFuncs.Parse_Int());
 				defaultLibrairy.add(new StringFuncs.Parse_Float());
 				defaultLibrairy.add(new StringFuncs.Parse_Double());
+				defaultLibrairy.add(new JavaScript_Math());
 			
 				for(Class c : SystemLib.class.getDeclaredClasses()){
 					if(Executable.class.isAssignableFrom(c)){

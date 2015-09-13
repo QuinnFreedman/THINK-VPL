@@ -26,12 +26,14 @@ package think;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
-import think.Node.NodeType;
+import jdk.nashorn.internal.objects.annotations.Constructor;
 
-class FlowControl{
+abstract class FlowControl{
 	static class Branch extends Executable{
 		private static final long serialVersionUID = 1L;
 		
@@ -353,7 +355,7 @@ class FlowControl{
 		Sequence(Point pos, GraphEditor owner) {
 			super(pos, owner);
 			
-			addOutputNode(new ReplicatingNode(Node.NodeType.RECIEVING, this, Variable.DataType.GENERIC));
+			addOutputNode(new ReplicatingNode(Node.NodeType.SENDING, this, Variable.DataType.GENERIC));
 		}
 		
 		public Sequence() {
@@ -366,34 +368,59 @@ class FlowControl{
 					30+inputNodeHolder.getPreferredSize().height+outputNodeHolder.getPreferredSize().height);
 		}
 		
-		private class ReplicatingNode extends Node{
+		static class ReplicatingNode extends Node{
 			private static final long serialVersionUID = 1L;
-
+			
+			ArrayList<Node> holder;
+			
 			@Override
 			 void onConnect(){
 				boolean allConnected = true;
-				for(Node n : ((Executable) parentObject).getOutputNodes()){
-					if(n.children.isEmpty()){
+				for(Node n : holder){
+					if(((type == NodeType.SENDING) ? n.children : n.parents).isEmpty()){
 						allConnected = false;
 						break;
 					}
 				}
 				if(allConnected){
-					Out.pln(parentObject.getPreferredSize().width);
-					Out.pln(((Executable) parentObject).outputNodeHolder.getPreferredSize().width);
+					Node newNode = null;
+					try {
+						java.lang.reflect.Constructor<? extends ReplicatingNode> constructor = this.getClass().getConstructor(
+								NodeType.class, 
+								Executable.class, 
+								Variable.DataType.class);
+						newNode = constructor.newInstance(this.type, ((Executable) parentObject), this.dataType);
+					} catch (InstantiationException | IllegalAccessException
+							| IllegalArgumentException | InvocationTargetException
+							| NoSuchMethodException | SecurityException e) {
+						e.printStackTrace();
+					}
 					
-					((Executable) parentObject).addOutputNode(new ReplicatingNode(Node.NodeType.SENDING, ((Executable) parentObject), Variable.DataType.GENERIC));
-
+					if(type == Node.NodeType.RECIEVING){
+						((Executable) parentObject).addInputNode(newNode);
+						((Executable) parentObject).setupInputTooltips();
+					}else{
+						((Executable) parentObject).addOutputNode(newNode);
+						((Executable) parentObject).setupOutputTooltips();
+					}
 					parentObject.setBounds(new Rectangle(parentObject.getLocation(),parentObject.getSize()));
-					owner.getPanel().repaint();
-					owner.getPanel().revalidate();
+					parentObject.owner.getPanel().repaint();
+					parentObject.owner.getPanel().revalidate();
 					
-					
+					additionalOnConnect();
 				}
 			}
 			
-			ReplicatingNode(NodeType type, Executable parent, Variable.DataType dt) {
+			protected void additionalOnConnect(){
+				
+			}
+			
+			public ReplicatingNode(NodeType type, Executable parent, Variable.DataType dt) {
 				super(type, parent, dt);
+				if(type == Node.NodeType.RECIEVING)
+					holder = ((Executable) parentObject).getInputNodes();
+				else
+					holder = ((Executable) parentObject).getOutputNodes();
 			}
 		}
 	}

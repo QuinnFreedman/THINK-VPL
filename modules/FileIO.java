@@ -315,7 +315,7 @@ public class FileIO extends Module{
 						writer.println(((VariableData.String) d).value);
 					}else{
 						writer.close();
-						throw new Exception("ERROR: type missmatch in \"FunctionIO > Make_File\": expected an array of type String but got an array of a different type");
+						throw new Exception("type missmatch in \"FunctionIO > Make_File\": expected an array of type String but got an array of a different type");
 					}
 				}
 				writer.close();

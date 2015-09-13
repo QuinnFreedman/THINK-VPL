@@ -227,7 +227,7 @@ class Console implements KeyListener{
         	StyleConstants.setBold(keyWord, true);
         	
         	try {
-        		doc.insertString(doc.getLength(), s+"\n", keyWord );
+        		doc.insertString(doc.getLength(), "ERROR: "+s+"\n", keyWord );
         	} catch(Exception e) { System.out.println(e); }
         	
         });

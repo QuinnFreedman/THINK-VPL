@@ -160,7 +160,7 @@ import javax.swing.text.DocumentFilter;
 				return ((VariableData.Array) getParentVarData()).value.get(((VariableData.Integer) input[0]).value);
 			}catch(IndexOutOfBoundsException e){
 				Out.printStackTrace(e);
-				throw new Exception("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[0].getValueAsString()+" of "+((VariableData.Array) getParentVarData()).value.size());
+				throw new Exception("in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[0].getValueAsString()+" of "+((VariableData.Array) getParentVarData()).value.size());
 			}
 			
 		}
@@ -254,7 +254,7 @@ import javax.swing.text.DocumentFilter;
 				
 			}catch(IndexOutOfBoundsException e){
 				Out.printStackTrace(e);
-				throw new Exception("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[0].getValueAsString()+" of "+((VariableData.Array) getParentVarData()).value.size());
+				throw new Exception("in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[0].getValueAsString()+" of "+((VariableData.Array) getParentVarData()).value.size());
 			}
 			
 		}
@@ -326,7 +326,7 @@ import javax.swing.text.DocumentFilter;
 					((VariableData.Array) getParentVarData()).value.set(index,VariableData.clone(input[0]));
 				}catch(IndexOutOfBoundsException e){
 					Out.printStackTrace(e);
-					throw new Exception("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[1].getValueAsString()+" of "+size);
+					throw new Exception("in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[1].getValueAsString()+" of "+size);
 				}
 			}
 			return null;
@@ -392,7 +392,7 @@ import javax.swing.text.DocumentFilter;
 			if(((VariableData.Array) parentVarData).dataType == ((VariableData.Array) input[0]).dataType){
 				((VariableData.Array) parentVarData).value = ((VariableData.Array) input[0]).value;
 			}else{
-				throw new Exception("ERROR: in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; type mismatch: can't convert from ["+((VariableData.Array) input[0]).dataType+"] to ["+((VariableData.Array) getParentVarData()).dataType+"]");
+				throw new Exception("in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; type mismatch: can't convert from ["+((VariableData.Array) input[0]).dataType+"] to ["+((VariableData.Array) getParentVarData()).dataType+"]");
 			}
 			return null;
 			

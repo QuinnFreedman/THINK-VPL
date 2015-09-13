@@ -158,12 +158,16 @@ public class Executable extends VObject{
 		outputNodes = nodes;
 	}
 	public void addInputNode(Node node) {
+		if(node == null)
+			return;
 		inputNodes.add(node);
 		inputNodeHolder.add(node);
 		inputNodeHolder.revalidate();
 		inputNodeHolder.repaint();
 	}
 	public void addOutputNode(Node node) {
+		if(node == null)
+			return;
 		outputNodes.add(node);
 		outputNodeHolder.add(node);
 		outputNodeHolder.revalidate();
@@ -278,18 +282,9 @@ public class Executable extends VObject{
 				}
 			}
 		}
-		if(getInputTooltips() != null){
-			int j = (Collections.frequency(getInputs(), Variable.DataType.GENERIC) == 1) ? 1 : 0;
-			for(int i = 0; i < getInputTooltips().size(); i++){
-				getInputNodes().get(i + j).setToolTipText(getInputTooltips().get(i));
-			}
-		}
-		if(getOutputTooltips() != null){
-			int j = (Collections.frequency(getOutputs(), Variable.DataType.GENERIC) == 1) ? 1 : 0;
-			for(int i = 0; i < getOutputTooltips().size(); i++){
-				getOutputNodes().get(i + j).setToolTipText(getOutputTooltips().get(i));
-			}
-		}
+		
+		setupInputTooltips();
+		setupOutputTooltips();
 		
 		if(pos != null)
 			setBounds(new Rectangle(pos,getSize()));
@@ -299,6 +294,23 @@ public class Executable extends VObject{
 				this.executeOnce = true;
 			}
 		}catch(Exception e){};
+	}
+	
+	protected void setupInputTooltips(){
+		if(getInputTooltips() != null){
+			int j = (Collections.frequency(getInputs(), Variable.DataType.GENERIC) == 1) ? 1 : 0;
+			for(int i = 0; i < getInputTooltips().size(); i++){
+				getInputNodes().get(i + j).setToolTipText(getInputTooltips().get(i));
+			}
+		}
+	}
+	protected void setupOutputTooltips(){
+		if(getOutputTooltips() != null){
+			int j = (Collections.frequency(getOutputs(), Variable.DataType.GENERIC) == 1) ? 1 : 0;
+			for(int i = 0; i < getOutputTooltips().size(); i++){
+				getOutputNodes().get(i + j).setToolTipText(getOutputTooltips().get(i));
+			}
+		}
 	}
 	
 	protected Executable() {

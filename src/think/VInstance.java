@@ -246,7 +246,7 @@ import think.VariableData.Instance;
 		@Override
 		public VariableData execute(VariableData[] input) throws Exception{
 			if(((VariableData.Instance) parentVarData).parentBlueprint != ((VariableData.Instance) input[0]).parentBlueprint){
-				throw new Exception("ERROR: type missmatch at \""+(this.getParentVariable() == null ? "Anonymous" : getParentVariable().getID())+" > Set\";"
+				throw new Exception("type missmatch at \""+(this.getParentVariable() == null ? "Anonymous" : getParentVariable().getID())+" > Set\";"
 							+" type mismatch: can't convert from <"+((VariableData.Instance) input[0]).parentBlueprint.getName()+"> to <"+((VariableData.Instance) getParentVarData()).parentBlueprint.getName()+">");
 			}else{
 				//System.err.println("set");

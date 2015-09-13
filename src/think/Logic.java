@@ -33,7 +33,7 @@ import java.util.Arrays;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-class Logic extends Executable implements Binop{
+abstract class Logic extends Executable implements Binop{
 	private static final long serialVersionUID = 1L;
 	
 	

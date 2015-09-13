@@ -58,7 +58,7 @@ import java.util.Random;
 		}else if(data instanceof VariableData.Instance){
 			return data;
 		}else{
-			System.err.println("ERROR: clone type not supported");
+			System.err.println("clone type not supported");
 		}
 		return newData;
 	}

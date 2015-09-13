@@ -33,7 +33,7 @@ import java.util.Arrays;
 
 import javax.swing.border.EmptyBorder;
 
-class Arithmetic extends Executable implements Binop{
+abstract class Arithmetic extends Executable implements Binop{
 	private static final long serialVersionUID = 1L;
 	
 	protected String getID(){
@@ -285,7 +285,7 @@ class Arithmetic extends Executable implements Binop{
 		@Override
 		public VariableData execute(VariableData[] inputs) throws Exception{
 			if(inputs[1].getValueAsDouble() == 0){
-				throw new Exception("ERROR: Can't divide by zero");
+				throw new Exception("Can't divide by zero");
 			}
 			return new VariableData.Double((inputs[0].getValueAsDouble() / inputs[1].getValueAsDouble()));
 		}

@@ -287,7 +287,7 @@ class Debug{
 						);
 				getTop().workingData.remove(0);
 			}else{
-				Debug.console.postError("ERROR: internal error");
+				Debug.console.postError("internal error");
 				exit();
 				return false;
 			}
@@ -437,7 +437,7 @@ class Debug{
 		
 		if(!isStepping){
 			Out.pln("ABORTED");
-			Debug.console.postError("ERROR: program aborted by user");
+			Debug.console.postError("program aborted by user");
 			return false;
 		}
 		
@@ -480,7 +480,7 @@ class Debug{
 			if(e instanceof BadInputException){
 				s = e.getMessage();
 			}else{
-				s = "ERROR: An unexpected error occured";
+				s = "An unexpected error occured";
 				if(stack != null && !stack.isEmpty() && stack.get(stack.size()-1) != null && stack.get(stack.size()-1).headerLabel != null){
 					s += " when executing \""+stack.get(stack.size()-1).headerLabel.getText()+"\"";
 				}
