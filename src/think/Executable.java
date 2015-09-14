@@ -61,6 +61,7 @@ public class Executable extends VObject{
 	protected int activeNode;
 	ArrayList<VariableData> workingData;
 	protected boolean selected = false;
+	protected boolean isError = false;
 	protected boolean executeOnce;
 	protected boolean hasExecuted = false;
 	ArrayList<VariableData> outputData;
@@ -340,17 +341,10 @@ public class Executable extends VObject{
 	public void paintComponent(Graphics g){
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		if(selected){
-			 Point2D start = new Point2D.Float(0, 0);
-		     Point2D end = new Point2D.Float(this.getWidth()/2, 0);
-		     float[] dist = {0.0f, 0.7f};
-		     Color[] colors = {new Color(0,0,0,0), Color.YELLOW};
-		     LinearGradientPaint p =
-		         new LinearGradientPaint(start, end, dist, colors, MultipleGradientPaint.CycleMethod.REFLECT);
-			
-			g2.setPaint(p);
-			g2.setStroke(new BasicStroke(5));
-			g2.draw(new RoundRectangle2D.Double(-3, inputNodeHolder.getHeight()-8, this.getSize().width+4, this.body.getSize().height+14, 20, 20));
+		if(isError){
+			paintFocus(g2, Color.RED);
+		}else if(selected){
+			paintFocus(g2, Color.YELLOW);
 		}
 		GradientPaint gradient = new GradientPaint(0, 
 				inputNodeHolder.getHeight()-5, 
@@ -363,6 +357,19 @@ public class Executable extends VObject{
 	    g2.fill(new RoundRectangle2D.Double(0, inputNodeHolder.getHeight()-5, this.getSize().width, this.body.getSize().height+10, 20, 20));
 	    g2.setPaint(Color.black);
 	}
+	private void paintFocus(Graphics2D g2, Color color){
+		Point2D start = new Point2D.Float(0, 0);
+		Point2D end = new Point2D.Float(this.getWidth()/2, 0);
+		float[] dist = {0.0f, 0.7f};
+		Color[] colors = {new Color(0,0,0,0), color};
+		LinearGradientPaint p =
+				new LinearGradientPaint(start, end, dist, colors, MultipleGradientPaint.CycleMethod.REFLECT);
+		
+		g2.setPaint(p);
+		g2.setStroke(new BasicStroke(5));
+		g2.draw(new RoundRectangle2D.Double(-3, inputNodeHolder.getHeight()-8, this.getSize().width+4, this.body.getSize().height+14, 20, 20));
+	}
+	
 	static class NodeHolder extends JPanel{
 		private static final long serialVersionUID = 1L;
 

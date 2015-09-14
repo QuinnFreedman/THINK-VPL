@@ -38,6 +38,8 @@ import java.util.Collections;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
+import com.sun.xml.internal.ws.developer.MemberSubmissionAddressing.Validation;
+
 class Debug{
 	
 	private static ArrayList<Executable> stack;
@@ -85,10 +87,13 @@ class Debug{
 			int i = 0;
 			while(i < bp.getObjects().size()){
 				VObject o = bp.getObjects().get(i);
-				if(o instanceof FunctionSelector || o instanceof PrimitiveFunctionSelector)
+				if(o instanceof FunctionSelector || o instanceof PrimitiveFunctionSelector){
 					o.delete();
-				else
+				}else{
 					i++;
+					if(o instanceof Executable)
+						((Executable) o).isError = false;
+				}
 			}
 			
 			bp.addVar.setEnabled(false);
@@ -211,6 +216,7 @@ class Debug{
 		
 		if((getTop().getInputNodes().size() - (hasGeneric ? 1 : 0) > 0) && parents.isEmpty() && !getTop().inputsOptional(getTop().activeNode)){
 			Out.pln("failed: parents are missing; exiting...");
+			getTop().isError = true;
 			throw new BadInputException("Error: Missing inputs ("+getTop().getFunctionName()+").");
 			
 		}
@@ -303,6 +309,9 @@ class Debug{
 			try {
 				execute = getTop().execute(array);
 			} catch (Exception e) {
+				if(getTop() != null){
+					getTop().isError = true;
+				}
 				exit();
 				console.postError(e.getMessage());
 				Out.printStackTrace(e);
@@ -334,10 +343,8 @@ class Debug{
 				getTop().outputData = new ArrayList<VariableData>(Arrays.asList(execute));
 				Out.pln("outputData = "+getTop().outputData);
 			}else{
-				//if(getTop() instanceof UserFunc){
-					Out.pln("execute == null, getTop().outputData = "+getTop().outputData);
-					multiExecute = getTop().outputData;
-				//}
+				Out.pln("execute == null, getTop().outputData = "+getTop().outputData);
+				multiExecute = getTop().outputData;
 			}
 		}else if(((FunctionEditor.FunctionIO) getTop()).mode == FunctionEditor.FunctionIO.Mode.OUTPUT){
 			FunctionOverseer overseer = ((FunctionEditor.FunctionIO) getTop()).getOverseer();
@@ -351,7 +358,12 @@ class Debug{
 			((FunctionEditor.FunctionIO) getTop()).getOverseer().getCurrentlyExecuting().outputData = 
 					new ArrayList<VariableData>(Arrays.asList(execute));
 			
-			//execute = null;//TODO
+		}
+		
+		if(!getTop().getOutputNodes().isEmpty() && 
+				getTop().getOutputNodes().get(0).dataType == Variable.DataType.GENERIC){
+			Out.pln("is generic output > clearing execute");
+			execute = null;//TODO
 		}
 		
 		if(mode != RunMode.RUN){

@@ -27,12 +27,13 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import think.Executable.Mode;
 import think.Variable.DataType;
 
+@SuppressWarnings("serial")
 abstract class StringFuncs{
 	
 	static class Parse_Int extends Executable{
-		private static final long serialVersionUID = 1L;
 		
 		Parse_Int(){
 			super();
@@ -62,7 +63,6 @@ abstract class StringFuncs{
 	}
 	
 	static class Parse_Float extends Executable{
-		private static final long serialVersionUID = 1L;
 		
 		Parse_Float(){
 			super();
@@ -79,7 +79,7 @@ abstract class StringFuncs{
 		
 		@Override
 		public ArrayList<DataType> getOutputs() {
-			return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.INTEGER));
+			return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.FLOAT));
 		}
 		
 		@Override
@@ -91,7 +91,6 @@ abstract class StringFuncs{
 	}
 	
 	static class Parse_Double extends Executable{
-		private static final long serialVersionUID = 1L;
 		
 		Parse_Double(){
 			super();
@@ -108,7 +107,7 @@ abstract class StringFuncs{
 		
 		@Override
 		public ArrayList<DataType> getOutputs() {
-			return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.INTEGER));
+			return new ArrayList<Variable.DataType>(Arrays.asList(Variable.DataType.DOUBLE));
 		}
 		
 		@Override
@@ -116,6 +115,45 @@ abstract class StringFuncs{
 			return new VariableData.Double(
 					Double.parseDouble(((VariableData.String) inputs[0]).value)
 				);
+		}
+	}
+	
+	static class Split extends Executable{
+		
+		@Override
+		public ArrayList<String> getInputTooltips() {
+			return new ArrayList<String>(Arrays.asList("String","regex"));
+		}
+		
+		@Override
+		public ArrayList<Variable.DataType> getInputs(){
+			return new ArrayList<DataType>(Arrays.asList(DataType.STRING,DataType.STRING));
+		}
+		@Override
+		public ArrayList<Variable.DataType> getOutputs(){
+			return new ArrayList<DataType>(Arrays.asList(Variable.DataType.ARRAY));
+		}
+		@Override
+		public Mode getPrimairyMode(){return Mode.OUT;};
+		
+		@Override
+		public VariableData execute(VariableData[] input){
+			String regex = ((VariableData.String) input[1]).value;
+			String s = ((VariableData.String) input[0]).value;
+			String[] strs = s.split(regex);
+			VariableData.Array output = new VariableData.Array(Variable.DataType.STRING);
+			
+			for(String str : strs){
+				output.add(new VariableData.String(str));
+			}
+			
+			return output;
+		}
+		Split(Point pos, GraphEditor owner) {
+			super(pos, owner);
+		}
+		Split(){
+			super();
 		}
 	}
 }

@@ -179,7 +179,7 @@ abstract class FlowControl{
 				index = 0;
 				isContinue = true;
 			}else{
-				if(index < max){
+				if(index < max - 1){
 					index++;
 				}else{
 					index = -1;

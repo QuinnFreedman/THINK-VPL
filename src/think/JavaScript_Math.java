@@ -29,12 +29,10 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.script.Invocable;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -43,8 +41,6 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-import think.Variable.DataType;
 
 @SuppressWarnings("serial")
 class JavaScript_Math extends Executable implements DocumentListener {
@@ -107,7 +103,7 @@ class JavaScript_Math extends Executable implements DocumentListener {
 			
 			if(Character.isLetter(c)){
 				
-				if(alphabetStr.indexOf(c) >= inputs-2){
+				if(alphabetStr.indexOf(c) >= inputs){
 					return false;
 				}
 				
@@ -161,6 +157,12 @@ class JavaScript_Math extends Executable implements DocumentListener {
 	@Override
 	public VariableData execute(VariableData[] inputs) throws Exception{
 		VariableData output = new VariableData.Double(0);
+
+		String editorText = editor.getText();
+		
+		if(!isValid(editorText, inputs.length)){
+			throw new Exception("In JavaScript Math: Invalid Syntax");
+		}
 		
 		ScriptEngineManager manager = new ScriptEngineManager();
 	    ScriptEngine engine = manager.getEngineByName("JavaScript");
@@ -171,7 +173,6 @@ class JavaScript_Math extends Executable implements DocumentListener {
 			script += ("var "+getNameForIndex(i)+" = "+inputs[i].getValueAsString()+";");
 		}
 		
-		String editorText = editor.getText();
 		for(String term[] : dictionairy){
 			editorText = editorText.replaceAll(term[0], term[1]);
 		}
@@ -293,7 +294,7 @@ class JavaScript_Math extends Executable implements DocumentListener {
 	}
 	
 	private static void checkValid(JavaScript_Math THIS){
-		if(isValid(THIS.editor.getText(), THIS.getInputNodes().size())){
+		if(isValid(THIS.editor.getText(), THIS.getInputNodes().size()-2)){
 			THIS.editor.setBackground(THIS.defaultColor);
 		}else{
 			THIS.editor.setBackground(Color.YELLOW);

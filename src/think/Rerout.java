@@ -34,7 +34,7 @@ import java.awt.RenderingHints;
 class Rerout extends Executable{
 	private static final long serialVersionUID = 1L;
 	
-	static final int diameter = 30;
+	static final int diameter = 25;
 	
 	Node inputNode;
 	Node outputNode;
@@ -103,7 +103,7 @@ class Rerout extends Executable{
 		
 		@Override
 		public Dimension getPreferredSize() {
-			return new Dimension(10,15);
+			return new Dimension(10,12);
 		}
 	}
 	
@@ -134,7 +134,7 @@ class Rerout extends Executable{
 		
 		@Override
 		public Dimension getPreferredSize() {
-			return new Dimension(10,15);
+			return new Dimension(10,12);
 		}
 	}
 	
