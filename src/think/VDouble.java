@@ -207,7 +207,7 @@ import javax.swing.text.DocumentFilter;
 			String sb = "";
 			for(int i = 0; i < text.length(); i++){
 				char c = text.charAt(i);
-				if(Character.isDigit(c) || (c == '-' && doc.getLength() == 0 && i == 0) || (c == '.' && !(sb.contains(".") || doc.getText(0, doc.getLength()).contains(".")))){
+				if(Character.isDigit(c) || (c == '-' && offset + i == 0) || (c == '.' && !(sb.contains(".") || doc.getText(0, doc.getLength()).contains(".")))){
 					sb += c;
 				}
 			}

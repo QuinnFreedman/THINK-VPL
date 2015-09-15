@@ -156,7 +156,7 @@ import javax.swing.event.MouseInputListener;
 	}
 	@Override
 	public void mousePressed(MouseEvent e) {
-
+		
 		if(e.getButton() == MouseEvent.BUTTON3){
 			if(this.getClass() != EntryPoint.class){
 				this.delete();

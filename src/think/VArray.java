@@ -319,7 +319,7 @@ import javax.swing.text.DocumentFilter;
 		public VariableData execute(VariableData[] input) throws Exception{
 			int index = ((VariableData.Integer) input[0]).value;
 			int size = ((VariableData.Array) getParentVarData()).value.size();
-			if(index == 0){
+			if(index == size){
 				((VariableData.Array) getParentVarData()).add(VariableData.clone(input[1]));
 			}else{
 				try{

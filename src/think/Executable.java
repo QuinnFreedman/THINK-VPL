@@ -47,8 +47,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+@SuppressWarnings("serial")
 public class Executable extends VObject{
-	private static final long serialVersionUID = 1L;
 
 	protected Color color;
 	protected static enum Mode{
@@ -371,7 +371,6 @@ public class Executable extends VObject{
 	}
 	
 	static class NodeHolder extends JPanel{
-		private static final long serialVersionUID = 1L;
 
 		NodeHolder(){
 			this.setOpaque(false);
