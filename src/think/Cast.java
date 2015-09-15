@@ -39,8 +39,10 @@ import javax.swing.border.EmptyBorder;
 
  class Cast extends Executable{
 	private static final long serialVersionUID = 1L;
-	private Node sendingNode;
-	private Node recievingNode;
+	//private Node sendingNode;
+	//private Node recievingNode;
+	private Node inputNode;
+	private Node outputNode;
 	private Variable.DataType input;
 	private Variable.DataType output;
 	
@@ -50,11 +52,11 @@ import javax.swing.border.EmptyBorder;
 		
 		Out.pln("CAST "+sendingNode.dataType+" > "+recievingNode.dataType);
 		
-    	this.sendingNode = sendingNode;
-    	this.recievingNode = recievingNode;
+    	//this.sendingNode = sendingNode;
+    	//this.recievingNode = recievingNode;
     	owner.getPanel().add(this);
-		Node inputNode = new Node(Node.NodeType.RECIEVING, this, sendingNode.dataType);
-		Node outputNode = new Node(Node.NodeType.SENDING, this, recievingNode.dataType,true);
+		inputNode = new Node(Node.NodeType.RECIEVING, this, sendingNode.dataType);
+		outputNode = new Node(Node.NodeType.SENDING, this, recievingNode.dataType,true);
 		addInputNode(inputNode);
 		addOutputNode(outputNode);
 		input = inputNode.dataType;
@@ -85,13 +87,13 @@ import javax.swing.border.EmptyBorder;
 		Node inputNode = new Node(Node.NodeType.RECIEVING, getThis(), inputType){
 			@Override
 			void onConnect() {
-				getThis().sendingNode = this.parents.get(0);
+				//getThis().sendingNode = this.parents.get(0);
 			}
 		};
 		Node outputNode = new Node(Node.NodeType.SENDING, this, outputType,true){
 			@Override
 			void onConnect() {
-				getThis().sendingNode = this.children.get(this.children.size()-1);
+				//getThis().sendingNode = this.children.get(this.children.size()-1);
 			}
 		};
 		addInputNode(inputNode);
@@ -147,19 +149,19 @@ import javax.swing.border.EmptyBorder;
 		if(this.output == Variable.DataType.STRING){
 			return new VariableData.String(inputs[0].getValueAsString());
 		}
-		Out.pln("CASTING "+sendingNode.dataType+" > "+recievingNode.dataType);
+		Out.pln("CASTING "+input+" > "+output);
 		
-		switch(this.sendingNode.dataType){
+		switch(input){
 		case BOOLEAN:
-			Out.pln("sendingNode.dataType = BOOLEAN");
-			switch(this.recievingNode.dataType){
+			Out.pln("inputNode.dataType = BOOLEAN");
+			switch(output){
 			case INTEGER:
 				return new VariableData.Integer((((VariableData.Boolean) inputs[0]).value) ? 1 : 0);
 			default:
 				return null;
 			}
 		case BYTE:
-			switch(this.recievingNode.dataType){
+			switch(output){
 			case DOUBLE:
 				return new VariableData.Double((double) ((VariableData.Byte) inputs[0]).value);
 			case FLOAT:
@@ -175,15 +177,15 @@ import javax.swing.border.EmptyBorder;
 			
 			}
 		case CHARACTER:
-			switch(this.recievingNode.dataType){
+			switch(output){
 			case STRING:
 				return new VariableData.String(Character.toString(((VariableData.Character) inputs[0]).value));
 			default:
 				return null;
 			}
 		case DOUBLE:
-			Out.pln("sendingNode.dataType = DOUBLE");
-			switch(this.recievingNode.dataType){
+			Out.pln("inputNode.dataType = DOUBLE");
+			switch(output){
 			case BYTE:
 				return new VariableData.Byte((byte) ((VariableData.Double) inputs[0]).value);
 			case FLOAT:
@@ -199,8 +201,8 @@ import javax.swing.border.EmptyBorder;
 			
 			}
 		case FLOAT:
-			Out.pln("sendingNode.dataType = FLOAT");
-			switch(this.recievingNode.dataType){
+			Out.pln("inputNode.dataType = FLOAT");
+			switch(output){
 			case BYTE:
 				return new VariableData.Byte((byte) ((VariableData.Float) inputs[0]).value);
 			case DOUBLE:
@@ -216,8 +218,8 @@ import javax.swing.border.EmptyBorder;
 			
 			}
 		case INTEGER:
-			Out.pln("sendingNode.dataType = INT");
-			switch(this.recievingNode.dataType){
+			Out.pln("inputNode.dataType = INT");
+			switch(output){
 			case BYTE:
 				return new VariableData.Byte((byte) ((VariableData.Integer) inputs[0]).value);
 			case FLOAT:
@@ -233,7 +235,7 @@ import javax.swing.border.EmptyBorder;
 			
 			}
 		case LONG:
-			switch(this.recievingNode.dataType){
+			switch(output){
 			case BYTE:
 				return new VariableData.Byte((byte) ((VariableData.Long) inputs[0]).value);
 			case FLOAT:
@@ -249,7 +251,7 @@ import javax.swing.border.EmptyBorder;
 			
 			}
 		case SHORT:
-			switch(this.recievingNode.dataType){
+			switch(output){
 			case BYTE:
 				return new VariableData.Byte((byte) ((VariableData.Short) inputs[0]).value);	
 			case FLOAT:

@@ -136,6 +136,10 @@ class Debug{
 					o2.workingData = new ArrayList<VariableData>();
 					o2.outputData = new ArrayList<VariableData>();
 					o2.hasExecuted = false;
+					if(o2 instanceof FlowControl.For)
+						((FlowControl.For) o2).resetIndex();
+					else if(o2 instanceof FlowControl.AdvancedFor)
+						((FlowControl.AdvancedFor) o2).resetIndex();
 					//Out.pln(o.getClass().getName()+" : "+((Executable) o).workingData);
 					
 				}

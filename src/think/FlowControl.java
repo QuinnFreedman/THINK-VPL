@@ -147,6 +147,13 @@ abstract class FlowControl{
 			return "For 0 . . . n";
 		}
 		
+
+		protected void resetIndex() {
+			index = -1;
+			max = -1;
+			
+		}
+		
 		@Override
 		public ArrayList<Variable.DataType> getInputs(){
 			return new ArrayList<Variable.DataType>(Arrays.asList(
@@ -215,6 +222,10 @@ abstract class FlowControl{
 		@Override
 		public String getFunctionName() {
 			return "For Element in List";
+		}
+		
+		protected void resetIndex() {
+			index = -1;
 		}
 		
 		@Override

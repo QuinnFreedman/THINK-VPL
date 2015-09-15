@@ -34,11 +34,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
+import org.jdom.output.Format.TextMode;
 import org.jdom.output.XMLOutputter;
 
 import think.Node.NodeType;
@@ -61,7 +64,11 @@ class SaveFileIO{
 		}
 		document.setRootElement(root);
 		XMLOutputter output = new XMLOutputter();
-		output.setFormat(Format.getCompactFormat()/*getPrettyFormat()*/);
+		Format format = Format.getPrettyFormat();//getRawFormat();
+		format.setOmitDeclaration(true);
+		format.setOmitEncoding(true);
+		format.setTextMode(TextMode.PRESERVE);
+		output.setFormat(format);
 		output.output(document, new FileOutputStream(file));
 	}
 	
@@ -322,6 +329,10 @@ class SaveFileIO{
 			throws ClassNotFoundException, NoSuchMethodException, SecurityException, 
 			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
 	{
+		Out.pln();
+		Out.pln("loadObjects:");
+		Out.pln("    element: "+element.toString());
+		Out.pln("    owner:   "+owner.toString());
 		
 		Element objects = element.getChild("objects");
 		List<Element> objList = objects.getChildren();
@@ -364,8 +375,21 @@ class SaveFileIO{
 				continue;
 			}else if(PrimitiveFunction.class.isAssignableFrom(objClass)){
 				String[] parentVarStrs = obj.getAttributeValue("parentVar").split(":");
-				Blueprint parentBlueprint = getBlueprintById(parentVarStrs[0]);
-				Variable parentVar = getVariableById(parentBlueprint, parentVarStrs[1]);
+				Out.print("parentVar = ");
+				for(String s : parentVarStrs){
+					Out.print(s+" : ");
+				}
+				Out.pln();
+				
+				Variable parentVar;
+				if(owner instanceof FunctionEditor && parentVarStrs[0].isEmpty()){
+					parentVar = getVariableById(owner, parentVarStrs[1]);
+				}else{
+					Blueprint parentBlueprint = getBlueprintById(parentVarStrs[0]);
+					parentVar = getVariableById(parentBlueprint, parentVarStrs[1]);
+				}
+				
+				Out.pln("parentVar = "+parentVar);
 				
 				Constructor<?> constructor = objClass.getDeclaredConstructor(Point.class, Variable.class, GraphEditor.class);
 				newObj = (VObject) constructor.newInstance(
@@ -420,6 +444,7 @@ class SaveFileIO{
 		
 		Element wires = element.getChild("wires");
 		List<Element> curveList = wires.getChildren();
+		boolean wasError = false;
 		for(Element curve : curveList){
 			VObject sendObj = getObjectById(owner, curve.getAttributeValue("objSend"));
 			VObject recObj = getObjectById(owner, curve.getAttributeValue("objRecieve"));
@@ -434,10 +459,24 @@ class SaveFileIO{
 				sendEx = (Executable) sendObj;
 				recEx = (Executable) recObj;
 			}
+			try{
 			Node.connect(
 					sendEx.getOutputNodes().get(Integer.parseInt(curve.getAttributeValue("nodeSend"))),
 					recEx.getInputNodes().get(Integer.parseInt(curve.getAttributeValue("nodeRecieve")))
 				);
+			}catch (Exception e){
+				Out.pln("ERROR : ");
+				Out.pln("sendObj = "+sendObj);
+				Out.pln("recObj = "+recObj);
+				wasError = true;
+				throw e;
+			}
+		}
+		if(wasError){
+			JOptionPane.showMessageDialog(Main.window,
+				    "Warning: Unable to load some wires. \nThis is a known bug which will be fixed eventually.",
+				    "Warning",
+				    JOptionPane.WARNING_MESSAGE);
 		}
 	}
 	
@@ -450,7 +489,7 @@ class SaveFileIO{
 		return null;
 	}
 	
-	private static Variable getVariableById(Blueprint bp, String name) {
+	private static Variable getVariableById(GraphEditor bp, String name) {
 		for(Variable v : bp.getVariables()){
 			if(v.getID().equals(name)){
 				return v;

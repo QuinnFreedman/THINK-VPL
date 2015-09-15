@@ -317,16 +317,16 @@ import javax.swing.text.DocumentFilter;
 		
 		@Override
 		public VariableData execute(VariableData[] input) throws Exception{
-			int index = ((VariableData.Integer) input[1]).value;
+			int index = ((VariableData.Integer) input[0]).value;
 			int size = ((VariableData.Array) getParentVarData()).value.size();
 			if(index == 0){
-				((VariableData.Array) getParentVarData()).add(VariableData.clone(input[0]));
+				((VariableData.Array) getParentVarData()).add(VariableData.clone(input[1]));
 			}else{
 				try{
-					((VariableData.Array) getParentVarData()).value.set(index,VariableData.clone(input[0]));
+					((VariableData.Array) getParentVarData()).value.set(index,VariableData.clone(input[1]));
 				}catch(IndexOutOfBoundsException e){
 					Out.printStackTrace(e);
-					throw new Exception("in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[1].getValueAsString()+" of "+size);
+					throw new Exception("in \""+this.getParentVariable().getFullName()+" : "+this.getSimpleName()+"\"; index out of bounds; trying to get element "+input[0].getValueAsString()+" of "+size);
 				}
 			}
 			return null;

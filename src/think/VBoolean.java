@@ -181,7 +181,7 @@ import javax.swing.text.DocumentFilter;
 				offset = 0;
 				length = doc.getLength();
 			}*/
-			if(doc.getText(0,Math.min(1, doc.getLength())).equals("t") || doc.getText(0,Math.min(1, doc.getLength())).equals("T") || (text.equals("t")) || (text.equals("T"))){
+			if(doc.getText(0,Math.min(1, doc.getLength())).equals("t") || doc.getText(0,Math.min(1, doc.getLength())).equals("T") || (text.equals("t")) || (text.equals("T")) || (text.equals("true"))){
 				text = "true";
 				offset = 0;
 				length = doc.getLength();
