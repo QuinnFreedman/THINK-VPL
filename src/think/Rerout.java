@@ -50,7 +50,8 @@ class Rerout extends Executable{
 	
 	public Rerout(Point pos, GraphEditor owner, boolean flowUp) {
 		this(pos, owner);
-		this.flowUp = flowUp;
+		if(flowUp)
+			flip();
 	}
 	
 	Rerout(Point pos, GraphEditor owner){
@@ -168,6 +169,10 @@ class Rerout extends Executable{
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		flip();
+	}
+	
+	private void flip(){
 		flowUp = !flowUp;
 		this.remove(inputNodeHolder);
 		this.remove(outputNodeHolder);
@@ -184,5 +189,9 @@ class Rerout extends Executable{
 		}
 		this.owner.getPanel().repaint();
 		this.owner.getPanel().revalidate();
+	}
+	
+	public boolean getInversed() {
+		return flowUp;
 	}
 }

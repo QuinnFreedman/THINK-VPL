@@ -163,6 +163,15 @@ class SaveFileIO{
 				}
 			}
 			
+			String content;
+			if(o instanceof Constant)
+				content = ((Constant) o).getText();
+			else if(o instanceof Rerout)
+				content = Boolean.toString(((Rerout) o).getInversed());
+			else
+				content = null;
+				
+			
 			objects.addContent(
 					new Element("object")
 						.setAttribute("x", Integer.toString(o.getLocation().x))
@@ -171,7 +180,7 @@ class SaveFileIO{
 						.setAttribute("id", o.getUniqueID())
 						.setAttribute("parentVar", parentVar)
 						.setAttribute("dataType", dataType)
-						.addContent((o instanceof Constant) ? ((Constant) o).getText() : null)
+						.addContent(content)
 					);
 		}
 		
@@ -429,6 +438,10 @@ class SaveFileIO{
 					Out.pln(parentBlueprint);
 				}
 				newObj = new UserFunc(p, overseer, owner);
+			}else if(objClass == Rerout.class){
+				String reverse = obj.getText();
+				
+				newObj = new Rerout(p, owner, reverse.equals("true"));
 			}else{
 				Constructor<?> constructor = objClass.getDeclaredConstructor(Point.class, GraphEditor.class);
 				newObj = (VObject) constructor.newInstance(
