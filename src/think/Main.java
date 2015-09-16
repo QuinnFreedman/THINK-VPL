@@ -93,6 +93,8 @@ public class Main{
 	private static String lastSave;
 	private static JMenuItem mntmSave;
 	
+	private static boolean canChangeTitle = true;
+	
 	public static void main(String args[]){	
 		colors.put(Variable.DataType.BOOLEAN, new Color(20,210,20));
 		colors.put(Variable.DataType.INTEGER, Color.red);
@@ -343,7 +345,7 @@ public class Main{
 	    mntmSave.setAccelerator(KeyStroke.getKeyStroke(
 	            KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 	    mntmSave.addActionListener(listener);
-	    mntmSave.setEnabled(lastSave != null);
+	    //mntmSave.setEnabled(lastSave != null);
 	    fileMenu.add(mntmSave);
 	    
 	    JMenuItem mntmSaveAs = new JMenuItem("Save As...");
@@ -479,22 +481,31 @@ public class Main{
 		final JPanel plus = null;
 		tabbedPane.addTab("+", plus);
 		
-		tabbedPane.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
+		tabbedPane.addChangeListener(e -> {
+
+			SwingUtilities.invokeLater(() -> {
 	            if(tabbedPane.getSelectedComponent() == plus){
 	            	InstantiableBlueprint ibp = new InstantiableBlueprint();
 	            	blueprints.add(ibp);
+            		canChangeTitle = true;
 	            	tabbedPane.removeTabAt(tabbedPane.getTabCount()-1);
-	            	tabbedPane.addTab("new_Blueprint", ibp.splitPane);
+	            	tabbedPane.addTab("", ibp.splitPane);
 	            	tabbedPane.setSelectedIndex(tabbedPane.getTabCount()-1);
 	            	ibp.className.requestFocusInWindow();
 	            	tabbedPane.addTab("+", plus);
+	            }else{
+	            	setWindowTitle(tabbedPane.getTitleAt(tabbedPane.getSelectedIndex()));
+	            	if(tabbedPane.getSelectedComponent() == Main.mainBP.splitPane){
+	            		canChangeTitle = false;
+	            	}else{
+	            		canChangeTitle = true;
+	            	}
 	            }
-	            //window.setTitle(Main.blueprints.get(tabbedPane.getSelectedIndex()).getName());
-	        }
+	        });
+				
 	    });
 		window.setVisible(true);
-
+		
 		
 		entryPoint = new EntryPoint(mainBP);
 		mainBP.getPanel().add(entryPoint);
@@ -505,7 +516,12 @@ public class Main{
 
 	}
 	
-	 static Blueprint getOpenClass(){
+	static void setWindowTitle(String s){
+		if(canChangeTitle && s != null && !s.isEmpty())
+			window.setTitle("Think - "+s);
+	}
+	
+	static Blueprint getOpenClass(){
 		return blueprints.get(tabbedPane.getSelectedIndex());
 	}
 	
@@ -552,21 +568,7 @@ public class Main{
 					Out.printStackTrace(e1);
 				}
 			}else if(c == "Save As..."){
-				JFileChooser jfc = new JFileChooser();
-				jfc.setCurrentDirectory(new File(SAVE_DIR));
-				FileFilter filter = new FileNameExtensionFilter("THINK Graph","graph");
-			    jfc.setFileFilter(filter);
-				int result = jfc.showSaveDialog(window);
-				if (result == JFileChooser.APPROVE_OPTION) {
-				    File selectedFile = jfc.getSelectedFile();
-				    Out.pln("Selected file: " + selectedFile.getAbsolutePath());
-				    if(!selectedFile.getName().endsWith(".graph")){
-				    	selectedFile = new File(selectedFile.getAbsolutePath()+".graph");
-				    }
-				    lastSave = selectedFile.getAbsolutePath();
-					mntmSave.setEnabled(true);
-					saveFile(selectedFile.getAbsolutePath());
-				}
+				saveAs();
 			}else if(c == "New"){
 				window.getContentPane().removeAll();
 				setupGUI();
@@ -605,7 +607,7 @@ public class Main{
 				    	SaveFileIO.read(selectedFile);
 				    	
 						lastSave = selectedFile.getAbsolutePath();
-						mntmSave.setEnabled(true);
+						//mntmSave.setEnabled(true);
 					} catch (Exception e1){
 						e1.printStackTrace();
 						String message = "Error loading file "+selectedFile.getAbsolutePath();
@@ -614,7 +616,10 @@ public class Main{
 					}
 				}
 			}else if(c == "Save"){
-				saveFile(lastSave);
+				if(lastSave == null)
+					saveAs();
+				else
+					saveFile(lastSave);
 			}else if(c == "Compile..."){
 				try{
 					Compiler.compile();
@@ -628,6 +633,24 @@ public class Main{
 			}
 			
 	    }
+		private static void saveAs() {
+			JFileChooser jfc = new JFileChooser();
+			jfc.setCurrentDirectory(new File(SAVE_DIR));
+			FileFilter filter = new FileNameExtensionFilter("THINK Graph","graph");
+		    jfc.setFileFilter(filter);
+			int result = jfc.showSaveDialog(window);
+			if (result == JFileChooser.APPROVE_OPTION) {
+			    File selectedFile = jfc.getSelectedFile();
+			    Out.pln("Selected file: " + selectedFile.getAbsolutePath());
+			    if(!selectedFile.getName().endsWith(".graph")){
+			    	selectedFile = new File(selectedFile.getAbsolutePath()+".graph");
+			    }
+			    lastSave = selectedFile.getAbsolutePath();
+				//mntmSave.setEnabled(true);
+				saveFile(selectedFile.getAbsolutePath());
+			}
+		}
+		
 		private static void saveFile(String path){
 			try {
 				//ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(path));
@@ -643,7 +666,7 @@ public class Main{
 			}
 		}
 	}
-	 static String crop(String s, int i){
+	static String crop(String s, int i){
 		if(s.length() <= i){
 			return s;
 		}

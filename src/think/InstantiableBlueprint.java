@@ -97,7 +97,8 @@ class InstantiableBlueprint extends Blueprint implements FunctionOverseer, Compo
 			}
 			private void update(String s){
 				setName(s);
-				Main.tabbedPane.setTitleAt(Main.blueprints.indexOf(THIS),Main.crop(s,20));
+				Main.tabbedPane.setTitleAt(Main.blueprints.indexOf(THIS), Main.crop(s,20));
+				Main.setWindowTitle(s);
 			}
 		});
 		
