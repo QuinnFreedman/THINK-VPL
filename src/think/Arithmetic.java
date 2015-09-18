@@ -368,7 +368,7 @@ abstract class Arithmetic extends Executable implements Binop{
 		Concatinate(){};
 		
 	}
-	static class Random extends Executable{
+	static class Random extends Executable implements JavaKeyword{
 		private static final long serialVersionUID = 1L;
 		
 		@Override
@@ -397,7 +397,12 @@ abstract class Arithmetic extends Executable implements Binop{
 		        
 		}
 		
-		Random(){};
+		Random(){}
+
+		@Override
+		public String getJavaKeyword() {
+			return "Math.random";
+		}
 		
 	}
 	static class Round extends Executable{

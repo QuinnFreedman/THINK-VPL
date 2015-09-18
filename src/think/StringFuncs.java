@@ -33,7 +33,7 @@ import think.Variable.DataType;
 @SuppressWarnings("serial")
 abstract class StringFuncs{
 	
-	static class Parse_Int extends Executable{
+	static class Parse_Int extends Executable implements JavaKeyword{
 		
 		Parse_Int(){
 			super();
@@ -60,9 +60,13 @@ abstract class StringFuncs{
 					Integer.parseInt(((VariableData.String) inputs[0]).value)
 				);
 		}
+		@Override
+		public String getJavaKeyword() {
+			return "Integer.parseInt";
+		}
 	}
 	
-	static class Parse_Float extends Executable{
+	static class Parse_Float extends Executable implements JavaKeyword{
 		
 		Parse_Float(){
 			super();
@@ -88,9 +92,13 @@ abstract class StringFuncs{
 					Float.parseFloat(((VariableData.String) inputs[0]).value)
 				);
 		}
+		@Override
+		public String getJavaKeyword() {
+			return "Float.parseFloat";
+		}
 	}
 	
-	static class Parse_Double extends Executable{
+	static class Parse_Double extends Executable implements JavaKeyword{
 		
 		Parse_Double(){
 			super();
@@ -115,6 +123,11 @@ abstract class StringFuncs{
 			return new VariableData.Double(
 					Double.parseDouble(((VariableData.String) inputs[0]).value)
 				);
+		}
+
+		@Override
+		public String getJavaKeyword() {
+			return "Double.parseDouble";
 		}
 	}
 	

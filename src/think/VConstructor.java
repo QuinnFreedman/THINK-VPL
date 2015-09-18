@@ -36,7 +36,7 @@ import java.awt.Point;
 	@Override
 	public VariableData execute(VariableData[] inputs){
 		
-		((InstantiableBlueprint) parentFunc).setWorkingInstance(new VariableData.Instance((InstantiableBlueprint) parentFunc));
+		((InstantiableBlueprint) parentFunc).setWorkingInstance(new VariableData.Instance((InstantiableBlueprint) parentFunc, true));
 		
 		return null;
 	}

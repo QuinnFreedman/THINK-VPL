@@ -110,39 +110,13 @@ class Compiler{
 			throw new Exception("Compiling does not handle multi-class programs yet.  I'm working on it, I promise.");
 		
 		//CLASS
-		lines.add("class "+name+" {");
+		lines.add("public abstract class "+name+" {");
 		
 		indent++;
 		
 		//CLASS VARIABLES
 		for(Variable v : Main.mainBP.getVariables()){
-			if(v instanceof VArray){
-				addImport("java.util.ArrayList"); //TODO eliminate duplicates more efficiently
-				String type = getJavaObjectName(((VArray) v).dataType);
-				String declaration = getIndent()+"ArrayList<"+type+"> "+v.getID()+" = new ArrayList<"+type+">(";
-				String initialization = null;
-				try {
-					v.resetVariableData();
-					for(VariableData data : ((VariableData.Array) v.varData).value){
-						initialization += data.getValueAsString()+", ";
-					}
-					if(!initialization.isEmpty())
-						initialization = initialization.substring(0, initialization.length()-2);
-				} catch(Exception e){
-					Main.warn("Unable to parse the value of Array \""+v.getID()+"\"");
-					initialization = v.valueField.getText();
-				}
-				if(!initialization.isEmpty()){
-					declaration += "Arrays.asList("+initialization+")";
-				}
-				declaration += ");";
-				lines.add(declaration);
-			}else if(v instanceof VInstance){
-				//TODO
-			}else{
-				String quote = ((v.dataType == Variable.DataType.STRING) ? "\"" : ((v.dataType == Variable.DataType.CHARACTER) ? "\'" : ""));
-				lines.add(getIndent()+getJavaName(v.dataType)+" "+v.getID()+" = "+quote+v.valueField.getText()+quote);
-			}
+			lines.add(getIndent()+"static "+getVariableDeclaration(v)+";");
 		}
 		
 		//MAIN
@@ -153,9 +127,101 @@ class Compiler{
 		//lines.add(getIndent()+"}");
 		
 		//FUNCTION DECLARATIONS
-		for(VFunction function : Main.mainBP.getFunctions()){
+		lines.addAll(getFunctionDeclarations(Main.mainBP));
+		
+		indent--;
+		
+		//END CLASS
+		lines.add("}");
+		return lines;
+	}
+	
+	private static ArrayList<String> getInstantiableBlueprintDeclaration(InstantiableBlueprint bp)
+			throws Exception{
+		ArrayList<String> lines = new ArrayList<String>();
+		
+		//CLASS
+		lines.add("public abstract class "+bp.getName()+" {");
+		
+		indent++;
+		
+		//CLASS VARIABLES
+		for(Variable v : Main.mainBP.getVariables()){
+			lines.add(getIndent()+getVariableDeclaration(v)+";");
+		}
+		
+		//CONSTRUCTOR
+		lines.add(getIndent()+"public "+bp.getID()+"(){}");
+		
+		lines.add(getIndent());
+		
+		//seudoconstructor
+		{
+			String declarationLine = getIndent()+"Object init(";
 			
-			String declarationLine = getIndent()+"static ";
+			int id = 0;
+			for(Variable.DataType dataType : bp.getOutput()){
+				if(dataType != Variable.DataType.GENERIC)
+					declarationLine += getJavaName(dataType)+" arg"+id;
+			}
+			
+			declarationLine += "){";
+			
+			lines.add(declarationLine);
+			
+		}
+		lines.addAll(getContinuousWireText(bp.getInputObject().getOutputNodes().get(0)));
+		lines.add(getIndent()+"}");
+		
+		
+		//FUNCTION DECLARATIONS
+		lines.addAll(getFunctionDeclarations(bp));
+		
+		
+		indent--;
+		
+		//END CLASS
+		lines.add("}");
+		return lines;
+	}
+	
+	private static String getVariableDeclaration(Variable v){
+		if(v instanceof VArray){
+			addImport("java.util.ArrayList"); //TODO eliminate duplicates more efficiently
+			String type = getJavaObjectName(((VArray) v).dataType);
+			String declaration = "ArrayList<"+type+"> "+v.getID()+" = new ArrayList<"+type+">(";
+			String initialization = null;
+			try {
+				v.resetVariableData();
+				for(VariableData data : ((VariableData.Array) v.varData).value){
+					initialization += data.getValueAsString()+", ";
+				}
+				if(!initialization.isEmpty())
+					initialization = initialization.substring(0, initialization.length()-2);
+			} catch(Exception e){
+				Main.warn("Unable to parse the value of Array \""+v.getID()+"\"");
+				initialization = v.valueField.getText();
+			}
+			if(!initialization.isEmpty()){
+				declaration += "Arrays.asList("+initialization+")";
+			}
+			declaration += ");";
+			return declaration;
+		}else if(v instanceof VInstance){
+			//TODO
+			return null;
+		}else{
+			String quote = ((v.dataType == Variable.DataType.STRING) ? "\"" : ((v.dataType == Variable.DataType.CHARACTER) ? "\'" : ""));
+			return getJavaName(v.dataType)+" "+v.getID()+" = "+quote+v.valueField.getText()+quote;
+		}
+	}
+	
+	private static ArrayList<String> getFunctionDeclarations(Blueprint bp) throws Exception{
+		ArrayList<String> lines = new ArrayList<String>();
+		
+		for(VFunction function : bp.getFunctions()){
+			
+			String declarationLine = getIndent()+(bp instanceof InstantiableBlueprint ? "" : "static ");
 			
 			assert function.getInput().size() >= 1;
 			assert function.getOutput().size() == 1;
@@ -175,16 +241,11 @@ class Compiler{
 			assert function.getInputObject().getOutputNodes().size() >= 1;
 			
 			lines.addAll(getContinuousWireText(function.getInputObject().getOutputNodes().get(0)));
-			
 		}
 		
-		indent--;
-		
-		//END CLASS
-		lines.add("}");
 		return lines;
 	}
-
+	
 	private static ArrayList<String> getContinuousWireText(Node n) throws Exception{
 		return getContinuousWireText(n, true, true);
 	}
@@ -401,11 +462,11 @@ class Compiler{
 		}else if(ex instanceof FlowControl.AdvancedFor){
 			throw new Exception("Compiling does not support advanced for loops yet");
 		}else if(ex instanceof FlowControl.Sequence){
-			output += "//SEQUENCE\n"
+			output += "//SEQUENCE"+ln
 					+getIndent()+"{";
 			for(Node n : ex.getOutputNodes()){
 				for(String s : getContinuousWireText(n)){
-					output += s+"\n";
+					output += s+ln;
 				}
 			}
 			

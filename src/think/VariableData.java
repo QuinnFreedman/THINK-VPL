@@ -304,7 +304,7 @@ import java.util.Random;
 		public Instance(){
 			
 		}
-		public Instance(InstantiableBlueprint bp) {
+		public Instance(InstantiableBlueprint bp, boolean initialized) {
 			values = new ArrayList<VariableData>();
 			names = new ArrayList<java.lang.String>();
 			for(Variable v : bp.getVariables()){
@@ -313,13 +313,14 @@ import java.util.Random;
 			}
 			this.parentBlueprint = bp;
 			this.name = parentBlueprint.getName()+"::"+rng.nextInt(java.lang.Integer.MAX_VALUE);
+			this.isInitialized = initialized;
 		}
 		private java.lang.String getInitiaized(){
 			return isInitialized ? "" : "*";
 		}
 		@Override
 		public java.lang.String getValueAsString(){
-			return "<"+name+">";
+			return "<"+getName()+">";
 		}
 		
 		public java.lang.String getName(){
