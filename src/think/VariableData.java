@@ -288,6 +288,7 @@ import java.util.Random;
 		public ArrayList<VariableData> values;
 		public ArrayList<java.lang.String> names;
 		private java.lang.String name;
+		boolean isInitialized = false;
 		public InstantiableBlueprint parentBlueprint;
 		
 		public Instance(VInstance i) {
@@ -313,13 +314,16 @@ import java.util.Random;
 			this.parentBlueprint = bp;
 			this.name = parentBlueprint.getName()+"::"+rng.nextInt(java.lang.Integer.MAX_VALUE);
 		}
+		private java.lang.String getInitiaized(){
+			return isInitialized ? "" : "*";
+		}
 		@Override
 		public java.lang.String getValueAsString(){
 			return "<"+name+">";
 		}
 		
 		public java.lang.String getName(){
-			return name;
+			return name+getInitiaized();
 		}
 		
 		public VariableData getVariableDataByName(java.lang.String string){

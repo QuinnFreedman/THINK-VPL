@@ -46,7 +46,7 @@ import javax.swing.text.DocumentFilter;
 	protected VArray getThisVariable(){
 		return this;
 	}
-	VArray(DataType dt,GraphEditor owner){
+	VArray(DataType dt, GraphEditor owner){
 		super(owner);
 		this.dataType = dt;
 		this.varData = new VariableData.Array(dt);
@@ -66,6 +66,7 @@ import javax.swing.text.DocumentFilter;
 		this.functions.add(new Add(this));
 		this.functions.add(new Set(this));
 		this.functions.add(new Remove(this));
+		this.functions.add(new Clear(this));
 		this.functions.add(new To_String(this));
 		this.functions.add(new Get_Array(this));
 		this.functions.add(new Set_Array(this));
@@ -77,7 +78,7 @@ import javax.swing.text.DocumentFilter;
 		this.objectType = bp;
 	}
 	@Override
-	 void resetVariableData(){
+	void resetVariableData(){
 		value = valueField.getText();
 		
 		VariableData.Array data = new VariableData.Array(this.dataType);
@@ -288,7 +289,6 @@ import javax.swing.text.DocumentFilter;
 			((VariableData.Array) getParentVarData()).value.clear();
 				
 			return null;
-			
 		}
 		Clear(Point pos, Variable parent, GraphEditor owner) {
 			super(pos, parent, owner);

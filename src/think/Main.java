@@ -611,8 +611,7 @@ public class Main{
 					} catch (Exception e1){
 						e1.printStackTrace();
 						String message = "Error loading file "+selectedFile.getAbsolutePath();
-						JOptionPane.showMessageDialog(new JFrame(), message, "Dialog",
-						        JOptionPane.ERROR_MESSAGE);
+						error(message);
 					}
 				}
 			}else if(c == "Save"){
@@ -625,8 +624,9 @@ public class Main{
 					Compiler.compile();
 				}catch(Exception e1){
 					e1.printStackTrace();
-					JOptionPane.showMessageDialog(new JFrame(), e1.getMessage(), "Dialog",
-					        JOptionPane.ERROR_MESSAGE);
+					String s = "Error compiling file:\n";
+					s += ((e1.getMessage() == null || e1.getMessage().isEmpty()) ? e1.getClass().getSimpleName() : e1.getMessage());
+					error(e1.getMessage());
 				}
 			}else{
 				Out.pln("null Action: "+c);
@@ -661,8 +661,7 @@ public class Main{
 			} catch (Exception e1){
 				e1.printStackTrace();
 				String message = "Error saving file "+path;
-				JOptionPane.showMessageDialog(new JFrame(), message, "Dialog",
-				        JOptionPane.ERROR_MESSAGE);
+				error(message);
 			}
 		}
 	}
@@ -671,6 +670,18 @@ public class Main{
 			return s;
 		}
 		return s.substring(0, i-2)+"...";
+	}
+	public static void warn(String string) {
+		JOptionPane.showMessageDialog(window,
+			    string,
+			    "Warning",
+			    JOptionPane.WARNING_MESSAGE);
+	}
+	public static void error(String string) {
+		JOptionPane.showMessageDialog(window,
+				string,
+				"Error",
+		        JOptionPane.ERROR_MESSAGE);
 	}
 
 }

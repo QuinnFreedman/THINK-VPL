@@ -28,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -44,7 +45,9 @@ class Compiler{
 	private static ArrayList<String> imports = new ArrayList<String>();
 	
 	private static void addImport(String s){
-		imports.add("import "+s+";");
+		s = "import "+s+";";
+		if(!imports.contains(s))
+			imports.add(s);
 	}
 	
 	static void compile() throws Exception{
@@ -104,7 +107,7 @@ class Compiler{
 		lines.add(" */");
 		
 		if(Main.blueprints.size() > 1)
-			throw new Exception("Compiling does not handle multi-class programs yet.  I'm working on it I promise.");
+			throw new Exception("Compiling does not handle multi-class programs yet.  I'm working on it, I promise.");
 		
 		//CLASS
 		lines.add("class "+name+" {");
@@ -114,7 +117,26 @@ class Compiler{
 		//CLASS VARIABLES
 		for(Variable v : Main.mainBP.getVariables()){
 			if(v instanceof VArray){
-				//TODO
+				addImport("java.util.ArrayList"); //TODO eliminate duplicates more efficiently
+				String type = getJavaObjectName(((VArray) v).dataType);
+				String declaration = getIndent()+"ArrayList<"+type+"> "+v.getID()+" = new ArrayList<"+type+">(";
+				String initialization = null;
+				try {
+					v.resetVariableData();
+					for(VariableData data : ((VariableData.Array) v.varData).value){
+						initialization += data.getValueAsString()+", ";
+					}
+					if(!initialization.isEmpty())
+						initialization = initialization.substring(0, initialization.length()-2);
+				} catch(Exception e){
+					Main.warn("Unable to parse the value of Array \""+v.getID()+"\"");
+					initialization = v.valueField.getText();
+				}
+				if(!initialization.isEmpty()){
+					declaration += "Arrays.asList("+initialization+")";
+				}
+				declaration += ");";
+				lines.add(declaration);
 			}else if(v instanceof VInstance){
 				//TODO
 			}else{
@@ -162,7 +184,7 @@ class Compiler{
 		lines.add("}");
 		return lines;
 	}
-	
+
 	private static ArrayList<String> getContinuousWireText(Node n) throws Exception{
 		return getContinuousWireText(n, true, true);
 	}
@@ -243,21 +265,84 @@ class Compiler{
 			
 			output = quote+((Constant) ex).editor.getText()+suffix+quote;
 		}else if(ex instanceof PrimitiveFunction){
-			if(ex.getClass().getSimpleName().equals("Get")){
-				output = ((PrimitiveFunction) ex).parentVariable.getID();
-			}else if(ex.getClass().getSimpleName().equals("Set")){
-				output = ((PrimitiveFunction) ex).parentVariable.getID()+" = "
-						+getFunctionCall(ex.getInputNodes().get(1).parents.get(0));
+			String id = ((PrimitiveFunction) ex).parentVariable.getID();
+			Node input1 = null;
+			if(!ex.getInputNodes().isEmpty()){
+				boolean hasGeneric = (ex.getInputNodes().get(0).dataType == DataType.GENERIC);
+				if(!hasGeneric)
+					input1 = ex.getInputNodes().get(0).parents.get(0);
+				else if(ex.getInputNodes().size() > 1)
+					input1 = ex.getInputNodes().get(1).parents.get(0);
+			}
+			//Basic
+			if(ex.getClass().getSimpleName().equals("Get")
+					&& ex.getClass() != VArray.Get.class){
+				output = id;
+			}else if(ex.getClass().getSimpleName().equals("Set")
+					&& ex.getClass() != VArray.Set.class){
+				output = id+" = "+getFunctionCall(input1);
+				
 			}else if(ex.getClass().getSimpleName().equals("Multiply_By")){
-				output = ((PrimitiveFunction) ex).parentVariable.getID()+" *= "
-						+getFunctionCall(ex.getInputNodes().get(1).parents.get(0));
+				output = id+" *= "+getFunctionCall(input1);
+				
 			}else if(ex.getClass().getSimpleName().equals("Add_To")){
-				output = ((PrimitiveFunction) ex).parentVariable.getID()+" = "
-						+getFunctionCall(ex.getInputNodes().get(1).parents.get(0));
-			}else if(ex.getClass().getSimpleName().equals("Increment")){
-				output = ((PrimitiveFunction) ex).parentVariable.getID()+"++";
-			}else{
-				output = "ERROR";//TODO handle arrays, objects
+				output = id+" += "+getFunctionCall(input1);
+				
+			}
+			// Integer
+			else if(ex.getClass() == VInt.Increment.class){
+				output = id+"++";
+			}
+			//Boolean
+			else if(ex.getClass() == VBoolean.Toggle.class){
+				output = "!"+id;
+			}
+			//String
+			else if(ex.getClass() == VString.Append.class){
+				output = id+" += "+getFunctionCall(input1);
+				
+			}else if(ex.getClass() == VString.Get_Length.class){
+				output = id+".length()";
+				
+			}else if(ex.getClass() == VString.Get_Char_At.class){
+				output = "Character.toString("+id+".charAt("+getFunctionCall(input1)+"))";
+				
+			}else if(ex.getClass() == VString.Replace.class){
+				output = id+" = "+id+".replaceAll("+getFunctionCall(input1)+", "+ex.getInputNodes().get(2).parents.get(0)+")";
+				
+			}else if(ex.getClass() == VString.Split.class){
+				output = "new ArrayList<String>(Arrays.asList("+id+".split("+getFunctionCall(input1)+")))";
+				
+			}
+			//ARRAYS
+			else if(ex.getClass() == VArray.Add.class){
+				output = id+".add("+getFunctionCall(input1)+")";
+				
+			}else if(ex.getClass() == VArray.Get.class){
+				output = id+".get("+getFunctionCall(input1)+")";
+			
+			}else if(ex.getClass() == VArray.Get_Array.class){
+				output = id;
+			
+			}else if(ex.getClass() == VArray.Get_Length.class){
+				output = id+".size()";
+				
+			}else if(ex.getClass() == VArray.Set_Array.class){
+				output = id+" = "+getFunctionCall(input1);
+				
+			}else if(ex.getClass() == VArray.Remove.class){
+				output = id+".remove("+getFunctionCall(input1)+")";
+				
+			}else if(ex.getClass() == VArray.Set.class){
+				output = id+".set("+getFunctionCall(input1)+","
+						+getFunctionCall(ex.getInputNodes().get(2).parents.get(0))+")";
+				
+			}else if(ex.getClass() == VArray.To_String.class){
+				output = id+".toString()";
+				
+			}else if(ex.getClass() == VArray.Clear.class){
+				output = id+".clear()";
+				
 			}
 		}else if(ex instanceof Binop){
 			if(ex instanceof Logic.Not){
@@ -441,6 +526,10 @@ class Compiler{
 		default:
 			return dt.toString().toLowerCase();
 		}
+	}
+	private static String getJavaObjectName(DataType dataType) {
+		String str = dataType.toString().toLowerCase();
+		return str.substring(0, 1).toUpperCase() + str.substring(1);
 	}
 	private static String getIndent(){
 		String output = "";

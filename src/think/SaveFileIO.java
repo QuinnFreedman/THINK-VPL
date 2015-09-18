@@ -486,10 +486,7 @@ class SaveFileIO{
 			}
 		}
 		if(wasError){
-			JOptionPane.showMessageDialog(Main.window,
-				    "Warning: Unable to load some wires. \nThis is a known bug which will be fixed eventually.",
-				    "Warning",
-				    JOptionPane.WARNING_MESSAGE);
+			Main.warn("Warning: Unable to load some wires. \nThis is a known bug which will be fixed eventually.");
 		}
 	}
 	
