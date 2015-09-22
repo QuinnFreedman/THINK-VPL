@@ -331,7 +331,7 @@ abstract class Arithmetic extends Executable implements Binop{
 		Mod(){};
 		
 	}
-	static class Concatinate extends Executable{
+	static class Concatinate extends Executable implements Binop{
 		private static final long serialVersionUID = 1L;
 		@Override
 		public String getMenuName() {
@@ -365,7 +365,12 @@ abstract class Arithmetic extends Executable implements Binop{
 			setBounds(new Rectangle(pos,getSize()));
 		}
 		
-		Concatinate(){};
+		Concatinate(){}
+
+		@Override
+		public String getJavaBinop() {
+			return "+";
+		};
 		
 	}
 	static class Random extends Executable implements JavaKeyword{

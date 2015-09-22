@@ -34,14 +34,21 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import jdk.nashorn.internal.runtime.ScriptEnvironment.FunctionStatementBehavior;
 import think.FunctionEditor.FunctionIO;
 import think.FunctionEditor.FunctionIO.Mode;
 import think.Variable.DataType;
 
 class Compiler{
 	
+	private static final String ln = System.getProperty("line.separator");
+	private static final String blockComment =	
+			 "/**"												+ln
+			+" *  Created with THINK version "+Main.VERSION_ID	+ln
+			+" *  ThinkVPL.org"									+ln
+			+" */"												+ln;
+
 	private static int indent;
-	private static String ln;
 	private static ArrayList<String> imports = new ArrayList<String>();
 	
 	private static void addImport(String s){
@@ -66,8 +73,6 @@ class Compiler{
 		    
 		    Out.pln("Compiling");
 		    
-		    ln = System.getProperty("line.separator");
-		    
 		    String[] simpleName = selectedFile.getName().replace(".", "-").split("-");
 		    
 			ArrayList<String> lines = getText(simpleName[0]);
@@ -78,9 +83,13 @@ class Compiler{
 			PrintWriter writer;
 			try {
 				writer = new PrintWriter(selectedFile, "UTF-8");
+				writer.println(blockComment);
+				
 				for(String s : imports){
 					writer.println(s);
 				}
+				writer.println();
+				
 				for(String s : lines){
 					writer.println(s);
 				}
@@ -88,6 +97,7 @@ class Compiler{
 				Out.pln("Succeeded");
 			} catch (FileNotFoundException e) {
 				Out.pln("FAILED: File not found: "+e.getMessage());
+				Main.error("Failed to compile: File not found: "+e.getMessage());
 			} catch (UnsupportedEncodingException e) {
 				throw e;
 			}
@@ -99,12 +109,6 @@ class Compiler{
 	private static ArrayList<String> getText(String name) throws Exception {
 		ArrayList<String> lines = new ArrayList<String>();
 		indent = 0;
-		
-		//COMMENT
-		lines.add("/**");
-		lines.add(" *  Created with THINK version "+Main.VERSION_ID);
-		lines.add(" *  ThinkVPL.org");
-		lines.add(" */");
 		
 		if(Main.blueprints.size() > 1)
 			throw new Exception("Compiling does not handle multi-class programs yet.  I'm working on it, I promise.");
@@ -157,7 +161,7 @@ class Compiler{
 		
 		//seudoconstructor
 		{
-			String declarationLine = getIndent()+"Object init(";
+			String declarationLine = getIndent()+bp.getID()+" init(";
 			
 			int id = 0;
 			for(Variable.DataType dataType : bp.getOutput()){
@@ -171,6 +175,7 @@ class Compiler{
 			
 		}
 		lines.addAll(getContinuousWireText(bp.getInputObject().getOutputNodes().get(0)));
+		//TODO retun obj
 		lines.add(getIndent()+"}");
 		
 		
@@ -191,21 +196,26 @@ class Compiler{
 			String type = getJavaObjectName(((VArray) v).dataType);
 			String declaration = "ArrayList<"+type+"> "+v.getID()+" = new ArrayList<"+type+">(";
 			String initialization = null;
-			try {
-				v.resetVariableData();
-				for(VariableData data : ((VariableData.Array) v.varData).value){
-					initialization += data.getValueAsString()+", ";
+			if(v.valueField.getText().isEmpty()){
+				initialization = "";
+			}else{
+				try {
+					v.resetVariableData();
+					for(VariableData data : ((VariableData.Array) v.varData).value){
+						initialization += data.getValueAsString()+", ";
+					}
+					if(!initialization.isEmpty())
+						initialization = initialization.substring(0, initialization.length()-2);
+				} catch(Exception e){
+					Main.warn("Unable to parse the value of Array \""+v.getID()+"\"");
+					initialization = v.valueField.getText();
 				}
-				if(!initialization.isEmpty())
-					initialization = initialization.substring(0, initialization.length()-2);
-			} catch(Exception e){
-				Main.warn("Unable to parse the value of Array \""+v.getID()+"\"");
-				initialization = v.valueField.getText();
 			}
 			if(!initialization.isEmpty()){
+				addImport("java.util.Arrays");
 				declaration += "Arrays.asList("+initialization+")";
 			}
-			declaration += ");";
+			declaration += ")";
 			return declaration;
 		}else if(v instanceof VInstance){
 			//TODO
@@ -238,6 +248,16 @@ class Compiler{
 			
 			lines.add(declarationLine);
 			
+			indent++;
+			
+			for(Variable v : function.editor.getVariables()){
+				lines.add(getIndent()+getVariableDeclaration(v)+";");
+			}
+			
+			lines.add(getIndent());
+			
+			indent--;
+			
 			assert function.getInputObject().getOutputNodes().size() >= 1;
 			
 			lines.addAll(getContinuousWireText(function.getInputObject().getOutputNodes().get(0)));
@@ -251,6 +271,7 @@ class Compiler{
 	}
 	
 	private static ArrayList<String> getContinuousWireText(Node node, boolean indented, boolean closed) throws Exception{
+		Out.pln("**********************getContinuousWireText*********************");
 		if(indented)
 			indent++;
 		ArrayList<String> lines = new ArrayList<String>();
@@ -258,23 +279,38 @@ class Compiler{
 		Node current = node.children.isEmpty() ? null : node.children.get(0);
 		
 		while(current != null){
-			String line = getIndent()+getFunctionCall(current,false);
-			if(!(line.endsWith("}") || line.endsWith(ln)))
-				line += ";";
-			lines.add(line);
-			if(line.endsWith("}") || line.endsWith(ln)){
-				break;
+			String line = getFunctionCall(current,false);
+			Executable currentObj = ((Executable) current.parentObject);
+			if(line != null){
+				Out.pln("__currentObj == "+currentObj);
+				if(!(line.endsWith("}") || line.endsWith(ln))){
+					line += ";";
+					if( currentObj.getOutputNodes().size() > 1 ) {
+						line = getJavaName(currentObj.getOutputNodes().get(1).dataType)+" "
+								+currentObj.getCompilerId()+" = "+line;
+					}
+				}else if(line.endsWith("}"+ln)){
+					line = line.substring(0, line.length() - ln.length());
+				}
+				line = getIndent()+line;
+				lines.add(line);
+				Out.pln("__line == "+line);
+				if(line.endsWith("}") || line.endsWith(ln)){
+					break;
+				}
 			}
 			
-			Executable next = getNext((Executable) current.parentObject);
+			Executable next = getNext(currentObj);
+			Out.pln("__next == "+next);
 			if(next == null)
 				break;
-			if(next instanceof FunctionEditor.FunctionIO && ((FunctionEditor.FunctionIO) next).mode == Mode.OUTPUT){
-				break;
-			}
 			Out.pln(" > "+next);
 			Out.pln(" > SIZE: "+next.getOutputNodes().size());
-			current = next.getOutputNodes().get(0);
+			
+			if(next instanceof FunctionEditor.FunctionIO && ((FunctionEditor.FunctionIO) next).mode == Mode.OUTPUT)
+				current = next.getInputNodes().get(0);
+			else
+				current = next.getOutputNodes().get(0);
 		}
 		
 		if(indented)
@@ -292,6 +328,21 @@ class Compiler{
 	
 	private static String getFunctionCall(Node node, boolean isCalledAsArguement) throws Exception {
 		Executable ex = (Executable) node.parentObject;
+		
+		if(ex instanceof Rerout){
+			if(isCalledAsArguement){
+				return getFunctionCall(((Rerout) ex).inputNode.parents.get(0));
+			}else{
+				return null;
+			}
+		}
+		
+		if(isCalledAsArguement && ex.getOutputNodes().size() > 1 &&
+				!(ex instanceof FlowControl.For || ex instanceof FlowControl.AdvancedFor
+						|| ex instanceof FunctionEditor.FunctionIO)){
+			return ex.getCompilerId();
+		}
+		
 		String output = null;
 		
 		if(ex instanceof Constant){
@@ -372,6 +423,7 @@ class Compiler{
 				output = id+" = "+id+".replaceAll("+getFunctionCall(input1)+", "+ex.getInputNodes().get(2).parents.get(0)+")";
 				
 			}else if(ex.getClass() == VString.Split.class){
+				addImport("java.util.Arrays");
 				output = "new ArrayList<String>(Arrays.asList("+id+".split("+getFunctionCall(input1)+")))";
 				
 			}
@@ -415,10 +467,14 @@ class Compiler{
 				String str1 = getFunctionCall(input1);
 				String str2 = getFunctionCall(input2);
 				
+				Out.pln("binop");
+				Out.pln("str1 = "+str1);
+				Out.pln("str2 = "+str2);
+				
 				if(str1.contains(" "))
 					str1 = "("+str1+")";
 				if(str2.contains(" "))
-					str2 = "("+str1+")";
+					str2 = "("+str2+")";
 				
 				output = str1+" "+((Binop) ex).getJavaBinop()+" "+str2;
 			}
@@ -426,9 +482,18 @@ class Compiler{
 		}else if(ex instanceof Cast){
 			
 			String functionCall = getFunctionCall(ex.getInputNodes().get(0).parents.get(0));
+			if(functionCall.contains(" "))
+				functionCall = "("+functionCall+")";
 			
-			output = "("+getJavaName(((Cast) ex).getOutput())+") "+(functionCall.contains(" ") ? "(" : "")+functionCall+(functionCall.contains(" ") ? ")" : "");
-			
+			if(((Cast) ex).getOutput() == DataType.STRING){
+				if(((Cast) ex).getInput() == DataType.OBJECT || ((Cast) ex).getInput() == DataType.ARRAY){
+					output = functionCall+".toString()";
+				}else{
+					output = "String.valueOf("+functionCall+")";
+				}
+			}else{
+				output = "("+getJavaName(((Cast) ex).getOutput())+") "+functionCall;
+			}
 		}else if(ex instanceof FlowControl.Branch){
 			output = "if ("
 					+getFunctionCall(ex.getInputNodes().get(1).parents.get(0))
@@ -462,7 +527,7 @@ class Compiler{
 		}else if(ex instanceof FlowControl.AdvancedFor){
 			throw new Exception("Compiling does not support advanced for loops yet");
 		}else if(ex instanceof FlowControl.Sequence){
-			output += "//SEQUENCE"+ln
+			output = "//SEQUENCE"+ln
 					+getIndent()+"{";
 			for(Node n : ex.getOutputNodes()){
 				for(String s : getContinuousWireText(n)){
@@ -511,7 +576,6 @@ class Compiler{
 					i++;
 				}
 			}else{
-
 				boolean hasGeneric = (ex.getInputNodes().get(0).dataType == Variable.DataType.GENERIC);//contains(Variable.DataType.GENERIC);
 				//assert ex.getInputNodes().size() <= (hasGeneric ? 2 : 1); 
 				if(!(ex.getInputNodes().size() <= (hasGeneric ? 2 : 1)))
@@ -541,7 +605,7 @@ class Compiler{
 				else
 					output = ((InstantiableBlueprint) overseer).getName();
 			}else{
-				output = ex.getSimpleName();
+				output = ex.getSimpleName().replace(" > ", ".").replace(" ", "_");
 			}
 			output += "(";
 			
@@ -564,7 +628,6 @@ class Compiler{
 	}
 
 	private static Executable getNext(Executable current) {
-		
 		if(!current.getOutputNodes().isEmpty()){
 			Node outputNode = current.getOutputNodes().get(0);
 			if(outputNode.dataType == Variable.DataType.GENERIC && !outputNode.children.isEmpty()){
@@ -582,6 +645,9 @@ class Compiler{
 			return "int";
 		case STRING:
 			return "String";
+		case ARRAY:
+			addImport("java.util.ArrayList");
+			return "ArrayList";//TOOD <?>
 		case GENERIC:
 			return "void";
 		default:

@@ -65,6 +65,8 @@ public class Executable extends VObject{
 	protected boolean executeOnce;
 	protected boolean hasExecuted = false;
 	ArrayList<VariableData> outputData;
+	private static int compilerIdCounter = 100;
+	private int compilerId;
 
 	protected boolean inputsOptional(int i){
 		return false;
@@ -241,6 +243,9 @@ public class Executable extends VObject{
 	 */
 	protected Executable(Point pos, GraphEditor owner){
 		super(owner);
+		this.compilerId = compilerIdCounter;
+		compilerIdCounter++;
+		
 		this.color = Color.BLACK;
 		
 		inputNodes = new ArrayList<Node>();
@@ -296,6 +301,10 @@ public class Executable extends VObject{
 			}
 		}catch(Exception e){};
 	}
+
+	protected Executable() {
+		super();
+	}
 	
 	protected void setupInputTooltips(){
 		if(getInputTooltips() != null){
@@ -312,10 +321,6 @@ public class Executable extends VObject{
 				getOutputNodes().get(i + j).setToolTipText(getOutputTooltips().get(i));
 			}
 		}
-	}
-	
-	protected Executable() {
-		super();
 	}
 	
 	/**
@@ -389,7 +394,7 @@ public class Executable extends VObject{
 		return new Dimension(Math.max(60,this.getPreferredSize().width),
 				30+inputNodeHolder.getPreferredSize().height+outputNodeHolder.getPreferredSize().height);
 	}
-	 String getPathName(){
+	String getPathName(){
 		String s = "";
 		if(this instanceof PrimitiveFunction && this.owner != ((PrimitiveFunction) this).getParentVariable().getOwner()){
 			Out.pln("this instanceof PrimitiveFunction");
@@ -426,5 +431,14 @@ public class Executable extends VObject{
 
 	public String getMenuName() {
 		return getSimpleName();
+	}
+	
+	String getCompilerId(){
+		String id;
+		if(this instanceof UserFunc)
+			id = ((UserFunc) this).getParentVar().getID();
+		else
+			id = this.getClass().getSimpleName();
+		return id+"_Data_"+Integer.toHexString(compilerId);
 	}
 }

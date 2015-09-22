@@ -190,6 +190,11 @@ class Debug{
 			for(Variable var : bp.getVariables()){
 				var.setEditable(true);
 			}
+			for(VFunction f : bp.getFunctions()){
+				for(Variable var : f.editor.getVariables()){
+					var.setEditable(true);
+				}
+			}
 		}
 		if(running != null){
 			running.setVisible(false);

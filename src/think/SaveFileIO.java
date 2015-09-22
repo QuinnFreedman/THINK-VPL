@@ -318,14 +318,16 @@ class SaveFileIO{
 				Variable.DataType dt = Variable.DataType.valueOf(var.getAttributeValue("dataType"));
 				
 				newVar = new VArray(dt,owner);
-				Out.pln("value = "+var.getAttributeValue("value"));
 				newVar.valueField.setText(var.getAttributeValue("value"));
 			}else{
 				newVar = (Variable) varClass.getDeclaredConstructor(GraphEditor.class).newInstance(owner);
+				newVar.valueField.setText(""); //workaround
+				//TODO handle inserting decimal over existing decimal (docfilter blocks it)
 				newVar.valueField.setText(var.getAttributeValue("value"));
 			}
 			newVar.nameField.setText(var.getAttributeValue("id"));
 			owner.getVariables().add(newVar);
+			Out.pln("value = "+var.getAttributeValue("value"));
 		}
 		owner.updateVars();
 		if(owner instanceof Blueprint)

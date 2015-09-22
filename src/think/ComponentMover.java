@@ -257,7 +257,7 @@ import javax.swing.SwingUtilities;
 		if (changeCursor)
 		{
 			originalCursor = source.getCursor();
-			source.setCursor( Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR) );
+			source.setCursor(Main.DRAG_CURSOR);
 		}
 
 		//  Making sure autoscrolls is false will allow for smoother dragging of

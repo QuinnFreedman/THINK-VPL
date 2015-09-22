@@ -128,7 +128,7 @@ public class Variable extends SidebarItem implements DocumentListener{
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				drag.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+				drag.setCursor(Main.DRAG_CURSOR);
 				
 			}
 
