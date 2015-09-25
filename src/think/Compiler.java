@@ -174,7 +174,11 @@ class Compiler{
 			lines.add(declarationLine);
 			
 		}
-		lines.addAll(getContinuousWireText(bp.getInputObject().getOutputNodes().get(0)));
+		ArrayList<String> initFunctionDefn = getContinuousWireText(bp.getInputObject().getOutputNodes().get(0));
+		for(String s : initFunctionDefn){
+			s = s.replaceAll("return;", "return this;");
+		}
+		lines.addAll(initFunctionDefn);
 		//TODO retun obj
 		lines.add(getIndent()+"}");
 		
@@ -218,8 +222,8 @@ class Compiler{
 			declaration += ")";
 			return declaration;
 		}else if(v instanceof VInstance){
-			//TODO
-			return null;
+			String type = ((VInstance) v).parentBlueprint.getName();
+			return type+" "+v.getID()+" = new "+type+"()";
 		}else{
 			String quote = ((v.dataType == Variable.DataType.STRING) ? "\"" : ((v.dataType == Variable.DataType.CHARACTER) ? "\'" : ""));
 			return getJavaName(v.dataType)+" "+v.getID()+" = "+quote+v.valueField.getText()+quote;
@@ -350,7 +354,7 @@ class Compiler{
 			String suffix = "";
 			switch (((Constant) ex).dt) {
 			case ARRAY:
-				throw new Exception("Compiling does not support arrays/lists yet");
+				throw new Exception("Think does not support constant arrays/lists yet");
 			case BYTE:
 				break;
 			case CHARACTER:
